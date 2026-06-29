@@ -7,6 +7,8 @@ import { Navigation } from './components/Navigation';
 import LockScreen from './components/LockScreen';
 import { memoriesData } from './data';
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return localStorage.getItem('tanalumina_unlocked') === 'true';
@@ -16,7 +18,7 @@ function App() {
   const [editingMemory, setEditingMemory] = useState<any>(null);
 
   const fetchMemories = () => {
-    fetch('http://localhost:3001/api/memories')
+    fetch(`${API_BASE_URL}/api/memories`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setMemories(data);
@@ -35,7 +37,7 @@ function App() {
 
   const addMemory = async (newMemory: any) => {
     try {
-      const res = await fetch('http://localhost:3001/api/memories', {
+      const res = await fetch(`${API_BASE_URL}/api/memories`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(newMemory)
@@ -53,7 +55,7 @@ function App() {
 
   const updateMemory = async (id: string, updatedMemory: any) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/memories/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/memories/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(updatedMemory)
@@ -69,7 +71,7 @@ function App() {
 
   const deleteMemory = async (id: string) => {
     try {
-      const res = await fetch(`http://localhost:3001/api/memories/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/api/memories/${id}`, {
         method: 'DELETE'
       });
       if (res.ok) {
