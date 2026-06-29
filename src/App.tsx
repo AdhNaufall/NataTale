@@ -120,9 +120,8 @@ function App() {
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
           >
-            <Heart className="w-16 h-16 text-softblue fill-softblue/30 mb-6 drop-shadow-lg" />
+            <Heart className="w-16 h-16 text-softblue fill-softblue/30 drop-shadow-lg" />
           </motion.div>
-          <h1 className="font-handwriting text-4xl text-slate">Memuat Kenangan...</h1>
         </motion.div>
       </div>
     );
