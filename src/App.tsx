@@ -26,11 +26,11 @@ function App() {
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setMemories(data);
-        setIsLoading(false);
+        setTimeout(() => setIsLoading(false), 1500); // 1.5s delay for the cute splash screen
       })
       .catch(err => {
         console.error('Failed to load memories from DB:', err);
-        setIsLoading(false);
+        setTimeout(() => setIsLoading(false), 1500);
       });
   };
 
@@ -119,9 +119,28 @@ function App() {
           <motion.div
             animate={{ scale: [1, 1.2, 1] }}
             transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+            className="mb-4"
           >
             <Heart className="w-16 h-16 text-softblue fill-softblue/30 drop-shadow-lg" />
           </motion.div>
+          
+          {/* Cute NataTale Text */}
+          <motion.h1 
+            initial={{ y: 10, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ delay: 0.3, duration: 0.8 }}
+            className="font-handwriting text-4xl text-softblue font-bold tracking-wider drop-shadow-sm"
+          >
+            NataTale
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8, duration: 1 }}
+            className="text-xs text-softblue/60 mt-2 font-serif uppercase tracking-[0.2em]"
+          >
+            Loading our memories...
+          </motion.p>
         </motion.div>
       </div>
     );
