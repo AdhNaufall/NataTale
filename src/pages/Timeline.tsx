@@ -31,7 +31,7 @@ export default function Timeline({ memories, onEdit, onDelete }: { memories: any
   }, []);
 
   return (
-    <div className="relative min-h-screen pt-12 pb-24 px-4 max-w-2xl mx-auto">
+    <div className="relative min-h-screen pt-12 pb-24 px-4 max-w-2xl md:max-w-6xl mx-auto">
       
       {/* Mini Calendar Quick Jump (Fixed) */}
       <div className="fixed top-6 right-6 z-40">
@@ -50,20 +50,22 @@ export default function Timeline({ memories, onEdit, onDelete }: { memories: any
               </span>
             </div>
 
-            {/* Timeline Line for the month */}
-            <div className="absolute left-[19px] md:left-[27px] top-12 bottom-0 w-[2px] bg-gradient-to-b from-softblue/40 via-softblue/20 to-transparent rounded-full"></div>
+            {/* Timeline Line for the month (Mobile Only) */}
+            <div className="absolute left-[19px] top-12 bottom-0 w-[2px] bg-gradient-to-b from-softblue/40 via-softblue/20 to-transparent rounded-full md:hidden"></div>
 
-            <div className="space-y-10">
+            {/* Grid for Desktop, Vertical List for Mobile */}
+            <div className="space-y-10 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 md:items-start">
               {monthMemories.map((memory) => {
                 const isExpanded = expandedId === memory.id;
+                const memoryDate = new Date(memory.date);
                 
                 return (
-                  <div key={memory.id} className="relative flex gap-3 md:gap-6">
-                    {/* Dot */}
-                    <div className="relative z-20 shrink-0 w-10 md:w-14 flex flex-col items-center">
+                  <div key={memory.id} className="relative flex md:block gap-3 md:gap-0 md:mb-0">
+                    {/* Dot (Mobile Only) */}
+                    <div className="relative z-20 shrink-0 w-10 flex flex-col items-center md:hidden">
                       <div className="w-3 h-3 bg-lavender rounded-full border-2 border-background ring-4 ring-lavender/20 mt-6 shadow-sm"></div>
                       <span className="text-xs font-bold text-gray-400 mt-2">
-                        {new Date(memory.date).getDate()}
+                        {memoryDate.getDate()}
                       </span>
                     </div>
 
@@ -73,12 +75,17 @@ export default function Timeline({ memories, onEdit, onDelete }: { memories: any
                       onClick={() => setExpandedId(isExpanded ? null : memory.id)}
                       className={cn(
                         "flex-1 bg-white p-2.5 pb-6 md:p-3 md:pb-8 cursor-pointer transition-all duration-500",
-                        "border border-gray-100 rounded-sm",
+                        "border border-gray-100 rounded-sm relative",
                         isExpanded 
                           ? "shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] scale-[1.02] rotate-0 z-30" 
                           : "shadow-polaroid hover:shadow-xl hover:-translate-y-2 hover:rotate-1 hover:z-30"
                       )}
                     >
+                      {/* Date Badge (Desktop Only) */}
+                      <div className="hidden md:block absolute -top-3 -left-3 bg-lavender text-white px-3 py-1 rounded-sm text-xs font-bold shadow-md z-40 transform -rotate-3 border border-white/20">
+                        {memoryDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
+                      </div>
+
                       {/* Taped Emoji Sticker */}
                       {memory.mood && (
                         <div className="absolute -top-3 -right-3 md:-top-4 md:-right-4 z-40 transform rotate-12 bg-white w-14 h-14 md:w-16 md:h-16 shadow-lg border border-gray-100 flex items-center justify-center text-4xl md:text-5xl">
@@ -91,7 +98,7 @@ export default function Timeline({ memories, onEdit, onDelete }: { memories: any
                       <Carousel images={memory.images || [memory.image]} />
 
                       <div className="px-1 md:px-2">
-                        <h3 className="font-handwriting text-3xl md:text-4xl font-bold text-slate mb-2 md:mb-3 mt-3 md:mt-4 leading-none text-center">{memory.title}</h3>
+                        <h3 className="font-handwriting text-3xl md:text-3xl font-bold text-slate mb-2 md:mb-3 mt-3 md:mt-4 leading-none text-center">{memory.title}</h3>
                         
                         {/* Tags */}
                         <div className="flex flex-wrap gap-2 mt-3">
