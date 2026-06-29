@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Timeline from './pages/Timeline';
 import Archive from './pages/Archive';
 import Write from './pages/Write';
@@ -7,7 +7,7 @@ import { Navigation } from './components/Navigation';
 import LockScreen from './components/LockScreen';
 import { memoriesData } from './data';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:3001';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -103,7 +103,7 @@ function App() {
       {/* Route Content */}
       <main className="pb-32">
         {currentPath === '/' && <Timeline memories={memories} onEdit={handleEdit} onDelete={deleteMemory} />}
-        {currentPath === '/archive' && <Archive memories={memories} onEdit={handleEdit} onDelete={deleteMemory} />}
+        {currentPath === '/archive' && <Archive memories={memories} />}
         {currentPath === '/write' && <Write onSave={addMemory} onUpdate={updateMemory} navigate={navigate} memories={memories} editingMemory={editingMemory} setEditingMemory={setEditingMemory} />}
         {currentPath === '/us' && <Us memories={memories} />}
       </main>

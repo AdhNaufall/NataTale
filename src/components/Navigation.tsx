@@ -1,4 +1,3 @@
-import React from 'react';
 import { Clock, PenTool, Grid, Heart } from 'lucide-react';
 import { cn } from '../lib/utils';
 
