@@ -26,11 +26,11 @@ function App() {
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setMemories(data);
-        setTimeout(() => setIsLoading(false), 1500); // 1.5s delay for romantic splash screen effect
+        setIsLoading(false);
       })
       .catch(err => {
         console.error('Failed to load memories from DB:', err);
-        setTimeout(() => setIsLoading(false), 1500);
+        setIsLoading(false);
       });
   };
 
