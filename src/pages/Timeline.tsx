@@ -74,12 +74,15 @@ export default function Timeline({ memories, onEdit, onDelete }: { memories: any
                       layout
                       onClick={() => setExpandedId(isExpanded ? null : memory.id)}
                       className={cn(
-                        "flex-1 bg-white p-2.5 pb-6 md:p-3 md:pb-8 cursor-pointer transition-all duration-500",
+                        "flex-1 bg-white p-2.5 pb-6 md:p-3 md:pb-8 cursor-pointer transition-shadow duration-500",
                         "border border-gray-100 rounded-sm relative",
                         isExpanded 
-                          ? "shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] scale-[1.02] rotate-0 z-30" 
-                          : "shadow-polaroid hover:shadow-xl hover:-translate-y-2 hover:rotate-1 hover:z-30"
+                          ? "shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] z-30" 
+                          : "shadow-polaroid hover:shadow-xl"
                       )}
+                      animate={isExpanded ? { scale: 1.02, rotate: 0, y: 0 } : { scale: 1, rotate: 0, y: 0 }}
+                      whileHover={!isExpanded ? { y: -8, rotate: 1, zIndex: 30 } : undefined}
+                      transition={{ duration: 0.4, ease: "easeOut" }}
                     >
                       {/* Date Badge (Desktop Only) */}
                       <div className="hidden md:block absolute -top-3 -left-3 bg-lavender text-white px-3 py-1 rounded-sm text-xs font-bold shadow-md z-40 transform -rotate-3 border border-white/20">
