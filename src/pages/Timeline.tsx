@@ -95,7 +95,7 @@ export default function Timeline({ memories, onEdit, onDelete }: { memories: any
                         
                         {/* Tags */}
                         <div className="flex flex-wrap gap-2 mt-3">
-                          <span className="px-3 py-1 bg-gray-50 text-gray-500 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 border border-gray-100">
+                          <span className="px-3 py-1 bg-softblue/10 text-blue-500 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 border border-softblue/20 shadow-sm">
                             <MapPin className="w-3 h-3" /> {memory.location}
                           </span>
                         </div>
