@@ -6,11 +6,10 @@ import dotenv from 'dotenv';
 dotenv.config({ override: true });
 
 const app = express();
-const PORT = process.env.PORT || 3001;
 
 // Middleware
 app.use(cors());
-app.use(express.json({ limit: '50mb' })); // Increased limit for Base64 images
+app.use(express.json({ limit: '50mb' }));
 
 // MongoDB Connection
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -100,7 +99,5 @@ app.delete('/api/memories/:id', async (req, res) => {
   }
 });
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`NataTale Backend is running on http://localhost:${PORT}`);
-});
+// Export the app for Vercel Serverless
+export default app;

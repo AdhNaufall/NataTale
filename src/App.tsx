@@ -7,7 +7,7 @@ import { Navigation } from './components/Navigation';
 import LockScreen from './components/LockScreen';
 import { memoriesData } from './data';
 
-const API_BASE_URL = (import.meta as any).env.VITE_API_URL || 'http://localhost:3001';
+const API_BASE_URL = (import.meta as any).env.VITE_API_URL || '';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {

@@ -16,7 +16,11 @@
     "lucide-react": "^0.300.0",
     "framer-motion": "^10.16.4",
     "clsx": "^2.0.0",
-    "tailwind-merge": "^2.1.0"
+    "tailwind-merge": "^2.1.0",
+    "cors": "^2.8.6",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.2",
+    "mongoose": "^8.24.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
