@@ -1,4 +1,7 @@
 import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Heart } from 'lucide-react';
+import { FloatingParticles } from './components/FloatingParticles';
 import Timeline from './pages/Timeline';
 import Archive from './pages/Archive';
 import Write from './pages/Write';
@@ -16,14 +19,19 @@ function App() {
   const [currentPath, setCurrentPath] = useState('/');
   const [memories, setMemories] = useState(memoriesData);
   const [editingMemory, setEditingMemory] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const fetchMemories = () => {
     fetch(`${API_BASE_URL}/api/memories`)
       .then(res => res.json())
       .then(data => {
         if (Array.isArray(data)) setMemories(data);
+        setTimeout(() => setIsLoading(false), 1500); // 1.5s delay for romantic splash screen effect
       })
-      .catch(err => console.error('Failed to load memories from DB:', err));
+      .catch(err => {
+        console.error('Failed to load memories from DB:', err);
+        setTimeout(() => setIsLoading(false), 1500);
+      });
   };
 
   useEffect(() => {
@@ -98,14 +106,54 @@ function App() {
     );
   }
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background bg-noise flex flex-col items-center justify-center font-sans text-slate relative overflow-hidden">
+        <FloatingParticles />
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="flex flex-col items-center z-10"
+        >
+          <motion.div
+            animate={{ scale: [1, 1.2, 1] }}
+            transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+          >
+            <Heart className="w-16 h-16 text-softblue fill-softblue/30 mb-6 drop-shadow-lg" />
+          </motion.div>
+          <h1 className="font-handwriting text-4xl text-slate">Memuat Kenangan...</h1>
+        </motion.div>
+      </div>
+    );
+  }
+
+  const pageVariants = {
+    initial: { opacity: 0, y: 20 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
+    exit: { opacity: 0, y: -20, transition: { duration: 0.3, ease: "easeIn" } }
+  };
+
   return (
-    <div className="min-h-screen bg-background bg-noise font-sans text-slate selection:bg-softblue selection:text-white">
+    <div className="min-h-screen bg-background bg-noise font-sans text-slate selection:bg-softblue selection:text-white relative">
+      <FloatingParticles />
       {/* Route Content */}
-      <main className="pb-32">
-        {currentPath === '/' && <Timeline memories={memories} onEdit={handleEdit} onDelete={deleteMemory} />}
-        {currentPath === '/archive' && <Archive memories={memories} />}
-        {currentPath === '/write' && <Write onSave={addMemory} onUpdate={updateMemory} navigate={navigate} memories={memories} editingMemory={editingMemory} setEditingMemory={setEditingMemory} />}
-        {currentPath === '/us' && <Us memories={memories} />}
+      <main className="pb-32 relative z-10">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentPath}
+            variants={pageVariants}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="w-full h-full"
+          >
+            {currentPath === '/' && <Timeline memories={memories} onEdit={handleEdit} onDelete={deleteMemory} />}
+            {currentPath === '/archive' && <Archive memories={memories} />}
+            {currentPath === '/write' && <Write onSave={addMemory} onUpdate={updateMemory} navigate={navigate} memories={memories} editingMemory={editingMemory} setEditingMemory={setEditingMemory} />}
+            {currentPath === '/us' && <Us memories={memories} />}
+          </motion.div>
+        </AnimatePresence>
       </main>
 
       {/* Global Navigation */}
