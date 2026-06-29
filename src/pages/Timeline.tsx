@@ -53,14 +53,14 @@ export default function Timeline({ memories, onEdit, onDelete }: { memories: any
             {/* Timeline Line for the month (Mobile Only) */}
             <div className="absolute left-[19px] top-12 bottom-0 w-[2px] bg-gradient-to-b from-softblue/40 via-softblue/20 to-transparent rounded-full md:hidden"></div>
 
-            {/* Masonry Grid for Desktop, Vertical List for Mobile */}
-            <div className="space-y-10 md:space-y-0 md:columns-2 lg:columns-3 md:gap-6">
+            {/* Grid for Desktop, Vertical List for Mobile */}
+            <div className="space-y-10 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-6 md:items-start">
               {monthMemories.map((memory) => {
                 const isExpanded = expandedId === memory.id;
                 const memoryDate = new Date(memory.date);
                 
                 return (
-                  <div key={memory.id} className="relative flex md:block gap-3 md:gap-0 break-inside-avoid md:mb-6">
+                  <div key={memory.id} className="relative flex md:block gap-3 md:gap-0 md:mb-0">
                     {/* Dot (Mobile Only) */}
                     <div className="relative z-20 shrink-0 w-10 flex flex-col items-center md:hidden">
                       <div className="w-3 h-3 bg-lavender rounded-full border-2 border-background ring-4 ring-lavender/20 mt-6 shadow-sm"></div>
