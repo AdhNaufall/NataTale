@@ -249,7 +249,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
 
         <div>
           <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Mood Today</label>
-          <div className="flex gap-3 flex-wrap">
+          <div className="flex gap-3 flex-wrap items-center">
             {MOOD_EMOJIS.map(emoji => (
               <button
                 key={emoji}
@@ -263,7 +263,26 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
                 {emoji}
               </button>
             ))}
+            <div className="w-[2px] h-8 bg-gray-200 mx-1 rounded-full"></div>
+            <input
+              type="text"
+              value={!MOOD_EMOJIS.includes(mood) ? mood : ''}
+              onChange={(e) => {
+                const val = e.target.value;
+                if (val) setMood(val);
+                else setMood('🥰'); // default back if cleared
+              }}
+              placeholder="+"
+              title="Ketik emoji kustom dari keyboard"
+              className={cn(
+                "w-12 h-12 text-3xl text-center rounded-xl transition-all duration-300 outline-none placeholder:text-gray-300 placeholder:text-2xl border-2",
+                !MOOD_EMOJIS.includes(mood) && mood 
+                  ? "bg-softblue/10 border-softblue scale-110 shadow-sm" 
+                  : "border-dashed border-gray-300 bg-transparent hover:bg-gray-50 focus:border-softblue focus:bg-softblue/5"
+              )}
+            />
           </div>
+          <p className="text-[10px] text-gray-400 mt-2">Pilih dari atas atau ketik emoji sendiri di kotak paling kanan.</p>
         </div>
 
         <div>
