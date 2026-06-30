@@ -81,10 +81,10 @@ export default function Timeline({ memories, onEdit, onDelete }: { memories: any
                       onClick={() => setExpandedId(isExpanded ? null : memory.id)}
                       className={cn(
                         "flex-1 bg-white p-3 pb-8 md:p-4 md:pb-10 cursor-pointer transition-shadow duration-500",
-                        "border border-gray-50 rounded-lg relative",
+                        "border border-white/50 rounded-[2rem] relative backdrop-blur-sm bg-white/80",
                         isExpanded 
-                          ? "shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] z-30 ring-1 ring-black/5" 
-                          : "shadow-polaroid hover:shadow-2xl"
+                          ? "shadow-[0_20px_50px_-15px_rgba(0,0,0,0.1)] z-30 ring-4 ring-lavender/10" 
+                          : "shadow-polaroid hover:shadow-2xl hover:ring-2 hover:ring-softblue/10"
                       )}
                       animate={isExpanded ? { scale: 1.03, rotate: 0, y: -5 } : { scale: 1, rotate: 0, y: 0 }}
                       whileHover={!isExpanded ? { y: -8, rotate: 1.5, zIndex: 30, scale: 1.02 } : undefined}
@@ -95,12 +95,11 @@ export default function Timeline({ memories, onEdit, onDelete }: { memories: any
                         {memoryDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short' })}
                       </div>
 
-                      {/* Taped Emoji Sticker */}
                       {memory.mood && (
-                        <div className="absolute -top-3 -right-3 md:-top-4 md:-right-4 z-40 transform rotate-12 bg-white w-14 h-14 md:w-16 md:h-16 shadow-lg border border-gray-100 flex items-center justify-center text-4xl md:text-5xl">
-                          {/* Tape */}
-                          <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-10 h-4 bg-white/70 backdrop-blur-md border border-gray-200/50 -rotate-6 z-50"></div>
-                          {memory.mood}
+                        <div className="absolute -top-3 -right-3 md:-top-4 md:-right-4 z-40 transform rotate-12 bg-white/90 backdrop-blur-md w-14 h-14 md:w-16 md:h-16 rounded-2xl shadow-lg border border-pink-100 flex items-center justify-center text-4xl md:text-5xl">
+                          {/* Cute Pink Tape */}
+                          <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-10 h-4 bg-pink-200/40 backdrop-blur-md border border-pink-100/50 -rotate-6 z-50"></div>
+                          <motion.div animate={{ scale: [1, 1.1, 1] }} transition={{ repeat: Infinity, duration: 2 }}>{memory.mood}</motion.div>
                         </div>
                       )}
 
