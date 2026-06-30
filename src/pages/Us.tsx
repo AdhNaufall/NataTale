@@ -145,6 +145,10 @@ export default function Us({ memories }: { memories: any[] }) {
             <span className="text-3xl font-serif font-bold text-slate mb-1">{timeTogether.minutes.toString().padStart(2, '0')}</span>
             <span className="text-[9px] uppercase font-bold tracking-widest text-gray-400">Min</span>
           </div>
+          <div className="flex flex-col items-center">
+            <span className="text-3xl font-serif font-bold text-slate mb-1">{timeTogether.seconds.toString().padStart(2, '0')}</span>
+            <span className="text-[9px] uppercase font-bold tracking-widest text-gray-400">Sec</span>
+          </div>
         </div>
       </motion.div>
 
