@@ -1,11 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Camera, CalendarHeart, Sparkles, ExternalLink } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function Us({ memories }: { memories: any[] }) {
   const totalMemories = memories.length;
   const totalPhotos = memories.reduce((acc, curr) => acc + (curr.images?.length || 1), 0);
   
-  const [timeTogether, setTimeTogether] = React.useState({
+  // Pick up to 4 random images for the scrapbook
+  const randomPhotos = useMemo(() => {
+    const allImages = memories.flatMap(m => m.images || [m.image]).filter(Boolean);
+    const shuffled = [...allImages].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, 4);
+  }, [memories]);
+
+  // Generate random rotations for polaroids
+  const rotations = useMemo(() => [
+    -12, 8, -6, 15
+  ], []);
+
+  const [timeTogether, setTimeTogether] = useState({
     years: 0,
     months: 0,
     days: 0,
@@ -14,7 +27,7 @@ export default function Us({ memories }: { memories: any[] }) {
     seconds: 0
   });
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Tanggal jadian: 23 Mei 2026
     const startDate = new Date('2026-05-23T00:00:00');
     
@@ -47,83 +60,140 @@ export default function Us({ memories }: { memories: any[] }) {
   }, []);
 
   return (
-    <div className="min-h-screen pt-20 pb-32 px-6 max-w-md mx-auto text-center">
+    <div className="min-h-screen pt-12 pb-32 px-6 max-w-lg mx-auto text-center relative">
       
-      <div className="w-32 h-32 mx-auto rounded-full bg-softblue/20 flex items-center justify-center mb-8 border-4 border-white shadow-lg relative">
-        <HeartIcon className="w-12 h-12 text-lavender animate-pulse" />
-        {/* Floating elements */}
-        <Sparkles className="w-6 h-6 text-yellow-500 absolute -top-2 -right-2" />
-      </div>
+      {/* Decorative Orbs */}
+      <div className="absolute top-40 left-0 w-64 h-64 bg-lavender/10 rounded-full blur-[80px] -z-10 animate-pulse" />
+      <div className="absolute top-80 right-0 w-64 h-64 bg-softblue/10 rounded-full blur-[80px] -z-10 animate-pulse" style={{ animationDelay: '2s' }} />
 
-      <h2 className="font-serif text-4xl font-bold text-slate mb-2">Our Journey</h2>
-      <p className="text-gray-500 mb-8">Building memories, one day at a time.</p>
+      <h2 className="font-serif text-5xl font-bold text-slate mb-3 mt-4">Our Journey</h2>
+      <p className="text-gray-400 mb-12 tracking-wide text-sm font-medium">Building memories, one day at a time.</p>
 
-      {/* Live Counter */}
-      <div className="bg-white rounded-[2rem] p-6 shadow-sm border border-gray-100 mb-12">
-        <h3 className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">Time Together</h3>
-        <div className="flex justify-center gap-3 text-center">
+      {/* Scrapbook Polaroids */}
+      {randomPhotos.length > 0 && (
+        <div className="relative h-64 mb-20 flex justify-center items-center">
+          {randomPhotos.map((img, idx) => (
+            <motion.div
+              key={idx}
+              initial={{ opacity: 0, scale: 0.5, y: -50, rotate: 0 }}
+              animate={{ opacity: 1, scale: 1, y: 0, rotate: rotations[idx] }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 100, 
+                damping: 12, 
+                delay: idx * 0.15 
+              }}
+              whileHover={{ 
+                scale: 1.15, 
+                rotate: 0, 
+                zIndex: 50,
+                y: -20,
+                transition: { type: "spring", stiffness: 400, damping: 25 }
+              }}
+              className="absolute w-36 aspect-[3/4] bg-white p-2 pb-8 shadow-polaroid border border-gray-100 rounded-sm cursor-pointer"
+              style={{
+                left: `calc(50% - 72px + ${(idx - 1.5) * 40}px)`, // Spread them out slightly
+                zIndex: 10 + idx
+              }}
+            >
+              <img src={img} alt="Scrapbook" className="w-full h-full object-cover" />
+              <div className="absolute bottom-2 left-0 right-0 flex justify-center">
+                <HeartIcon className="w-4 h-4 text-rose/30" />
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {/* Live Counter Widget (Premium Glassmorphic) */}
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.6 }}
+        className="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/50 mb-8 relative overflow-hidden"
+      >
+        <div className="absolute -top-10 -right-10 w-32 h-32 bg-lavender/10 rounded-full blur-2xl"></div>
+        <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-softblue/10 rounded-full blur-2xl"></div>
+        
+        <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate/40 mb-6 flex items-center justify-center gap-2">
+          <Sparkles className="w-3 h-3 text-lavender" />
+          Time Together
+          <Sparkles className="w-3 h-3 text-lavender" />
+        </h3>
+        
+        <div className="flex justify-center gap-4 sm:gap-6 text-center">
           {timeTogether.years > 0 && (
-            <div className="flex flex-col">
-              <span className="text-2xl font-serif font-bold text-softblue">{timeTogether.years}</span>
-              <span className="text-[9px] uppercase font-bold text-gray-400">Yrs</span>
+            <div className="flex flex-col items-center">
+              <span className="text-3xl font-serif font-bold text-softblue mb-1">{timeTogether.years}</span>
+              <span className="text-[9px] uppercase font-bold tracking-widest text-gray-400">Yrs</span>
             </div>
           )}
-          <div className="flex flex-col">
-            <span className="text-2xl font-serif font-bold text-lavender">{timeTogether.months}</span>
-            <span className="text-[9px] uppercase font-bold text-gray-400">Mths</span>
+          <div className="flex flex-col items-center">
+            <span className="text-3xl font-serif font-bold text-lavender mb-1">{timeTogether.months}</span>
+            <span className="text-[9px] uppercase font-bold tracking-widest text-gray-400">Mths</span>
           </div>
-          <div className="flex flex-col">
-            <span className="text-2xl font-serif font-bold text-mint">{timeTogether.days}</span>
-            <span className="text-[9px] uppercase font-bold text-gray-400">Days</span>
+          <div className="flex flex-col items-center">
+            <span className="text-3xl font-serif font-bold text-mint mb-1">{timeTogether.days}</span>
+            <span className="text-[9px] uppercase font-bold tracking-widest text-gray-400">Days</span>
           </div>
-          <div className="flex flex-col">
-            <span className="text-2xl font-serif font-bold text-slate">{timeTogether.hours}</span>
-            <span className="text-[9px] uppercase font-bold text-gray-400">Hrs</span>
+          <div className="w-[1px] h-10 bg-gray-200 mx-1"></div>
+          <div className="flex flex-col items-center">
+            <span className="text-3xl font-serif font-bold text-slate mb-1">{timeTogether.hours.toString().padStart(2, '0')}</span>
+            <span className="text-[9px] uppercase font-bold tracking-widest text-gray-400">Hrs</span>
           </div>
-          <div className="flex flex-col">
-            <span className="text-2xl font-serif font-bold text-slate">{timeTogether.minutes}</span>
-            <span className="text-[9px] uppercase font-bold text-gray-400">Min</span>
-          </div>
-          <div className="flex flex-col">
-            <span className="text-2xl font-serif font-bold text-softblue">{timeTogether.seconds}</span>
-            <span className="text-[9px] uppercase font-bold text-gray-400">Sec</span>
+          <div className="flex flex-col items-center">
+            <span className="text-3xl font-serif font-bold text-slate mb-1">{timeTogether.minutes.toString().padStart(2, '0')}</span>
+            <span className="text-[9px] uppercase font-bold tracking-widest text-gray-400">Min</span>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-2 gap-4 mb-16">
-        <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col items-center">
-          <div className="w-10 h-10 rounded-full bg-lavender/10 flex items-center justify-center text-lavender mb-3">
-            <CalendarHeart className="w-5 h-5" />
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.7 }}
+        className="grid grid-cols-2 gap-4 mb-16"
+      >
+        <div className="bg-white/60 backdrop-blur-xl p-6 rounded-[2rem] shadow-sm border border-white/50 flex flex-col items-center hover:bg-white/80 transition-colors">
+          <div className="w-12 h-12 rounded-full bg-lavender/15 flex items-center justify-center text-lavender mb-4 shadow-inner ring-1 ring-lavender/20">
+            <CalendarHeart className="w-6 h-6" />
           </div>
           <span className="text-3xl font-serif font-bold text-slate mb-1">{totalMemories}</span>
-          <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Chapters</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-slate/40">Chapters</span>
         </div>
 
-        <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex flex-col items-center">
-          <div className="w-10 h-10 rounded-full bg-mint/20 flex items-center justify-center text-mint mb-3">
-            <Camera className="w-5 h-5" />
+        <div className="bg-white/60 backdrop-blur-xl p-6 rounded-[2rem] shadow-sm border border-white/50 flex flex-col items-center hover:bg-white/80 transition-colors">
+          <div className="w-12 h-12 rounded-full bg-mint/20 flex items-center justify-center text-mint mb-4 shadow-inner ring-1 ring-mint/20">
+            <Camera className="w-6 h-6" />
           </div>
           <span className="text-3xl font-serif font-bold text-slate mb-1">{totalPhotos}</span>
-          <span className="text-xs font-bold uppercase tracking-wider text-gray-400">Captures</span>
+          <span className="text-[10px] font-bold uppercase tracking-widest text-slate/40">Captures</span>
         </div>
-      </div>
+      </motion.div>
 
       {/* App Ecosystem Portal */}
-      <div className="bg-gradient-to-br from-[#2D2D2D] to-[#1A1A1A] rounded-[2rem] p-8 text-left relative overflow-hidden shadow-xl">
-        <div className="absolute -right-10 -top-10 w-40 h-40 bg-white/5 rounded-full blur-2xl"></div>
-        <h3 className="font-serif text-2xl font-bold text-white mb-2">TanaLumina</h3>
-        <p className="text-gray-400 text-sm mb-6">Enter the photobooth universe and capture your raw moments.</p>
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.8 }}
+        className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] rounded-[2rem] p-8 text-left relative overflow-hidden shadow-2xl shadow-slate/20"
+      >
+        <div className="absolute -right-20 -top-20 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
+        <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-softblue/10 rounded-full blur-2xl"></div>
+        
+        <h3 className="font-serif text-2xl font-bold text-white mb-2 relative z-10">TanaLumina</h3>
+        <p className="text-gray-400 text-sm mb-8 relative z-10 font-medium">Enter the photobooth universe and capture your raw moments.</p>
+        
         <a 
           href="https://tanalumina-photobooth.vercel.app/"
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full py-4 bg-white text-slate rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-gray-100 transition-colors"
+          className="relative z-10 w-full py-4 bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 rounded-2xl font-bold tracking-wide flex items-center justify-center gap-2 transition-all active:scale-[0.98]"
         >
           Open Portal <ExternalLink className="w-4 h-4" />
         </a>
-      </div>
+      </motion.div>
 
     </div>
   );
