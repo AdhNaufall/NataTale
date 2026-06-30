@@ -1,11 +1,24 @@
 import React, { useState, useEffect } from 'react';
-import { Lock, Heart, X } from 'lucide-react';
+import { Lock, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { cn } from '../lib/utils';
 
 interface LockScreenProps {
   onUnlock: () => void;
 }
+
+const PAD_MAPPING: Record<string, string> = {
+  '1': '',
+  '2': 'A B C',
+  '3': 'D E F',
+  '4': 'G H I',
+  '5': 'J K L',
+  '6': 'M N O',
+  '7': 'P Q R S',
+  '8': 'T U V',
+  '9': 'W X Y Z',
+  '0': ''
+};
 
 export default function LockScreen({ onUnlock }: LockScreenProps) {
   const [pin, setPin] = useState('');
@@ -21,8 +34,10 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
       onUnlock();
     } else {
       setError(true);
-      setPin('');
-      setTimeout(() => setError(false), 500);
+      setTimeout(() => {
+        setPin('');
+        setError(false);
+      }, 400); // Wait for shake animation
     }
   };
 
@@ -32,53 +47,65 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
     }
   }, [pin]);
 
+  const handleKeyPress = (num: string) => {
+    if (pin.length < SECRET_PIN.length) {
+      setPin(p => p + num);
+      setError(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background bg-noise p-6 overflow-hidden">
-
-      {/* Decorative background elements */}
-      <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-lavender/20 rounded-full blur-3xl -z-10 animate-pulse" />
-      <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-softblue/20 rounded-full blur-3xl -z-10 animate-pulse" style={{ animationDelay: '1s' }} />
+      
+      {/* Decorative Orbs (Light Theme) */}
+      <div className="absolute top-1/4 left-1/4 w-[30rem] h-[30rem] bg-lavender/30 rounded-full blur-[100px] -z-10 animate-pulse" />
+      <div className="absolute bottom-1/4 right-1/4 w-[30rem] h-[30rem] bg-softblue/30 rounded-full blur-[100px] -z-10 animate-pulse" style={{ animationDelay: '1s' }} />
 
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-sm bg-white/70 backdrop-blur-xl p-6 sm:p-8 rounded-[2rem] shadow-2xl border border-white flex flex-col items-center text-center mx-4"
+        className="w-full max-w-sm bg-white/70 backdrop-blur-xl p-8 sm:p-10 rounded-[3rem] shadow-2xl border border-white flex flex-col items-center mx-4"
       >
-        <div className="w-20 h-20 bg-gradient-to-br from-softblue to-lavender rounded-full flex items-center justify-center mb-6 shadow-lg relative">
-          <Lock className="w-8 h-8 text-white absolute" />
-          <Heart className="w-8 h-8 text-white absolute opacity-0 hover:opacity-100 transition-opacity duration-300" />
-        </div>
+        <motion.div
+          animate={{ scale: [1, 1.1, 1] }}
+          transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          className="mb-4"
+        >
+          <Heart className="w-12 h-12 text-softblue fill-softblue/30 drop-shadow-lg" />
+        </motion.div>
+        <h1 className="text-softblue font-serif text-3xl font-bold tracking-wide mb-8 drop-shadow-sm">NataTale</h1>
 
-        <h1 className="font-serif text-3xl font-bold text-slate mb-2">NataTale</h1>
-        <p className="text-gray-500 text-sm mb-8">Enter the secret date to unlock our memories.</p>
-
-        <form onSubmit={handleSubmit} className="w-full flex flex-col items-center">
+        <form onSubmit={handleSubmit} className="flex flex-col items-center">
+          
+          {/* Passcode Dots */}
           <motion.div
-            animate={error ? { x: [-10, 10, -10, 10, 0] } : {}}
+            animate={error ? { x: [-12, 12, -10, 10, -5, 5, 0] } : {}}
             transition={{ duration: 0.4 }}
-            className="flex gap-2 sm:gap-4 mb-8 flex-wrap justify-center"
+            className="flex gap-4 sm:gap-6 mb-16 h-6 items-center"
           >
-            {Array.from({ length: SECRET_PIN.length }).map((_, index) => (
-              <div
-                key={index}
-                className={cn(
-                  "w-10 h-12 sm:w-12 sm:h-14 rounded-xl flex items-center justify-center text-xl sm:text-2xl font-bold text-slate border-2 transition-colors",
-                  pin.length > index ? "border-softblue bg-softblue/5" : "border-gray-200 bg-white",
-                  error && "border-red-400 bg-red-50 text-red-500"
-                )}
-              >
-                {pin[index] ? '•' : ''}
-              </div>
-            ))}
+            {Array.from({ length: SECRET_PIN.length }).map((_, index) => {
+              const isFilled = pin.length > index;
+              return (
+                <div
+                  key={index}
+                  className={cn(
+                    "w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full border-2 transition-all duration-200",
+                    isFilled 
+                      ? "bg-slate border-slate scale-110" 
+                      : "border-slate/20 bg-transparent",
+                    error && "bg-rose border-rose"
+                  )}
+                />
+              );
+            })}
           </motion.div>
 
           <input
             type="number"
             value={pin}
             onChange={(e) => {
-              if (e.target.value.length <= SECRET_PIN.length) {
+              if (e.target.value.length <= SECRET_PIN.length && !error) {
                 setPin(e.target.value);
-                setError(false);
               }
             }}
             className="opacity-0 absolute -z-10 h-0 w-0"
@@ -87,35 +114,48 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
             pattern="[0-9]*"
           />
 
-          <div className="grid grid-cols-3 gap-4 w-full">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-              <button
+          {/* iOS Style Dial Pad */}
+          <div className="grid grid-cols-3 gap-x-6 gap-y-4 sm:gap-x-8 sm:gap-y-6">
+            {['1', '2', '3', '4', '5', '6', '7', '8', '9'].map((num) => (
+              <motion.button
                 key={num}
                 type="button"
-                onClick={() => pin.length < SECRET_PIN.length && setPin(p => p + num)}
-                className="h-12 sm:h-14 rounded-full bg-white shadow-sm border border-gray-100 text-lg sm:text-xl font-bold text-slate hover:bg-gray-50 active:scale-95 transition-all"
+                whileTap={{ scale: 0.85, backgroundColor: 'rgba(0, 0, 0, 0.05)' }}
+                onClick={() => handleKeyPress(num)}
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-slate/5 flex flex-col items-center justify-center transition-colors hover:bg-slate/10 relative shadow-sm border border-white/50"
               >
-                {num}
-              </button>
+                <span className="text-2xl sm:text-3xl font-light text-slate leading-none mt-1">{num}</span>
+                <span className="text-[9px] sm:text-[10px] font-bold tracking-widest text-slate/40 uppercase mt-0.5 h-3">
+                  {PAD_MAPPING[num]}
+                </span>
+              </motion.button>
             ))}
-            <div className="col-start-2">
-              <button
-                type="button"
-                onClick={() => pin.length < SECRET_PIN.length && setPin(p => p + '0')}
-                className="w-full h-12 sm:h-14 rounded-full bg-white shadow-sm border border-gray-100 text-lg sm:text-xl font-bold text-slate hover:bg-gray-50 active:scale-95 transition-all"
-              >
-                0
-              </button>
-            </div>
-            <div className="col-start-3 flex justify-center items-center">
-              <button
-                type="button"
-                onClick={() => setPin(p => p.slice(0, -1))}
-                className="w-12 h-12 sm:w-14 sm:h-14 flex justify-center items-center rounded-full text-gray-400 hover:text-slate hover:bg-gray-100 active:scale-95 transition-all mx-auto"
-              >
-                <X className="w-6 h-6" />
-              </button>
-            </div>
+            
+            {/* Empty space bottom left */}
+            <div />
+
+            {/* Zero Button */}
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.85, backgroundColor: 'rgba(0, 0, 0, 0.05)' }}
+              onClick={() => handleKeyPress('0')}
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-slate/5 flex flex-col items-center justify-center transition-colors hover:bg-slate/10 shadow-sm border border-white/50"
+            >
+              <span className="text-2xl sm:text-3xl font-light text-slate leading-none">0</span>
+            </motion.button>
+
+            {/* Backspace Button */}
+            <motion.button
+              type="button"
+              whileTap={{ scale: 0.85 }}
+              onClick={() => setPin(p => p.slice(0, -1))}
+              className={cn(
+                "w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center text-slate/60 transition-opacity",
+                pin.length > 0 ? "opacity-100" : "opacity-0 pointer-events-none"
+              )}
+            >
+              <span className="text-sm font-semibold tracking-wide hover:text-slate">Cancel</span>
+            </motion.button>
           </div>
         </form>
       </motion.div>

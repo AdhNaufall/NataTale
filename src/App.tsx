@@ -13,9 +13,7 @@ import { memoriesData } from './data';
 const API_BASE_URL = (import.meta as any).env.VITE_API_URL || '';
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    return localStorage.getItem('tanalumina_unlocked') === 'true';
-  });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentPath, setCurrentPath] = useState('/');
   const [memories, setMemories] = useState(() => {
     const localData = localStorage.getItem('natatale_memories');
@@ -116,7 +114,6 @@ function App() {
       <LockScreen 
         onUnlock={() => {
           setIsAuthenticated(true);
-          localStorage.setItem('tanalumina_unlocked', 'true');
         }} 
       />
     );
