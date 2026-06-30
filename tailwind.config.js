@@ -7,12 +7,13 @@ export default {
   theme: {
     extend: {
       colors: {
-        background: '#F8F9FE', // Very soft blue-tinted white
+        background: '#FAFAFD', // Even softer background
         card: '#FFFFFF',
-        lavender: '#B39DDB', // Playful purple
-        softblue: '#90CAF9', // Soft light blue
-        mint: '#A5D6A7', // Fresh mint green
-        slate: '#334155', // Elegant dark text instead of brown/black
+        lavender: '#BBA2E3', // Slightly more saturated
+        softblue: '#98CFF9', 
+        mint: '#A8DFB1',
+        slate: '#2C3545', // Deeper, more elegant slate
+        rose: '#F4CFDF', // New accent color
       },
       fontFamily: {
         sans: ['Quicksand', 'sans-serif'],
@@ -20,7 +21,8 @@ export default {
         serif: ['Playfair Display', 'serif'],
       },
       boxShadow: {
-        'polaroid': '0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01)',
+        'polaroid': '0 15px 35px -5px rgba(0, 0, 0, 0.04), 0 10px 15px -6px rgba(0, 0, 0, 0.02)',
+        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
       }
     },
   },

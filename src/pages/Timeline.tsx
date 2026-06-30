@@ -60,7 +60,13 @@ export default function Timeline({ memories, onEdit, onDelete }: { memories: any
                 const memoryDate = new Date(memory.date);
                 
                 return (
-                  <div key={memory.id} className="relative flex md:block gap-3 md:gap-0 md:mb-0">
+                  <motion.div 
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.6, delay: 0.1, type: "spring", stiffness: 100, damping: 20 }}
+                    key={memory.id} 
+                    className="relative flex md:block gap-3 md:gap-0 md:mb-0"
+                  >
                     {/* Dot (Mobile Only) */}
                     <div className="relative z-20 shrink-0 w-10 flex flex-col items-center md:hidden">
                       <div className="w-3 h-3 bg-lavender rounded-full border-2 border-background ring-4 ring-lavender/20 mt-6 shadow-sm"></div>
@@ -74,15 +80,15 @@ export default function Timeline({ memories, onEdit, onDelete }: { memories: any
                       layout
                       onClick={() => setExpandedId(isExpanded ? null : memory.id)}
                       className={cn(
-                        "flex-1 bg-white p-2.5 pb-6 md:p-3 md:pb-8 cursor-pointer transition-shadow duration-500",
-                        "border border-gray-100 rounded-sm relative",
+                        "flex-1 bg-white p-3 pb-8 md:p-4 md:pb-10 cursor-pointer transition-shadow duration-500",
+                        "border border-gray-50 rounded-lg relative",
                         isExpanded 
-                          ? "shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] z-30" 
-                          : "shadow-polaroid hover:shadow-xl"
+                          ? "shadow-[0_30px_60px_-15px_rgba(0,0,0,0.2)] z-30 ring-1 ring-black/5" 
+                          : "shadow-polaroid hover:shadow-2xl"
                       )}
-                      animate={isExpanded ? { scale: 1.02, rotate: 0, y: 0 } : { scale: 1, rotate: 0, y: 0 }}
-                      whileHover={!isExpanded ? { y: -8, rotate: 1, zIndex: 30 } : undefined}
-                      transition={{ duration: 0.4, ease: "easeOut" }}
+                      animate={isExpanded ? { scale: 1.03, rotate: 0, y: -5 } : { scale: 1, rotate: 0, y: 0 }}
+                      whileHover={!isExpanded ? { y: -8, rotate: 1.5, zIndex: 30, scale: 1.02 } : undefined}
+                      transition={{ type: "spring", stiffness: 300, damping: 25 }}
                     >
                       {/* Date Badge (Desktop Only) */}
                       <div className="hidden md:block absolute -top-3 -left-3 bg-lavender text-white px-3 py-1 rounded-sm text-xs font-bold shadow-md z-40 transform -rotate-3 border border-white/20">
@@ -140,7 +146,7 @@ export default function Timeline({ memories, onEdit, onDelete }: { memories: any
                         </AnimatePresence>
                       </div>
                     </motion.div>
-                  </div>
+                  </motion.div>
                 );
               })}
             </div>

@@ -1,5 +1,6 @@
 import { Clock, PenTool, Grid, Heart } from 'lucide-react';
 import { cn } from '../lib/utils';
+import { motion } from 'framer-motion';
 
 interface NavigationProps {
   currentPath: string;
@@ -15,8 +16,11 @@ export function Navigation({ currentPath, navigate }: NavigationProps) {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bg-background/90 backdrop-blur-md border-t border-softblue/20 z-50 px-6 py-4">
-      <div className="max-w-md mx-auto flex justify-between items-center">
+    <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-2 w-[90%] max-w-sm">
+      <div className="bg-white/70 backdrop-blur-xl border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-[2rem] px-4 py-3 flex justify-between items-center relative overflow-hidden">
+        {/* Subtle inner highlight */}
+        <div className="absolute inset-0 bg-gradient-to-t from-white/10 to-white/60 pointer-events-none rounded-[2rem]"></div>
+        
         {navItems.map((item) => {
           const isActive = currentPath === item.path;
           const Icon = item.icon;
@@ -25,17 +29,33 @@ export function Navigation({ currentPath, navigate }: NavigationProps) {
               key={item.path}
               onClick={() => navigate(item.path)}
               className={cn(
-                "flex flex-col items-center gap-1 transition-colors duration-200",
-                isActive ? "text-lavender" : "text-gray-400 hover:text-softblue"
+                "relative flex flex-col items-center gap-1 transition-all duration-300 w-16 z-10",
+                isActive ? "text-slate" : "text-gray-400 hover:text-softblue"
               )}
             >
-              <div className={cn(
-                "p-2 rounded-2xl transition-all duration-300",
-                isActive ? "bg-lavender/10 scale-110" : ""
-              )}>
-                <Icon className="w-6 h-6" />
-              </div>
-              <span className="text-[10px] font-bold uppercase tracking-wider">{item.label}</span>
+              {isActive && (
+                <motion.div
+                  layoutId="nav-pill"
+                  className="absolute -inset-x-2 -inset-y-2 bg-softblue/15 rounded-2xl -z-10"
+                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                />
+              )}
+              <motion.div
+                animate={isActive ? { y: -2, scale: 1.1 } : { y: 0, scale: 1 }}
+                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                className={cn(
+                  "p-1 rounded-2xl transition-colors duration-300",
+                  isActive ? "text-softblue" : ""
+                )}
+              >
+                <Icon className={cn("w-6 h-6", isActive ? "stroke-[2.5px]" : "stroke-2")} />
+              </motion.div>
+              <motion.span 
+                animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0.6, y: 0 }}
+                className="text-[9px] font-bold uppercase tracking-widest mt-0.5"
+              >
+                {item.label}
+              </motion.span>
             </button>
           );
         })}

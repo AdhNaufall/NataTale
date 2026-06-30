@@ -17,16 +17,25 @@ function App() {
     return localStorage.getItem('tanalumina_unlocked') === 'true';
   });
   const [currentPath, setCurrentPath] = useState('/');
-  const [memories, setMemories] = useState(memoriesData);
+  const [memories, setMemories] = useState(() => {
+    const localData = localStorage.getItem('natatale_memories');
+    return localData ? JSON.parse(localData) : memoriesData;
+  });
   const [editingMemory, setEditingMemory] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchMemories = () => {
     fetch(`${API_BASE_URL}/api/memories`)
-      .then(res => res.json())
+      .then(res => {
+        if (!res.ok) throw new Error('Backend not available');
+        return res.json();
+      })
       .then(data => {
-        if (Array.isArray(data)) setMemories(data);
-        setTimeout(() => setIsLoading(false), 1500); // 1.5s delay for the cute splash screen
+        if (Array.isArray(data)) {
+          setMemories(data);
+          localStorage.setItem('natatale_memories', JSON.stringify(data));
+        }
+        setTimeout(() => setIsLoading(false), 1500); 
       })
       .catch(err => {
         console.error('Failed to load memories from DB:', err);
@@ -56,8 +65,10 @@ function App() {
     } catch (err) {
       console.error('Failed to save to MongoDB:', err);
       // Fallback update for UX if backend is off
-      const updated = [...memories, newMemory].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+      const newMemoriesWithId = { ...newMemory, id: Date.now().toString() };
+      const updated = [...memories, newMemoriesWithId].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
       setMemories(updated);
+      localStorage.setItem('natatale_memories', JSON.stringify(updated));
     }
   };
 
@@ -73,7 +84,10 @@ function App() {
         setEditingMemory(null);
       }
     } catch (err) {
-      console.error('Failed to update memory in MongoDB:', err);
+      const updatedList = memories.map(m => m.id === id ? { ...m, ...updatedMemory } : m);
+      setMemories(updatedList);
+      localStorage.setItem('natatale_memories', JSON.stringify(updatedList));
+      setEditingMemory(null);
     }
   };
 
@@ -86,7 +100,9 @@ function App() {
         fetchMemories();
       }
     } catch (err) {
-      console.error('Failed to delete memory from MongoDB:', err);
+      const updatedList = memories.filter(m => m.id !== id);
+      setMemories(updatedList);
+      localStorage.setItem('natatale_memories', JSON.stringify(updatedList));
     }
   };
 

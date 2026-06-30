@@ -147,23 +147,23 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
 
       <form onSubmit={handleSubmit} className="bg-white p-5 md:p-10 rounded-[2rem] shadow-sm border border-gray-100 space-y-5 md:space-y-6">
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Title</label>
-          <input required type="text" value={title} onChange={e => setTitle(e.target.value)} className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-softblue outline-none font-serif text-xl" placeholder="A day to remember..." />
+          <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/50 mb-1">Title</label>
+          <input required type="text" value={title} onChange={e => setTitle(e.target.value)} className="w-full px-0 py-2 bg-transparent border-b-2 border-gray-100 focus:border-lavender outline-none font-serif text-2xl transition-colors placeholder:text-gray-300" placeholder="A day to remember..." />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Date</label>
-            <input required type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-softblue outline-none text-sm" />
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/50 mb-1">Date</label>
+            <input required type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full px-0 py-2 bg-transparent border-b-2 border-gray-100 focus:border-lavender outline-none text-sm transition-colors text-gray-700" />
           </div>
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Location</label>
-            <input required type="text" value={location} onChange={e => setLocation(e.target.value)} className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-softblue outline-none text-sm" placeholder="Where did we go?" />
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/50 mb-1">Location Name</label>
+            <input required type="text" value={location} onChange={e => setLocation(e.target.value)} className="w-full px-0 py-2 bg-transparent border-b-2 border-gray-100 focus:border-lavender outline-none text-sm transition-colors placeholder:text-gray-300" placeholder="Where did we go?" />
           </div>
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Photos</label>
+          <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/50 mb-2 mt-4">Photos</label>
 
           {/* Drag & Drop Zone */}
           <div
@@ -172,8 +172,8 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
             className={cn(
-              "w-full border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center cursor-pointer transition-colors text-center",
-              isDragging ? "border-lavender bg-lavender/5" : "border-gray-200 bg-gray-50 hover:bg-gray-100"
+              "w-full border-2 border-dashed rounded-2xl p-10 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 text-center",
+              isDragging ? "border-lavender bg-lavender/5 scale-[1.02]" : "border-gray-200 bg-gray-50/50 hover:bg-gray-50 hover:border-gray-300"
             )}
           >
             <input
@@ -211,7 +211,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
         </div>
 
         <div className="relative">
-          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Category</label>
+          <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/50 mb-1 mt-2">Category</label>
           <input
             required
             type="text"
@@ -219,7 +219,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
             onChange={e => setCategory(e.target.value)}
             onFocus={() => setShowCategories(true)}
             onBlur={() => setTimeout(() => setShowCategories(false), 200)}
-            className="w-full px-4 py-3 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-softblue outline-none text-sm"
+            className="w-full px-0 py-2 bg-transparent border-b-2 border-gray-100 focus:border-lavender outline-none text-sm transition-colors placeholder:text-gray-300"
             placeholder="e.g. Cafe Hopping"
           />
           <AnimatePresence>
@@ -248,22 +248,24 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Mood Today</label>
+          <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/50 mb-2 mt-4">Mood Today</label>
           <div className="flex gap-3 flex-wrap items-center">
             {MOOD_EMOJIS.map(emoji => (
-              <button
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
                 key={emoji}
                 type="button"
                 onClick={() => setMood(emoji)}
                 className={cn(
                   "w-12 h-12 text-3xl flex items-center justify-center rounded-xl transition-all duration-300",
-                  mood === emoji ? "bg-softblue/10 scale-110 shadow-sm" : "hover:bg-gray-50 grayscale hover:grayscale-0 opacity-50 hover:opacity-100"
+                  mood === emoji ? "bg-lavender/15 shadow-sm ring-1 ring-lavender/30" : "hover:bg-gray-50 grayscale hover:grayscale-0 opacity-50 hover:opacity-100"
                 )}
               >
                 {emoji}
-              </button>
+              </motion.button>
             ))}
-            <div className="w-[2px] h-8 bg-gray-200 mx-1 rounded-full"></div>
+            <div className="w-[2px] h-8 bg-gray-100 mx-1 rounded-full"></div>
             <input
               type="text"
               value={!MOOD_EMOJIS.includes(mood) ? mood : ''}
@@ -277,8 +279,8 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
               className={cn(
                 "w-12 h-12 text-3xl text-center rounded-xl transition-all duration-300 outline-none placeholder:text-gray-300 placeholder:text-2xl border-2",
                 !MOOD_EMOJIS.includes(mood) && mood 
-                  ? "bg-softblue/10 border-softblue scale-110 shadow-sm" 
-                  : "border-dashed border-gray-300 bg-transparent hover:bg-gray-50 focus:border-softblue focus:bg-softblue/5"
+                  ? "bg-lavender/15 border-lavender/30 scale-110 shadow-sm ring-1 ring-lavender/30" 
+                  : "border-dashed border-gray-200 bg-transparent hover:bg-gray-50 focus:border-lavender focus:bg-lavender/5"
               )}
             />
           </div>
@@ -286,13 +288,18 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
         </div>
 
         <div>
-          <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">The Story (Markdown)</label>
-          <textarea required value={story} onChange={e => setStory(e.target.value)} rows={6} className="w-full px-4 py-4 bg-gray-50 border-none rounded-xl focus:ring-2 focus:ring-softblue outline-none text-sm resize-none leading-relaxed" placeholder="Write the memories... you can use **bold** or lists!"></textarea>
+          <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/50 mb-2 mt-4">The Story</label>
+          <textarea required value={story} onChange={e => setStory(e.target.value)} rows={6} className="w-full px-4 py-4 bg-gray-50/50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-lavender/50 outline-none text-sm resize-none leading-relaxed transition-all focus:bg-white" placeholder="Write the memories... you can use **bold** or lists!"></textarea>
         </div>
 
-        <button type="submit" className="w-full py-4 bg-slate text-white rounded-xl font-bold tracking-widest uppercase hover:bg-[#2D2D2D] transition-colors mt-8">
+        <motion.button 
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          type="submit" 
+          className="w-full py-4 bg-slate text-white rounded-2xl font-bold tracking-widest uppercase hover:bg-[#1A202C] transition-colors mt-8 shadow-lg shadow-slate/20"
+        >
           {editingMemory ? 'Update Chapter' : 'Save Chapter'}
-        </button>
+        </motion.button>
       </form>
     </div>
   );
