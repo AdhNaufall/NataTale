@@ -49,7 +49,6 @@ function App() {
 
   const navigate = (path: string) => {
     setCurrentPath(path);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const addMemory = async (newMemory: any) => {
@@ -163,9 +162,9 @@ function App() {
   }
 
   const pageVariants = {
-    initial: { opacity: 0, y: 20 },
-    animate: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } },
-    exit: { opacity: 0, y: -20, transition: { duration: 0.3, ease: "easeIn" } }
+    initial: { opacity: 0, scale: 0.95, filter: "blur(8px)", y: 10 },
+    animate: { opacity: 1, scale: 1, filter: "blur(0px)", y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
+    exit: { opacity: 0, scale: 1.05, filter: "blur(8px)", transition: { duration: 0.3, ease: "easeInOut" } }
   };
 
   return (
@@ -173,7 +172,7 @@ function App() {
       <FloatingParticles />
       {/* Route Content */}
       <main className="pb-32 relative z-10">
-        <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo(0, 0)}>
           <motion.div
             key={currentPath}
             variants={pageVariants}
