@@ -84,7 +84,7 @@ function App() {
         setEditingMemory(null);
       }
     } catch (err) {
-      const updatedList = memories.map(m => m.id === id ? { ...m, ...updatedMemory } : m);
+      const updatedList = memories.map((m: any) => m.id === id ? { ...m, ...updatedMemory } : m);
       setMemories(updatedList);
       localStorage.setItem('natatale_memories', JSON.stringify(updatedList));
       setEditingMemory(null);
@@ -100,7 +100,7 @@ function App() {
         fetchMemories();
       }
     } catch (err) {
-      const updatedList = memories.filter(m => m.id !== id);
+      const updatedList = memories.filter((m: any) => m.id !== id);
       setMemories(updatedList);
       localStorage.setItem('natatale_memories', JSON.stringify(updatedList));
     }
