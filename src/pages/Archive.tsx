@@ -51,15 +51,14 @@ export default function Archive({ memories }: { memories: any[] }) {
       </div>
 
       {/* Masonry Grid Simulation (CSS Columns) */}
-      <motion.div layout className="columns-2 md:columns-3 gap-4">
+      <div className="columns-2 md:columns-3 gap-4">
         <AnimatePresence>
           {filteredMemories.flatMap(m => (m.images || [m.image]).filter(Boolean).map((img: string, idx: number) => ({ id: `${m.id}-${idx}`, img }))).map((item) => (
             <motion.div 
-              layout
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ type: 'spring', stiffness: 200, damping: 20 }}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              transition={{ duration: 0.4, ease: "easeOut" }}
               key={item.id} 
               className="break-inside-avoid rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow relative group cursor-pointer mb-4"
             >
@@ -68,7 +67,7 @@ export default function Archive({ memories }: { memories: any[] }) {
             </motion.div>
           ))}
         </AnimatePresence>
-      </motion.div>
+      </div>
       
       {filteredMemories.length === 0 && (
         <div className="text-center text-gray-400 mt-20">No memories found.</div>
