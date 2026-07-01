@@ -13,6 +13,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
   const [rating, setRating] = useState(5);
   const [mood, setMood] = useState('🥰');
   const [showCategories, setShowCategories] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const MOOD_EMOJIS = ['🥰', '🤪', '🥹', '😴', '😡', '🥳', '😎'];
 
@@ -45,24 +46,28 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const memData = {
-      title,
-      date,
-      location,
-      story,
-      images,
-      category,
-      mood,
-      rating
-    };
-
-    if (editingMemory && onUpdate) {
-      onUpdate(editingMemory.id, memData);
-    } else {
-      onSave(memData);
-    }
+    setIsSubmitting(true);
     
-    navigate('/');
+    setTimeout(() => {
+      const memData = {
+        title,
+        date,
+        location,
+        story,
+        images,
+        category,
+        mood,
+        rating
+      };
+
+      if (editingMemory && onUpdate) {
+        onUpdate(editingMemory.id, memData);
+      } else {
+        onSave(memData);
+      }
+      
+      navigate('/');
+    }, 1200);
   };
 
   const processFiles = (files: FileList | null) => {
@@ -141,6 +146,35 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
 
   return (
     <div className="min-h-screen pt-12 pb-32 px-4 max-w-2xl mx-auto">
+      
+      <AnimatePresence>
+        {isSubmitting && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white/80 backdrop-blur-md"
+          >
+            <motion.div
+              initial={{ scale: 0.5, rotate: -20, opacity: 0 }}
+              animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0], opacity: 1 }}
+              transition={{ duration: 0.8, ease: "easeOut" }}
+              className="text-8xl drop-shadow-2xl"
+            >
+               💌
+            </motion.div>
+            <motion.p 
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="mt-6 font-serif text-slate font-bold text-xl tracking-widest uppercase"
+            >
+              Saving Memory...
+            </motion.p>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <h2 className="font-serif text-4xl font-bold text-slate mb-8 text-center">
         {editingMemory ? 'Edit Chapter' : 'Write a Story'}
       </h2>

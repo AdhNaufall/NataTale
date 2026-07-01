@@ -60,13 +60,14 @@ export default function Timeline({ memories, onEdit, onDelete }: { memories: any
                 const memoryDate = new Date(memory.date);
                 
                 return (
-                  <motion.div 
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, delay: 0.1, type: "spring", stiffness: 100, damping: 20 }}
-                    key={memory.id} 
-                    className="relative flex md:block gap-3 md:gap-0 md:mb-0"
-                  >
+                    <motion.div 
+                      initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                      whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                      viewport={{ once: true, margin: "-50px" }}
+                      transition={{ duration: 0.6, type: "spring", stiffness: 100, damping: 20 }}
+                      key={memory.id} 
+                      className="relative flex md:block gap-3 md:gap-0 md:mb-0"
+                    >
                     {/* Dot (Mobile Only) */}
                     <div className="relative z-20 shrink-0 w-10 flex flex-col items-center md:hidden">
                       <div className="w-3 h-3 bg-lavender rounded-full border-2 border-background ring-4 ring-lavender/20 mt-6 shadow-sm"></div>
