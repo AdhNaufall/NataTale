@@ -23,6 +23,10 @@ export default {
       boxShadow: {
         'polaroid': '0 15px 35px -5px rgba(0, 0, 0, 0.04), 0 10px 15px -6px rgba(0, 0, 0, 0.02)',
         'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+        'clay-card': '8px 8px 16px rgba(0, 0, 0, 0.04), -8px -8px 16px rgba(255, 255, 255, 0.8), inset 2px 2px 4px rgba(255, 255, 255, 0.8), inset -2px -2px 4px rgba(0, 0, 0, 0.03)',
+        'clay-btn': '4px 4px 8px rgba(0, 0, 0, 0.04), -4px -4px 8px rgba(255, 255, 255, 0.8), inset 2px 2px 4px rgba(255, 255, 255, 0.8), inset -2px -2px 4px rgba(0, 0, 0, 0.03)',
+        'clay-btn-active': 'inset 4px 4px 8px rgba(0, 0, 0, 0.04), inset -4px -4px 8px rgba(255, 255, 255, 0.8)',
+        'clay-input': 'inset 4px 4px 8px rgba(0, 0, 0, 0.04), inset -4px -4px 8px rgba(255, 255, 255, 0.8)',
       }
     },
   },

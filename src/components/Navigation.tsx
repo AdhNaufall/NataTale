@@ -17,26 +17,27 @@ export function Navigation({ currentPath, navigate }: NavigationProps) {
 
   return (
     <nav className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-2 w-[90%] max-w-sm">
-      <div className="bg-white/70 backdrop-blur-xl border border-white/40 shadow-[0_8px_30px_rgb(0,0,0,0.08)] rounded-[2rem] px-4 py-3 flex justify-between items-center relative overflow-hidden">
+      <div className="bg-background rounded-[2.5rem] px-4 py-3 flex justify-between items-center relative overflow-hidden shadow-clay-card border-none">
         {/* Subtle inner highlight */}
-        <div className="absolute inset-0 bg-gradient-to-t from-white/10 to-white/60 pointer-events-none rounded-[2rem]"></div>
         
         {navItems.map((item) => {
           const isActive = currentPath === item.path;
           const Icon = item.icon;
           return (
-            <button
+            <motion.button
+              whileTap={{ scale: 0.85 }}
+              whileHover={{ scale: 1.05 }}
               key={item.path}
               onClick={() => navigate(item.path)}
               className={cn(
-                "relative flex flex-col items-center gap-1 transition-all duration-300 w-16 z-10",
+                "relative flex flex-col items-center gap-1 transition-all duration-300 ease-out w-16 z-10",
                 isActive ? "text-slate" : "text-gray-400 hover:text-softblue"
               )}
             >
               {isActive && (
                 <motion.div
                   layoutId="nav-pill"
-                  className="absolute -inset-x-2 -inset-y-2 bg-softblue/15 rounded-2xl -z-10"
+                  className="absolute -inset-x-2 -inset-y-2 bg-background shadow-clay-input rounded-2xl -z-10"
                   transition={{ type: "spring", stiffness: 400, damping: 25 }}
                 />
               )}
@@ -44,7 +45,7 @@ export function Navigation({ currentPath, navigate }: NavigationProps) {
                 animate={isActive ? { y: -2, scale: 1.1 } : { y: 0, scale: 1 }}
                 transition={{ type: "spring", stiffness: 400, damping: 20 }}
                 className={cn(
-                  "p-1 rounded-2xl transition-colors duration-300",
+                  "p-1 rounded-2xl transition-colors duration-300 ease-out",
                   isActive ? "text-softblue" : ""
                 )}
               >
@@ -56,7 +57,7 @@ export function Navigation({ currentPath, navigate }: NavigationProps) {
               >
                 {item.label}
               </motion.span>
-            </button>
+            </motion.button>
           );
         })}
       </div>

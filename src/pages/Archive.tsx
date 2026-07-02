@@ -27,25 +27,29 @@ export default function Archive({ memories }: { memories: any[] }) {
             placeholder="Search memories..." 
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 rounded-2xl border border-gray-200 focus:border-softblue focus:ring-1 focus:ring-softblue outline-none bg-white shadow-sm transition-all"
+            className="w-full pl-12 pr-4 py-4 rounded-3xl border-none outline-none bg-background shadow-clay-input transition-all duration-300 ease-out focus:shadow-[inset_6px_6px_10px_rgba(0,0,0,0.06),inset_-6px_-6px_10px_rgba(255,255,255,0.9)]"
           />
         </div>
         
         <div className="flex flex-wrap justify-center gap-2">
-          <button 
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => setActiveCategory(null)}
-            className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${!activeCategory ? 'bg-lavender text-white' : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-200'}`}
+            className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 ${!activeCategory ? 'bg-lavender text-white shadow-clay-btn-active' : 'bg-background text-gray-500 hover:text-lavender shadow-clay-btn'}`}
           >
             All
-          </button>
+          </motion.button>
           {allCategories.map(cat => (
-            <button 
+            <motion.button 
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               key={cat as string}
               onClick={() => setActiveCategory(cat as string)}
-              className={`px-4 py-2 rounded-full text-xs font-bold uppercase tracking-wider transition-colors ${activeCategory === cat ? 'bg-lavender text-white' : 'bg-white text-gray-500 hover:bg-gray-50 border border-gray-200'}`}
+              className={`px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all duration-300 ${activeCategory === cat ? 'bg-lavender text-white shadow-clay-btn-active' : 'bg-background text-gray-500 hover:text-lavender shadow-clay-btn'}`}
             >
               {cat as string}
-            </button>
+            </motion.button>
           ))}
         </div>
       </div>
@@ -58,12 +62,13 @@ export default function Archive({ memories }: { memories: any[] }) {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.9 }}
+              whileHover={{ y: -8, scale: 1.02 }}
               transition={{ duration: 0.4, ease: "easeOut" }}
               key={item.id} 
-              className="break-inside-avoid rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow relative group cursor-pointer mb-4"
+              className="break-inside-avoid rounded-[2rem] p-2 sm:p-3 bg-background shadow-clay-card hover:shadow-polaroid transition-all duration-500 relative group cursor-pointer mb-6"
             >
-              <img src={item.img} alt="Archive" className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-500" />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors"></div>
+              <img src={item.img} alt="Archive" className="w-full h-auto rounded-[1.5rem] object-cover group-hover:scale-[1.02] transition-transform duration-500" />
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors rounded-[2rem]"></div>
             </motion.div>
           ))}
         </AnimatePresence>
