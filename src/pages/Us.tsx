@@ -110,7 +110,7 @@ export default function Us({ memories }: { memories: any[] }) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
-        className="bg-background rounded-[2.5rem] p-8 shadow-clay-card border-none mb-8 relative overflow-hidden"
+        className="bg-white/60 backdrop-blur-xl rounded-[2rem] p-8 shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white/50 mb-8 relative overflow-hidden"
       >
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-lavender/10 rounded-full blur-2xl"></div>
         <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-softblue/10 rounded-full blur-2xl"></div>
@@ -159,16 +159,16 @@ export default function Us({ memories }: { memories: any[] }) {
         transition={{ delay: 0.7 }}
         className="grid grid-cols-2 gap-4 mb-16"
       >
-        <div className="bg-background p-6 rounded-[2rem] shadow-clay-card border-none flex flex-col items-center hover:shadow-polaroid transition-all">
-          <div className="w-14 h-14 rounded-full bg-background flex items-center justify-center text-lavender mb-5 shadow-clay-input">
+        <div className="bg-white/60 backdrop-blur-xl p-6 rounded-[2rem] shadow-sm border border-white/50 flex flex-col items-center hover:bg-white/80 transition-colors">
+          <div className="w-12 h-12 rounded-full bg-lavender/15 flex items-center justify-center text-lavender mb-4 shadow-inner ring-1 ring-lavender/20">
             <CalendarHeart className="w-6 h-6" />
           </div>
           <span className="text-3xl font-serif font-bold text-slate mb-1">{totalMemories}</span>
           <span className="text-[10px] font-bold uppercase tracking-widest text-slate/40">Chapters</span>
         </div>
 
-        <div className="bg-background p-6 rounded-[2rem] shadow-clay-card border-none flex flex-col items-center hover:shadow-polaroid transition-all">
-          <div className="w-14 h-14 rounded-full bg-background flex items-center justify-center text-mint mb-5 shadow-clay-input">
+        <div className="bg-white/60 backdrop-blur-xl p-6 rounded-[2rem] shadow-sm border border-white/50 flex flex-col items-center hover:bg-white/80 transition-colors">
+          <div className="w-12 h-12 rounded-full bg-mint/20 flex items-center justify-center text-mint mb-4 shadow-inner ring-1 ring-mint/20">
             <Camera className="w-6 h-6" />
           </div>
           <span className="text-3xl font-serif font-bold text-slate mb-1">{totalPhotos}</span>
@@ -181,7 +181,7 @@ export default function Us({ memories }: { memories: any[] }) {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8 }}
-        className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] rounded-[2.5rem] p-8 text-left relative overflow-hidden shadow-2xl shadow-slate/20"
+        className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] rounded-[2rem] p-8 text-left relative overflow-hidden shadow-2xl shadow-slate/20"
       >
         <div className="absolute -right-20 -top-20 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
         <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-softblue/10 rounded-full blur-2xl"></div>

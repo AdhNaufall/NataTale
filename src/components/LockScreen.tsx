@@ -64,7 +64,7 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-sm bg-background p-8 sm:p-10 rounded-[3rem] shadow-clay-card border-none flex flex-col items-center mx-4"
+        className="w-full max-w-sm bg-white/70 backdrop-blur-xl p-8 sm:p-10 rounded-[3rem] shadow-2xl border border-white flex flex-col items-center mx-4"
       >
         <motion.div
           animate={{ scale: [1, 1.1, 1] }}
@@ -122,7 +122,7 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
                 type="button"
                 whileTap={{ scale: 0.85, backgroundColor: 'rgba(0, 0, 0, 0.05)' }}
                 onClick={() => handleKeyPress(num)}
-                className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-background flex flex-col items-center justify-center transition-all hover:shadow-clay-btn-active relative shadow-clay-btn border-none"
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-slate/5 flex flex-col items-center justify-center transition-colors hover:bg-slate/10 relative shadow-sm border border-white/50"
               >
                 <span className="text-2xl sm:text-3xl font-light text-slate leading-none mt-1">{num}</span>
                 <span className="text-[9px] sm:text-[10px] font-bold tracking-widest text-slate/40 uppercase mt-0.5 h-3">
@@ -139,7 +139,7 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
               type="button"
               whileTap={{ scale: 0.85, backgroundColor: 'rgba(0, 0, 0, 0.05)' }}
               onClick={() => handleKeyPress('0')}
-              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-background flex flex-col items-center justify-center transition-all hover:shadow-clay-btn-active shadow-clay-btn border-none"
+              className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-slate/5 flex flex-col items-center justify-center transition-colors hover:bg-slate/10 shadow-sm border border-white/50"
             >
               <span className="text-2xl sm:text-3xl font-light text-slate leading-none">0</span>
             </motion.button>
