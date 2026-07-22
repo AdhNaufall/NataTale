@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 export default function Us({ memories }: { memories: any[] }) {
   const totalMemories = memories.length;
   const totalPhotos = memories.reduce((acc, curr) => acc + (curr.images?.length || 1), 0);
-  
+
   // Pick up to 4 random images for the scrapbook
   const randomPhotos = useMemo(() => {
     const allImages = memories.flatMap(m => m.images || [m.image]).filter(Boolean);
@@ -28,20 +28,22 @@ export default function Us({ memories }: { memories: any[] }) {
   });
 
   useEffect(() => {
-    // Tanggal jadian: 23 Mei 2026
-    const startDate = new Date('2026-05-23T00:00:00');
-    
+
+    const startDate = new Date('2026-05-23T00:00:00+07:00');
+
+
+
     const updateCounter = () => {
       const now = new Date();
       const diff = now.getTime() - startDate.getTime();
-      
+
       if (diff < 0) return;
 
       const totalSeconds = Math.floor(diff / 1000);
       const totalMinutes = Math.floor(totalSeconds / 60);
       const totalHours = Math.floor(totalMinutes / 60);
       const totalDays = Math.floor(totalHours / 24);
-      
+
       const years = Math.floor(totalDays / 365);
       const remainingDays = totalDays % 365;
       const months = Math.floor(remainingDays / 30);
@@ -61,7 +63,7 @@ export default function Us({ memories }: { memories: any[] }) {
 
   return (
     <div className="min-h-screen pt-12 pb-32 px-6 max-w-lg mx-auto text-center relative">
-      
+
       {/* Decorative Orbs */}
       <div className="absolute top-40 left-0 w-64 h-64 bg-lavender/10 rounded-full blur-[80px] -z-10 animate-pulse" />
       <div className="absolute top-80 right-0 w-64 h-64 bg-softblue/10 rounded-full blur-[80px] -z-10 animate-pulse" style={{ animationDelay: '2s' }} />
@@ -77,15 +79,15 @@ export default function Us({ memories }: { memories: any[] }) {
               key={idx}
               initial={{ opacity: 0, scale: 0.5, y: -50, rotate: 0 }}
               animate={{ opacity: 1, scale: 1, y: 0, rotate: rotations[idx] }}
-              transition={{ 
-                type: "spring", 
-                stiffness: 100, 
-                damping: 12, 
-                delay: idx * 0.15 
+              transition={{
+                type: "spring",
+                stiffness: 100,
+                damping: 12,
+                delay: idx * 0.15
               }}
-              whileHover={{ 
-                scale: 1.15, 
-                rotate: 0, 
+              whileHover={{
+                scale: 1.15,
+                rotate: 0,
                 zIndex: 50,
                 y: -20,
                 transition: { type: "spring", stiffness: 400, damping: 25 }
@@ -106,7 +108,7 @@ export default function Us({ memories }: { memories: any[] }) {
       )}
 
       {/* Live Counter Widget (Premium Glassmorphic) */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6 }}
@@ -114,13 +116,13 @@ export default function Us({ memories }: { memories: any[] }) {
       >
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-lavender/10 rounded-full blur-2xl"></div>
         <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-softblue/10 rounded-full blur-2xl"></div>
-        
+
         <h3 className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate/40 mb-6 flex items-center justify-center gap-2">
           <Sparkles className="w-3 h-3 text-lavender" />
           Time Together
           <Sparkles className="w-3 h-3 text-lavender" />
         </h3>
-        
+
         <div className="flex justify-center gap-4 sm:gap-6 text-center">
           {timeTogether.years > 0 && (
             <div className="flex flex-col items-center">
@@ -153,7 +155,7 @@ export default function Us({ memories }: { memories: any[] }) {
       </motion.div>
 
       {/* Stats Grid */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.7 }}
@@ -177,7 +179,7 @@ export default function Us({ memories }: { memories: any[] }) {
       </motion.div>
 
       {/* App Ecosystem Portal */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8 }}
@@ -185,11 +187,11 @@ export default function Us({ memories }: { memories: any[] }) {
       >
         <div className="absolute -right-20 -top-20 w-64 h-64 bg-white/5 rounded-full blur-3xl"></div>
         <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-softblue/10 rounded-full blur-2xl"></div>
-        
+
         <h3 className="font-serif text-2xl font-bold text-white mb-2 relative z-10">TanaLumina</h3>
         <p className="text-gray-400 text-sm mb-8 relative z-10 font-medium">Enter the photobooth universe and capture your raw moments.</p>
-        
-        <a 
+
+        <a
           href="https://tanalumina-photobooth.vercel.app/"
           target="_blank"
           rel="noopener noreferrer"
