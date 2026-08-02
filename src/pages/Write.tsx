@@ -70,52 +70,68 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
     }, 1200);
   };
 
-  const processFiles = (files: FileList | null) => {
+  const processFiles = async (files: FileList | null) => {
     if (!files) return;
 
-    Array.from(files).forEach(file => {
-      if (!file.type.startsWith('image/')) return;
+    for (const file of Array.from(files)) {
+      // Robust image check: starts with 'image/' or matches common image extensions
+      const isImage = file.type.startsWith('image/') || /\.(jpg|jpeg|png|gif|webp|heic|heif)$/i.test(file.name);
+      if (!isImage) continue;
 
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement('canvas');
-          const MAX_WIDTH = 800;
-          const MAX_HEIGHT = 800;
-          let width = img.width;
-          let height = img.height;
+      try {
+        await new Promise<void>((resolve, reject) => {
+          const objectUrl = URL.createObjectURL(file);
+          const img = new Image();
 
-          if (width > height) {
-            if (width > MAX_WIDTH) {
-              height = Math.round((height *= MAX_WIDTH / width));
-              width = MAX_WIDTH;
+          img.onload = () => {
+            try {
+              const canvas = document.createElement('canvas');
+              const MAX_WIDTH = 800;
+              const MAX_HEIGHT = 800;
+              let width = img.width;
+              let height = img.height;
+
+              if (width > height) {
+                if (width > MAX_WIDTH) {
+                  height = Math.round(height * (MAX_WIDTH / width));
+                  width = MAX_WIDTH;
+                }
+              } else {
+                if (height > MAX_HEIGHT) {
+                  width = Math.round(width * (MAX_HEIGHT / height));
+                  height = MAX_HEIGHT;
+                }
+              }
+
+              canvas.width = width;
+              canvas.height = height;
+
+              const ctx = canvas.getContext('2d');
+              ctx?.drawImage(img, 0, 0, width, height);
+
+              // Compress to JPEG with 70% quality
+              const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+              
+              setImages(prev => [...prev, compressedBase64]);
+              URL.revokeObjectURL(objectUrl);
+              resolve();
+            } catch (err) {
+              URL.revokeObjectURL(objectUrl);
+              reject(err);
             }
-          } else {
-            if (height > MAX_HEIGHT) {
-              width = Math.round((width *= MAX_HEIGHT / height));
-              height = MAX_HEIGHT;
-            }
-          }
+          };
 
-          canvas.width = width;
-          canvas.height = height;
+          img.onerror = (err) => {
+            URL.revokeObjectURL(objectUrl);
+            reject(err);
+          };
 
-          const ctx = canvas.getContext('2d');
-          ctx?.drawImage(img, 0, 0, width, height);
-
-          // Compress to JPEG with 70% quality
-          const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
-          
-          setImages(prev => [...prev, compressedBase64]);
-        };
-        
-        if (e.target?.result) {
-          img.src = e.target.result as string;
-        }
-      };
-      reader.readAsDataURL(file);
-    });
+          img.src = objectUrl;
+        });
+      } catch (error) {
+        console.error('Failed to process image:', file.name, error);
+      }
+    }
   };
 
   const handleDragOver = (e: React.DragEvent) => {
