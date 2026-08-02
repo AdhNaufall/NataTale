@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { UploadCloud, X } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
-import heic2any from 'heic2any';
 
 export default function Write({ onSave, onUpdate, navigate, memories = [], editingMemory, setEditingMemory }: { onSave: (memory: any) => void, onUpdate?: (id: string, m: any) => void, navigate: (p: string) => void, memories?: any[], editingMemory?: any, setEditingMemory?: (m: any) => void }) {
   const [title, setTitle] = useState('');
@@ -82,7 +81,10 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
         let fileToProcess = file;
 
         if (isHeic) {
-          // Convert HEIC/HEIF to JPEG
+          // Dynamically import heic2any to avoid loading issues in Vite
+          const heic2anyModule = await import('heic2any');
+          const heic2any = heic2anyModule.default;
+          
           const convertedBlob = await heic2any({
             blob: file,
             toType: 'image/jpeg',
@@ -143,9 +145,9 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
 
           img.src = objectUrl;
         });
-      } catch (error) {
+      } catch (error: any) {
         console.error('Failed to process image:', file.name, error);
-        alert(`Gagal memproses gambar "${file.name}". Pastikan format berkas didukung (JPG, PNG, WebP, HEIC).`);
+        alert(`Gagal memproses gambar "${file.name}". Error: ${error?.message || error || 'Format/berkas tidak didukung'}`);
       }
     }
   };
