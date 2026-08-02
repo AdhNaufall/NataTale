@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import { UploadCloud, X } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -18,7 +18,6 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
   const MOOD_EMOJIS = ['🥰', '🤪', '🥹', '😴', '😡', '🥳', '😎'];
 
   const [isDragging, setIsDragging] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Extract unique categories from existing memories for autocomplete suggestions
   const existingCategories = Array.from(new Set(memories.map(m => m.category))).filter(Boolean);
@@ -130,6 +129,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
         });
       } catch (error) {
         console.error('Failed to process image:', file.name, error);
+        alert(`Gagal memproses gambar "${file.name}". Pastikan format berkas didukung (JPG, PNG, WebP) dan ukuran berkas tidak terlalu besar.`);
       }
     }
   };
@@ -153,7 +153,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     processFiles(e.target.files);
     // Reset input so the same file can be selected again if removed
-    if (fileInputRef.current) fileInputRef.current.value = '';
+    e.target.value = '';
   };
 
   const removeImage = (indexToRemove: number) => {
@@ -216,19 +216,17 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
           <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/50 mb-2 mt-4">Photos</label>
 
           {/* Drag & Drop Zone */}
-          <div
+          <label
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
-            onClick={() => fileInputRef.current?.click()}
             className={cn(
-              "w-full border-2 border-dashed rounded-2xl p-10 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 text-center",
+              "w-full border-2 border-dashed rounded-2xl p-10 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 text-center block",
               isDragging ? "border-lavender bg-lavender/5 scale-[1.02]" : "border-gray-200 bg-gray-50/50 hover:bg-gray-50 hover:border-gray-300"
             )}
           >
             <input
               type="file"
-              ref={fileInputRef}
               onChange={handleFileInput}
               multiple
               accept="image/*"
@@ -239,7 +237,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
             </div>
             <p className="font-bold text-gray-700">Click to upload or drag and drop</p>
             <p className="text-xs text-gray-400 mt-1">SVG, PNG, JPG or GIF (max. 800x400px)</p>
-          </div>
+          </label>
 
           {/* Image Previews */}
           {images.length > 0 && (
