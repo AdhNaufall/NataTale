@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { UploadCloud, X } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+import heic2any from 'heic2any';
 
 export default function Write({ onSave, onUpdate, navigate, memories = [], editingMemory, setEditingMemory }: { onSave: (memory: any) => void, onUpdate?: (id: string, m: any) => void, navigate: (p: string) => void, memories?: any[], editingMemory?: any, setEditingMemory?: (m: any) => void }) {
   const [title, setTitle] = useState('');
@@ -73,13 +74,28 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
     if (!files) return;
 
     for (const file of Array.from(files)) {
-      // Robust image check: starts with 'image/' or matches common image extensions
-      const isImage = file.type.startsWith('image/') || /\.(jpg|jpeg|png|gif|webp|heic|heif)$/i.test(file.name);
+      const isHeic = file.name.toLowerCase().endsWith('.heic') || file.name.toLowerCase().endsWith('.heif') || file.type === 'image/heic' || file.type === 'image/heif';
+      const isImage = file.type.startsWith('image/') || /\.(jpg|jpeg|png|gif|webp)$/i.test(file.name) || isHeic;
       if (!isImage) continue;
 
       try {
+        let fileToProcess = file;
+
+        if (isHeic) {
+          // Convert HEIC/HEIF to JPEG
+          const convertedBlob = await heic2any({
+            blob: file,
+            toType: 'image/jpeg',
+            quality: 0.7
+          });
+          const singleBlob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+          fileToProcess = new File([singleBlob], file.name.replace(/\.(heic|heif)$/i, '.jpg'), {
+            type: 'image/jpeg'
+          });
+        }
+
         await new Promise<void>((resolve, reject) => {
-          const objectUrl = URL.createObjectURL(file);
+          const objectUrl = URL.createObjectURL(fileToProcess);
           const img = new Image();
 
           img.onload = () => {
@@ -129,7 +145,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
         });
       } catch (error) {
         console.error('Failed to process image:', file.name, error);
-        alert(`Gagal memproses gambar "${file.name}". Pastikan format berkas didukung (JPG, PNG, WebP) dan ukuran berkas tidak terlalu besar.`);
+        alert(`Gagal memproses gambar "${file.name}". Pastikan format berkas didukung (JPG, PNG, WebP, HEIC).`);
       }
     }
   };
