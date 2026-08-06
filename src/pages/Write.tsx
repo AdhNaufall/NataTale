@@ -8,7 +8,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
   const [date, setDate] = useState('');
   const [location, setLocation] = useState('');
   const [story, setStory] = useState('');
-  const [images, setImages] = useState<string[]>([]);
+  const [images, setImages] = useState<{ url: string; isUploading: boolean; id: string }[]>([]);
   const [category, setCategory] = useState('');
   const [rating, setRating] = useState(5);
   const [mood, setMood] = useState('🥰');
@@ -31,7 +31,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
       setDate(editingMemory.date || '');
       setLocation(editingMemory.location || '');
       setStory(editingMemory.story || '');
-      setImages(editingMemory.images || []);
+      setImages((editingMemory.images || []).map((url: string, index: number) => ({ url, isUploading: false, id: `${index}-${Date.now()}` })));
       setCategory(editingMemory.category || '');
       setMood(editingMemory.mood || '🥰');
       setRating(editingMemory.rating || 5);
@@ -53,7 +53,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
         date,
         location,
         story,
-        images,
+        images: images.map(img => img.url),
         category,
         mood,
         rating
@@ -129,9 +129,43 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
               // Compress to JPEG with 70% quality
               const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
               
-              setImages(prev => [...prev, compressedBase64]);
+              const tempId = Math.random().toString(36).substring(2, 9);
+              setImages(prev => [...prev, { url: compressedBase64, isUploading: true, id: tempId }]);
               URL.revokeObjectURL(objectUrl);
               resolve();
+
+              // Background Cloudinary Upload
+              const cloudName = (import.meta as any).env.VITE_CLOUDINARY_CLOUD_NAME;
+              const uploadPreset = (import.meta as any).env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+              if (cloudName && uploadPreset) {
+                const formData = new FormData();
+                formData.append('file', compressedBase64);
+                formData.append('upload_preset', uploadPreset);
+
+                fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+                  method: 'POST',
+                  body: formData
+                })
+                  .then(res => {
+                    if (!res.ok) throw new Error('Cloudinary response error');
+                    return res.json();
+                  })
+                  .then(data => {
+                    if (data.secure_url) {
+                      setImages(prev => prev.map(img => img.id === tempId ? { ...img, url: data.secure_url, isUploading: false } : img));
+                    } else {
+                      throw new Error('No secure url in response');
+                    }
+                  })
+                  .catch(err => {
+                    console.error('Cloudinary upload failed, using Base64 fallback:', err);
+                    setImages(prev => prev.map(img => img.id === tempId ? { ...img, isUploading: false } : img));
+                  });
+              } else {
+                // If environment variables are missing, fallback to Base64 immediately
+                setImages(prev => prev.map(img => img.id === tempId ? { ...img, isUploading: false } : img));
+              }
             } catch (err) {
               URL.revokeObjectURL(objectUrl);
               reject(err);
@@ -174,8 +208,8 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
     e.target.value = '';
   };
 
-  const removeImage = (indexToRemove: number) => {
-    setImages(images.filter((_, idx) => idx !== indexToRemove));
+  const removeImage = (idToRemove: string) => {
+    setImages(images.filter((img) => img.id !== idToRemove));
   };
 
   return (
@@ -260,13 +294,18 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
           {/* Image Previews */}
           {images.length > 0 && (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 mt-4">
-              {images.map((img, idx) => (
-                <div key={idx} className="relative aspect-square rounded-xl overflow-hidden group shadow-sm">
-                  <img src={img} alt={`Upload preview ${idx}`} className="w-full h-full object-cover" />
+              {images.map((img) => (
+                <div key={img.id} className="relative aspect-square rounded-xl overflow-hidden group shadow-sm">
+                  <img src={img.url} alt="Upload preview" className={cn("w-full h-full object-cover", img.isUploading && "opacity-40 blur-[1px]")} />
+                  {img.isUploading && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/10">
+                      <div className="w-6 h-6 border-2 border-slate border-t-transparent rounded-full animate-spin"></div>
+                    </div>
+                  )}
                   <button
                     type="button"
-                    onClick={(e) => { e.stopPropagation(); removeImage(idx); }}
-                    className="absolute top-2 right-2 w-6 h-6 bg-white/90 text-slate rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
+                    onClick={(e) => { e.stopPropagation(); removeImage(img.id); }}
+                    className="absolute top-2 right-2 w-6 h-6 bg-white/90 text-slate rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm z-10"
                   >
                     <X className="w-3 h-3 font-bold" />
                   </button>
@@ -359,12 +398,16 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
         </div>
 
         <motion.button 
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
+          whileHover={!(images.some(img => img.isUploading) || isSubmitting) ? { scale: 1.02 } : undefined}
+          whileTap={!(images.some(img => img.isUploading) || isSubmitting) ? { scale: 0.98 } : undefined}
           type="submit" 
-          className="w-full py-4 bg-slate text-white rounded-2xl font-bold tracking-widest uppercase hover:bg-[#1A202C] transition-colors mt-8 shadow-lg shadow-slate/20"
+          disabled={images.some(img => img.isUploading) || isSubmitting}
+          className={cn(
+            "w-full py-4 bg-slate text-white rounded-2xl font-bold tracking-widest uppercase hover:bg-[#1A202C] transition-colors mt-8 shadow-lg shadow-slate/20",
+            (images.some(img => img.isUploading) || isSubmitting) && "opacity-50 cursor-not-allowed"
+          )}
         >
-          {editingMemory ? 'Update Chapter' : 'Save Chapter'}
+          {images.some(img => img.isUploading) ? 'Uploading Images...' : (editingMemory ? 'Update Chapter' : 'Save Chapter')}
         </motion.button>
       </form>
     </div>
