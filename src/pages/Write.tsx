@@ -46,6 +46,16 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    const cloudName = (import.meta as any).env.VITE_CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = (import.meta as any).env.VITE_CLOUDINARY_UPLOAD_PRESET;
+    const hasBase64 = images.some(img => img.url.startsWith('data:'));
+
+    if (cloudName && uploadPreset && hasBase64) {
+      alert('Beberapa gambar gagal diunggah ke Cloudinary atau masih dalam proses. Pastikan semua gambar berhasil diunggah demi performa loading website.');
+      setIsSubmitting(false);
+      return;
+    }
     
     setTimeout(() => {
       const memData = {

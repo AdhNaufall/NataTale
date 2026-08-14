@@ -35,11 +35,11 @@ function App() {
           setMemories(data);
           localStorage.setItem('natatale_memories', JSON.stringify(data));
         }
-        setTimeout(() => setIsLoading(false), 1500); 
+        setIsLoading(false); 
       })
       .catch(err => {
         console.error('Failed to load memories from DB:', err);
-        setTimeout(() => setIsLoading(false), 1500);
+        setIsLoading(false);
       });
   };
 

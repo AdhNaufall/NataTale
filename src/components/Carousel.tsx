@@ -17,7 +17,13 @@ export function Carousel({ images }: CarouselProps) {
   if (images.length === 1) {
     return (
       <div className="w-full aspect-square overflow-hidden bg-gray-100 mb-4">
-        <img src={images[0]} alt="Memory" className="w-full h-full object-cover" />
+        <img 
+          src={images[0]} 
+          alt="Memory" 
+          className="w-full h-full object-cover" 
+          loading="lazy" 
+          decoding="async" 
+        />
       </div>
     );
   }
@@ -34,6 +40,8 @@ export function Carousel({ images }: CarouselProps) {
           transition={{ duration: 0.2 }}
           alt={`Memory ${currentIndex}`}
           className="w-full h-full object-cover absolute inset-0"
+          loading="lazy"
+          decoding="async"
         />
       </AnimatePresence>
       
