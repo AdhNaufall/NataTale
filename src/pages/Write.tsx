@@ -49,15 +49,20 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
 
     const cloudName = (import.meta as any).env.VITE_CLOUDINARY_CLOUD_NAME;
     const uploadPreset = (import.meta as any).env.VITE_CLOUDINARY_UPLOAD_PRESET;
-    const hasBase64 = images.some(img => img.url.startsWith('data:'));
+    
+    // Hanya blokir jika ada gambar Base64 BARU (bukan gambar lama dari memori yang sedang diedit)
+    const originalImages = editingMemory?.images || [];
+    const hasNewBase64 = images.some(img => 
+      img.url.startsWith('data:') && !originalImages.includes(img.url)
+    );
 
-    if (hasBase64) {
+    if (hasNewBase64) {
       if (!cloudName || !uploadPreset) {
-        alert('Gagal menyimpan: Konfigurasi Cloudinary tidak ditemukan. Penyimpanan gambar langsung (Base64) diblokir demi menjaga performa loading website.');
+        alert('Gagal menyimpan: Konfigurasi Cloudinary tidak ditemukan di server/Vercel. Pastikan sudah memasukkan VITE_CLOUDINARY_CLOUD_NAME & VITE_CLOUDINARY_UPLOAD_PRESET di Settings Vercel dan melakukan Redeploy.');
         setIsSubmitting(false);
         return;
       } else {
-        alert('Beberapa gambar gagal diunggah ke Cloudinary atau masih dalam proses. Pastikan semua gambar berhasil diunggah demi performa loading website.');
+        alert('Beberapa gambar baru gagal diunggah ke Cloudinary. Coba periksa koneksi internet HP kamu atau pastikan kredensial Cloudinary di Vercel sudah benar.');
         setIsSubmitting(false);
         return;
       }
