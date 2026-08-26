@@ -22,7 +22,10 @@ function App() {
     return localData ? JSON.parse(localData) : memoriesData;
   });
   const [editingMemory, setEditingMemory] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => {
+    // If we have cached memories, we don't need to show the full-screen loader
+    return !localStorage.getItem('natatale_memories');
+  });
 
   const fetchMemories = () => {
     fetch(`${API_BASE_URL}/api/memories`)
