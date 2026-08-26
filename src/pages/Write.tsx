@@ -51,10 +51,16 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
     const uploadPreset = (import.meta as any).env.VITE_CLOUDINARY_UPLOAD_PRESET;
     const hasBase64 = images.some(img => img.url.startsWith('data:'));
 
-    if (cloudName && uploadPreset && hasBase64) {
-      alert('Beberapa gambar gagal diunggah ke Cloudinary atau masih dalam proses. Pastikan semua gambar berhasil diunggah demi performa loading website.');
-      setIsSubmitting(false);
-      return;
+    if (hasBase64) {
+      if (!cloudName || !uploadPreset) {
+        alert('Gagal menyimpan: Konfigurasi Cloudinary tidak ditemukan. Penyimpanan gambar langsung (Base64) diblokir demi menjaga performa loading website.');
+        setIsSubmitting(false);
+        return;
+      } else {
+        alert('Beberapa gambar gagal diunggah ke Cloudinary atau masih dalam proses. Pastikan semua gambar berhasil diunggah demi performa loading website.');
+        setIsSubmitting(false);
+        return;
+      }
     }
     
     setTimeout(() => {

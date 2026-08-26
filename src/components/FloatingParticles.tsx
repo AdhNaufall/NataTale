@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 export function FloatingParticles() {
-  const [particles, setParticles] = useState<{ id: number; x: number; y: number; size: number; delay: number; duration: number }[]>([]);
+  const [particles, setParticles] = useState<{ id: number; x: number; y: number; size: number; delay: number; duration: number; driftX: number }[]>([]);
 
   useEffect(() => {
     // Generate random particles
@@ -13,6 +13,7 @@ export function FloatingParticles() {
       size: Math.random() * 20 + 10, // size between 10-30px
       delay: Math.random() * 5, // 0-5s delay
       duration: Math.random() * 10 + 10, // 10-20s duration
+      driftX: (Math.random() - 0.5) * 20, // Pre-calculated horizontal drift
     }));
     setParticles(newParticles);
   }, []);
@@ -31,7 +32,7 @@ export function FloatingParticles() {
           }}
           animate={{
             y: ['0vh', '-120vh'], // Float up past the top of the screen
-            x: [`0vw`, `${(Math.random() - 0.5) * 20}vw`], // Slight horizontal drift
+            x: [`0vw`, `${p.driftX}vw`], // Stable pre-calculated horizontal drift
             opacity: [0, 0.8, 0], // Fade in then out
             rotate: [0, 360],
           }}

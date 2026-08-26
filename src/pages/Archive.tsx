@@ -1,18 +1,23 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Archive({ memories }: { memories: any[] }) {
   const [filter, setFilter] = useState('');
   
-  const allCategories = Array.from(new Set(memories.map(m => m.category).filter(Boolean)));
+  const allCategories = useMemo(() => {
+    return Array.from(new Set(memories.map(m => m.category).filter(Boolean)));
+  }, [memories]);
+
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
-  const filteredMemories = memories.filter(m => {
-    const matchesSearch = m.title.toLowerCase().includes(filter.toLowerCase()) || (m.location && m.location.toLowerCase().includes(filter.toLowerCase()));
-    const matchesCategory = activeCategory ? m.category === activeCategory : true;
-    return matchesSearch && matchesCategory;
-  });
+  const filteredMemories = useMemo(() => {
+    return memories.filter(m => {
+      const matchesSearch = m.title.toLowerCase().includes(filter.toLowerCase()) || (m.location && m.location.toLowerCase().includes(filter.toLowerCase()));
+      const matchesCategory = activeCategory ? m.category === activeCategory : true;
+      return matchesSearch && matchesCategory;
+    });
+  }, [memories, filter, activeCategory]);
 
   return (
     <div className="min-h-screen pt-12 pb-32 px-4 max-w-4xl mx-auto">

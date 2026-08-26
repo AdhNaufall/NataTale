@@ -35,7 +35,10 @@ export default function Timeline({ memories, onEdit, onDelete }: { memories: any
       
       {/* Mini Calendar Quick Jump (Fixed) */}
       <div className="fixed top-6 right-6 z-40">
-        <button className="w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center text-lavender hover:scale-110 transition-transform border border-softblue/20">
+        <button 
+          aria-label="Lompat ke tanggal memori"
+          className="w-10 h-10 bg-white shadow-lg rounded-full flex items-center justify-center text-lavender hover:scale-110 transition-transform border border-softblue/20"
+        >
           <CalendarIcon className="w-5 h-5" />
         </button>
       </div>
@@ -78,9 +81,18 @@ export default function Timeline({ memories, onEdit, onDelete }: { memories: any
                     {/* Card (Polaroid Style) */}
                     <motion.div 
                       layout
+                      role="button"
+                      tabIndex={0}
+                      aria-expanded={isExpanded}
                       onClick={() => setExpandedId(isExpanded ? null : memory.id)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          setExpandedId(isExpanded ? null : memory.id);
+                        }
+                      }}
                       className={cn(
-                        "flex-1 bg-white p-3 pb-10 md:p-4 md:pb-14 cursor-pointer transition-shadow duration-500",
+                        "flex-1 bg-white p-3 pb-10 md:p-4 md:pb-14 cursor-pointer transition-shadow duration-500 focus:outline-none focus:ring-2 focus:ring-lavender/50 focus:ring-offset-2",
                         "border border-gray-100 rounded-sm relative",
                         isExpanded 
                           ? "shadow-[0_20px_50px_-15px_rgba(0,0,0,0.15)] z-30 ring-1 ring-black/5" 
