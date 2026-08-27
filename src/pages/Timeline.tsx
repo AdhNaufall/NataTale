@@ -48,9 +48,20 @@ export default function Timeline({ memories, onEdit, onDelete }: { memories: any
           <div key={monthYear} className="relative">
             {/* Sticky Month Header */}
             <div className="sticky top-6 z-30 flex justify-center mb-10 pointer-events-none">
-              <span className="px-5 py-2 bg-background/95 backdrop-blur-md border border-softblue/30 rounded-full font-serif text-sm font-bold text-slate shadow-sm tracking-widest uppercase">
-                {monthYear}
-              </span>
+              <motion.div 
+                initial={{ y: -6, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                className="pointer-events-auto inline-flex items-center gap-2.5 px-4 py-1.5 bg-white/80 backdrop-blur-xl border border-white/60 shadow-[0_10px_30px_-5px_rgba(44,53,69,0.06),0_2px_8px_-2px_rgba(44,53,69,0.04)] rounded-full text-slate transition-all hover:bg-white/95 hover:shadow-[0_12px_35px_-5px_rgba(44,53,69,0.1)]"
+              >
+                <span className="w-2 h-2 rounded-full bg-lavender animate-pulse" />
+                <span className="font-serif text-xs md:text-sm font-bold text-slate tracking-wider uppercase">
+                  {monthYear}
+                </span>
+                <span className="h-3 w-[1px] bg-slate/15" />
+                <span className="px-2.5 py-0.5 bg-softblue/15 text-blue-600/90 text-[10px] md:text-[11px] font-bold rounded-full font-sans tracking-wide">
+                  {monthMemories.length} {monthMemories.length === 1 ? 'Memory' : 'Memories'}
+                </span>
+              </motion.div>
             </div>
 
             {/* Timeline Line for the month (Mobile Only) */}
@@ -134,22 +145,90 @@ export default function Timeline({ memories, onEdit, onDelete }: { memories: any
                               initial={{ opacity: 0, height: 0 }}
                               animate={{ opacity: 1, height: 'auto' }}
                               exit={{ opacity: 0, height: 0 }}
-                              className="mt-6 pt-5 border-t border-dashed border-gray-200"
+                              className="mt-6 pt-5 border-t border-dashed border-lavender/30"
                             >
-                              <div className="prose prose-sm prose-p:text-gray-600 prose-p:leading-relaxed prose-strong:text-slate font-sans">
-                                <ReactMarkdown>{memory.story}</ReactMarkdown>
+                              <div className="font-sans text-slate/85 text-[13.5px] leading-relaxed space-y-3">
+                                <ReactMarkdown
+                                  components={{
+                                    p: ({ children }) => (
+                                      <p className="text-slate/80 leading-relaxed font-sans mb-2.5 text-[13.5px]">
+                                        {children}
+                                      </p>
+                                    ),
+                                    blockquote: ({ children }) => (
+                                      <blockquote className="relative my-3.5 pl-4 pr-3 py-2.5 bg-gradient-to-r from-lavender/10 via-softblue/5 to-transparent border-l-2 border-lavender rounded-r-xl italic font-serif text-slate/90 text-sm">
+                                        <span className="text-lavender font-serif font-bold text-lg leading-none select-none mr-1">“</span>
+                                        {children}
+                                      </blockquote>
+                                    ),
+                                    h1: ({ children }) => (
+                                      <h4 className="font-serif font-bold text-slate text-base md:text-lg mt-3 mb-1.5 tracking-tight">
+                                        {children}
+                                      </h4>
+                                    ),
+                                    h2: ({ children }) => (
+                                      <h5 className="font-serif font-bold text-slate text-sm md:text-base mt-2.5 mb-1 tracking-tight">
+                                        {children}
+                                      </h5>
+                                    ),
+                                    h3: ({ children }) => (
+                                      <h6 className="font-sans font-bold text-slate text-xs uppercase tracking-wider mt-2 mb-1">
+                                        {children}
+                                      </h6>
+                                    ),
+                                    strong: ({ children }) => (
+                                      <strong className="font-bold text-slate font-sans">
+                                        {children}
+                                      </strong>
+                                    ),
+                                    em: ({ children }) => (
+                                      <em className="italic text-slate/90 font-serif">
+                                        {children}
+                                      </em>
+                                    ),
+                                    ul: ({ children }) => (
+                                      <ul className="list-disc list-inside space-y-1 my-2 pl-1 text-slate/80 text-[13px]">
+                                        {children}
+                                      </ul>
+                                    ),
+                                    ol: ({ children }) => (
+                                      <ol className="list-decimal list-inside space-y-1 my-2 pl-1 text-slate/80 text-[13px]">
+                                        {children}
+                                      </ol>
+                                    ),
+                                    hr: () => (
+                                      <div className="my-4 flex items-center justify-center gap-2">
+                                        <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-lavender/30 to-transparent" />
+                                        <span className="text-lavender text-xs">✦</span>
+                                        <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent via-lavender/30 to-transparent" />
+                                      </div>
+                                    )
+                                  }}
+                                >
+                                  {memory.story}
+                                </ReactMarkdown>
                               </div>
-                              <div className="mt-6 pt-4 border-t border-gray-100 flex justify-end gap-2">
-                                <button onClick={(e) => { e.stopPropagation(); onEdit?.(memory); }} className="px-3 py-2 text-xs font-bold text-gray-500 hover:text-softblue hover:bg-softblue/10 rounded-lg transition-colors flex items-center gap-1.5">
-                                  <Edit className="w-3.5 h-3.5" /> Edit
+
+                              {/* Soft Glass Pill Action Buttons */}
+                              <div className="mt-6 pt-4 border-t border-slate/10 flex justify-end gap-2">
+                                <button 
+                                  onClick={(e) => { e.stopPropagation(); onEdit?.(memory); }} 
+                                  className="px-3.5 py-1.5 text-xs font-semibold text-slate/75 hover:text-blue-600 bg-white/70 hover:bg-softblue/15 border border-slate/10 hover:border-softblue/30 backdrop-blur-md rounded-full shadow-sm transition-all duration-200 active:scale-95 flex items-center gap-1.5"
+                                >
+                                  <Edit className="w-3.5 h-3.5 text-softblue" /> 
+                                  <span>Edit</span>
                                 </button>
-                                <button onClick={(e) => { 
-                                  e.stopPropagation(); 
-                                  if (window.confirm('Are you sure you want to delete this precious memory?')) {
-                                    onDelete?.(memory.id);
-                                  }
-                                }} className="px-3 py-2 text-xs font-bold text-red-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors flex items-center gap-1.5">
-                                  <Trash2 className="w-3.5 h-3.5" /> Delete
+                                <button 
+                                  onClick={(e) => { 
+                                    e.stopPropagation(); 
+                                    if (window.confirm('Are you sure you want to delete this precious memory?')) {
+                                      onDelete?.(memory.id);
+                                    }
+                                  }} 
+                                  className="px-3.5 py-1.5 text-xs font-semibold text-rose-600/80 hover:text-rose-700 bg-white/70 hover:bg-rose-50/80 border border-rose-200/60 hover:border-rose-300 backdrop-blur-md rounded-full shadow-sm transition-all duration-200 active:scale-95 flex items-center gap-1.5"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5 text-rose-400" /> 
+                                  <span>Delete</span>
                                 </button>
                               </div>
                             </motion.div>
