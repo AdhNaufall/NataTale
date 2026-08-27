@@ -26,8 +26,6 @@ function App() {
     // If we have cached memories, we don't need to show the full-screen loader
     return !localStorage.getItem('natatale_memories');
   });
-  const [apiError, setApiError] = useState<string | null>(null);
-
   const fetchMemories = () => {
     fetch(`${API_BASE_URL}/api/memories`)
       .then(res => {
@@ -38,13 +36,11 @@ function App() {
         if (Array.isArray(data)) {
           setMemories(data);
           localStorage.setItem('natatale_memories', JSON.stringify(data));
-          setApiError(null);
         }
         setIsLoading(false); 
       })
       .catch(err => {
         console.error('Failed to load memories from DB:', err);
-        setApiError('Koneksi server gagal. Beberapa foto/memori baru mungkin tidak sinkron, menggunakan data lokal.');
         setIsLoading(false);
       });
   };
@@ -176,12 +172,6 @@ function App() {
   return (
     <div className="min-h-screen bg-background bg-noise font-sans text-slate selection:bg-softblue selection:text-white relative">
       <FloatingParticles />
-      {apiError && (
-        <div className="bg-amber-500 text-white text-xs py-2 px-4 text-center font-medium sticky top-0 z-50 shadow-sm flex justify-center items-center gap-2">
-          <span>⚠️ {apiError}</span>
-          <button onClick={() => setApiError(null)} className="underline hover:text-amber-100 ml-2 font-bold focus:outline-none">Tutup</button>
-        </div>
-      )}
       {/* Route Content */}
       <main className="pb-32 relative z-10">
         <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo(0, 0)}>
