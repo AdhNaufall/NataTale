@@ -5,6 +5,7 @@ import { FloatingParticles } from './components/FloatingParticles';
 import Timeline from './pages/Timeline';
 import Archive from './pages/Archive';
 import Write from './pages/Write';
+import Story from './pages/Story';
 import Us from './pages/Us';
 import { Navigation } from './components/Navigation';
 import LockScreen from './components/LockScreen';
@@ -186,6 +187,7 @@ function App() {
             {currentPath === '/' && <Timeline memories={memories} onEdit={handleEdit} onDelete={deleteMemory} />}
             {currentPath === '/archive' && <Archive memories={memories} />}
             {currentPath === '/write' && <Write onSave={addMemory} onUpdate={updateMemory} navigate={navigate} memories={memories} editingMemory={editingMemory} setEditingMemory={setEditingMemory} />}
+            {currentPath === '/story' && <Story memories={memories} navigate={navigate} />}
             {currentPath === '/us' && <Us memories={memories} />}
           </motion.div>
         </AnimatePresence>

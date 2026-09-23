@@ -2,6 +2,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { Camera, CalendarHeart, Sparkles, ExternalLink } from 'lucide-react';
 import { motion } from 'framer-motion';
 
+import { calculateRelationshipDuration } from '../lib/relationship';
+
 export default function Us({ memories }: { memories: any[] }) {
   const totalMemories = memories.length;
   const totalPhotos = memories.reduce((acc, curr) => acc + (curr.images?.length || 1), 0);
@@ -18,49 +20,11 @@ export default function Us({ memories }: { memories: any[] }) {
     -12, 8, -6, 15
   ], []);
 
-  const [timeTogether, setTimeTogether] = useState({
-    years: 0,
-    months: 0,
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0
-  });
+  const [timeTogether, setTimeTogether] = useState(() => calculateRelationshipDuration());
 
   useEffect(() => {
-
-    const startDate = new Date('2026-05-23T00:00:00+07:00');
-
-
-
     const updateCounter = () => {
-      const now = new Date();
-      if (now < startDate) return;
-
-      // Kalkulasi selisih tahun, bulan, dan hari berbasis kalender nyata
-      let years = now.getFullYear() - startDate.getFullYear();
-      let months = now.getMonth() - startDate.getMonth();
-      let days = now.getDate() - startDate.getDate();
-
-      if (days < 0) {
-        // Ambil jumlah hari di bulan sebelumnya
-        const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
-        days += prevMonth.getDate();
-        months -= 1;
-      }
-
-      if (months < 0) {
-        months += 12;
-        years -= 1;
-      }
-
-      const hours = now.getHours() - startDate.getHours() < 0 
-        ? 24 + (now.getHours() - startDate.getHours()) 
-        : now.getHours() - startDate.getHours();
-      const minutes = now.getMinutes();
-      const seconds = now.getSeconds();
-
-      setTimeTogether({ years, months, days, hours, minutes, seconds });
+      setTimeTogether(calculateRelationshipDuration());
     };
 
     updateCounter();
