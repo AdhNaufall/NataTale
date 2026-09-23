@@ -90,7 +90,7 @@ export default function Us({ memories, navigate }: UsProps) {
           transition={{ delay: 0.1, duration: 0.6 }}
           className="font-serif text-5xl sm:text-6xl font-bold text-slate mb-2 tracking-tight"
         >
-          You + Me
+          NATATALE
         </motion.h1>
 
         <motion.p
@@ -100,15 +100,6 @@ export default function Us({ memories, navigate }: UsProps) {
           className="font-handwriting text-2xl sm:text-3xl text-slate/75 mb-3"
         >
           Two souls, one beautiful journey.
-        </motion.p>
-
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-          className="text-[11px] font-bold uppercase tracking-[0.25em] text-lavender"
-        >
-          Since May 23, 2026
         </motion.p>
       </div>
 
@@ -460,7 +451,7 @@ export default function Us({ memories, navigate }: UsProps) {
               <Music className="w-4 h-4 text-rose-400/70" />
             </div>
 
-            <h3 className="font-serif text-2xl font-bold text-white mb-1.5 relative z-10">TikTok Vault</h3>
+            <h3 className="font-serif text-2xl font-bold text-white mb-1.5 relative z-10">TikTok</h3>
             <p className="text-gray-400 text-xs sm:text-sm mb-6 relative z-10 font-sans leading-relaxed">
               A little collection of our random moments, video memories, laughs, and chaos ♡
             </p>
