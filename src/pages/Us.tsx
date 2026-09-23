@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Sparkles, ExternalLink, Dices, ArrowRight, Heart, MapPin, Calendar } from 'lucide-react';
+import { Sparkles, ExternalLink, Dices, ArrowRight, Heart, MapPin, Calendar, Camera, Music } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { calculateRelationshipDuration } from '../lib/relationship';
 
@@ -399,35 +399,84 @@ export default function Us({ memories, navigate }: UsProps) {
         </motion.div>
       )}
 
-      {/* 7. APP ECOSYSTEM PORTAL — TANALUMINA */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8 }}
-        className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] rounded-[2.5rem] p-7 text-left relative overflow-hidden shadow-2xl shadow-slate/20"
-      >
-        <div className="absolute -right-20 -top-20 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-softblue/10 rounded-full blur-2xl pointer-events-none" />
+      {/* 7. APP ECOSYSTEM & SOCIAL PORTAL — TANALUMINA & TIKTOK */}
+      <div className="space-y-4">
+        <div className="text-left px-1">
+          <div className="inline-flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-[0.2em] text-slate/40 mb-1">
+            <Sparkles className="w-3 h-3 text-lavender" />
+            <span>Our Little Digital World</span>
+          </div>
+          <h3 className="font-serif text-xl font-bold text-slate">Connected Spaces</h3>
+        </div>
 
-        <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-softblue/80 bg-white/10 px-3 py-1 rounded-full inline-block mb-3 border border-white/10">
-          Our Little Photo Corner
-        </span>
+        <div className="space-y-4">
+          {/* TanaLumina Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.75 }}
+            className="bg-gradient-to-br from-[#1E293B] to-[#0F172A] rounded-[2.5rem] p-7 text-left relative overflow-hidden shadow-2xl shadow-slate/20 group hover:shadow-slate/30 transition-all"
+          >
+            <div className="absolute -right-20 -top-20 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-softblue/10 rounded-full blur-2xl pointer-events-none" />
 
-        <h3 className="font-serif text-2xl font-bold text-white mb-2 relative z-10">TanaLumina</h3>
-        <p className="text-gray-400 text-xs sm:text-sm mb-6 relative z-10 font-sans leading-relaxed">
-          Step into our photobooth universe and capture your raw, joyful, and candid moments.
-        </p>
+            <div className="flex items-center justify-between mb-3 relative z-10">
+              <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-softblue/80 bg-white/10 px-3 py-1 rounded-full border border-white/10 inline-block">
+                Photobooth Portal
+              </span>
+              <Camera className="w-4 h-4 text-softblue/60" />
+            </div>
 
-        <a
-          href="https://tanalumina-photobooth.vercel.app/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="relative z-10 w-full py-3.5 bg-white/10 hover:bg-white/20 backdrop-blur-xs text-white border border-white/20 rounded-2xl text-xs font-bold tracking-wider uppercase flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-sm"
-        >
-          <span>Open Photobooth Portal</span>
-          <ExternalLink className="w-3.5 h-3.5" />
-        </a>
-      </motion.div>
+            <h3 className="font-serif text-2xl font-bold text-white mb-1.5 relative z-10">TanaLumina</h3>
+            <p className="text-gray-400 text-xs sm:text-sm mb-6 relative z-10 font-sans leading-relaxed">
+              Step into our photobooth universe and capture our raw, joyful, and candid moments.
+            </p>
+
+            <a
+              href="https://tanalumina-photobooth.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative z-10 w-full py-3.5 bg-white/10 hover:bg-white/20 backdrop-blur-xs text-white border border-white/20 rounded-2xl text-xs font-bold tracking-wider uppercase flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-sm"
+            >
+              <span>Open Photobooth Portal</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </motion.div>
+
+          {/* TikTok Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.85 }}
+            className="bg-gradient-to-br from-[#1E1B2E] via-[#1F1D36] to-[#0F172A] rounded-[2.5rem] p-7 text-left relative overflow-hidden shadow-2xl shadow-slate/20 group hover:shadow-slate/30 transition-all border border-rose-500/10"
+          >
+            <div className="absolute -right-20 -top-20 w-64 h-64 bg-rose-500/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-lavender/10 rounded-full blur-2xl pointer-events-none" />
+
+            <div className="flex items-center justify-between mb-3 relative z-10">
+              <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-rose-300/90 bg-rose-500/15 px-3 py-1 rounded-full border border-rose-400/20 inline-block">
+                Our Little Videos
+              </span>
+              <Music className="w-4 h-4 text-rose-400/70" />
+            </div>
+
+            <h3 className="font-serif text-2xl font-bold text-white mb-1.5 relative z-10">TikTok Vault</h3>
+            <p className="text-gray-400 text-xs sm:text-sm mb-6 relative z-10 font-sans leading-relaxed">
+              A little collection of our random moments, video memories, laughs, and chaos ♡
+            </p>
+
+            <a
+              href="https://www.tiktok.com/@natadeqoqo.jpg?_r=1&_t=ZS-99y6MxZJdyv"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="relative z-10 w-full py-3.5 bg-rose-500/20 hover:bg-rose-500/30 backdrop-blur-xs text-white border border-rose-400/30 rounded-2xl text-xs font-bold tracking-wider uppercase flex items-center justify-center gap-2 transition-all active:scale-[0.98] shadow-sm"
+            >
+              <span>Visit @natadeqoqo.jpg</span>
+              <ExternalLink className="w-3.5 h-3.5 text-rose-200" />
+            </a>
+          </motion.div>
+        </div>
+      </div>
 
     </div>
   );
