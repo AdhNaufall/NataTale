@@ -24,7 +24,7 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
   const [pin, setPin] = useState('');
   const [error, setError] = useState(false);
 
-  // THE SECRET PIN (You can change this!)
+  // THE SECRET PIN
   const SECRET_PIN = "230526";
 
   const handleSubmit = (e?: React.FormEvent) => {

@@ -35,23 +35,30 @@ export default function Us({ memories }: { memories: any[] }) {
 
     const updateCounter = () => {
       const now = new Date();
-      const diff = now.getTime() - startDate.getTime();
+      if (now < startDate) return;
 
-      if (diff < 0) return;
+      // Kalkulasi selisih tahun, bulan, dan hari berbasis kalender nyata
+      let years = now.getFullYear() - startDate.getFullYear();
+      let months = now.getMonth() - startDate.getMonth();
+      let days = now.getDate() - startDate.getDate();
 
-      const totalSeconds = Math.floor(diff / 1000);
-      const totalMinutes = Math.floor(totalSeconds / 60);
-      const totalHours = Math.floor(totalMinutes / 60);
-      const totalDays = Math.floor(totalHours / 24);
+      if (days < 0) {
+        // Ambil jumlah hari di bulan sebelumnya
+        const prevMonth = new Date(now.getFullYear(), now.getMonth(), 0);
+        days += prevMonth.getDate();
+        months -= 1;
+      }
 
-      const years = Math.floor(totalDays / 365);
-      const remainingDays = totalDays % 365;
-      const months = Math.floor(remainingDays / 30);
-      const days = remainingDays % 30;
+      if (months < 0) {
+        months += 12;
+        years -= 1;
+      }
 
-      const hours = totalHours % 24;
-      const minutes = totalMinutes % 60;
-      const seconds = totalSeconds % 60;
+      const hours = now.getHours() - startDate.getHours() < 0 
+        ? 24 + (now.getHours() - startDate.getHours()) 
+        : now.getHours() - startDate.getHours();
+      const minutes = now.getMinutes();
+      const seconds = now.getSeconds();
 
       setTimeTogether({ years, months, days, hours, minutes, seconds });
     };
@@ -69,7 +76,8 @@ export default function Us({ memories }: { memories: any[] }) {
       <div className="absolute top-80 right-0 w-64 h-64 bg-softblue/10 rounded-full blur-[80px] -z-10 animate-pulse" style={{ animationDelay: '2s' }} />
 
       <h2 className="font-serif text-5xl font-bold text-slate mb-3 mt-4">Our Journey</h2>
-      <p className="text-gray-400 mb-12 tracking-wide text-sm font-medium">Building memories, one day at a time.</p>
+      <p className="text-gray-400 mb-2 tracking-wide text-sm font-medium">Building memories, one day at a time.</p>
+      <p className="text-xs font-bold uppercase tracking-widest text-lavender mb-12">Since May 23, 2026</p>
 
       {/* Scrapbook Polaroids */}
       {randomPhotos.length > 0 && (
