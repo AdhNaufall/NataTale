@@ -188,7 +188,7 @@ function App() {
             {currentPath === '/archive' && <Archive memories={memories} />}
             {currentPath === '/write' && <Write onSave={addMemory} onUpdate={updateMemory} navigate={navigate} memories={memories} editingMemory={editingMemory} setEditingMemory={setEditingMemory} />}
             {currentPath === '/story' && <Story memories={memories} navigate={navigate} />}
-            {currentPath === '/us' && <Us memories={memories} />}
+            {currentPath === '/us' && <Us memories={memories} navigate={navigate} />}
           </motion.div>
         </AnimatePresence>
       </main>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UploadCloud, X } from 'lucide-react';
+import { UploadCloud, X, Star } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -11,6 +11,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
   const [images, setImages] = useState<{ url: string; isUploading: boolean; id: string }[]>([]);
   const [category, setCategory] = useState('');
   const [rating, setRating] = useState(5);
+  const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [mood, setMood] = useState('🥰');
   const [showCategories, setShowCategories] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -411,6 +412,62 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
             />
           </div>
           <p className="text-[10px] text-gray-400 mt-2">Pilih dari atas atau ketik emoji sendiri di kotak paling kanan.</p>
+        </div>
+
+        {/* Interactive Star Rating Selector */}
+        <div>
+          <div className="flex items-center justify-between mb-2 mt-4">
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/50">
+              Memory Rating
+            </label>
+            <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200/60 shadow-xs">
+              {hoverRating !== null ? hoverRating : rating} / 5 Stars
+            </span>
+          </div>
+
+          <div className="flex items-center justify-between p-3.5 bg-gray-50/50 border border-gray-100 rounded-2xl">
+            <div className="flex items-center gap-1.5">
+              {[1, 2, 3, 4, 5].map((star) => {
+                const currentScore = hoverRating !== null ? hoverRating : rating;
+                const isFilled = currentScore >= star;
+                return (
+                  <button
+                    key={star}
+                    type="button"
+                    onClick={() => setRating(star)}
+                    onMouseEnter={() => setHoverRating(star)}
+                    onMouseLeave={() => setHoverRating(null)}
+                    onFocus={() => setHoverRating(star)}
+                    onBlur={() => setHoverRating(null)}
+                    aria-label={`Rate ${star} of 5 stars`}
+                    className="p-1 rounded-xl text-amber-400 hover:scale-115 active:scale-95 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-lavender/40 cursor-pointer"
+                  >
+                    <Star
+                      className={cn(
+                        "w-7 h-7 sm:w-8 sm:h-8 transition-all duration-150",
+                        isFilled
+                          ? "fill-amber-400 text-amber-400 drop-shadow-[0_2px_6px_rgba(251,191,36,0.35)]"
+                          : "fill-transparent text-gray-300 hover:text-amber-200"
+                      )}
+                    />
+                  </button>
+                );
+              })}
+            </div>
+
+            <span className="text-[11px] text-slate/50 font-serif italic hidden sm:inline pr-2">
+              {(hoverRating !== null ? hoverRating : rating) === 5
+                ? 'A truly magical moment ♡'
+                : (hoverRating !== null ? hoverRating : rating) === 4
+                ? 'A wonderful memory ✨'
+                : (hoverRating !== null ? hoverRating : rating) === 3
+                ? 'A sweet little time ✦'
+                : (hoverRating !== null ? hoverRating : rating) === 2
+                ? 'A nice cozy day 🌿'
+                : 'A day we remember ☕'}
+            </span>
+          </div>
+          <p className="text-[10px] text-gray-400 mt-1.5">How special was this memory to you?</p>
         </div>
 
         <div>
