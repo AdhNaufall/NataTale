@@ -105,5 +105,67 @@ app.delete('/api/memories/:id', async (req, res) => {
   }
 });
 
+// GET: Spotify Track Metadata Auto-Detection (No Auth/OAuth required)
+app.get('/api/spotify-metadata', async (req, res) => {
+  const { url } = req.query;
+  if (!url || typeof url !== 'string') {
+    return res.status(400).json({ error: 'Missing Spotify URL' });
+  }
+
+  // Security: only allow valid Spotify track links
+  const match = url.match(/\/track\/([a-zA-Z0-9]+)/);
+  if (!match) {
+    return res.status(400).json({ error: 'Invalid Spotify track URL format' });
+  }
+
+  const trackId = match[1];
+
+  try {
+    // 1. Try Spotify embed page (contains rich next_data with track name and artists list)
+    const embedUrl = `https://open.spotify.com/embed/track/${trackId}`;
+    const embedRes = await fetch(embedUrl, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+      }
+    });
+
+    if (embedRes.ok) {
+      const html = await embedRes.text();
+      const marker = '__NEXT_DATA__';
+      const idx = html.indexOf(marker);
+      if (idx !== -1) {
+        const start = html.indexOf('>', idx) + 1;
+        const end = html.indexOf('</script>', start);
+        if (start > 0 && end > start) {
+          const jsonStr = html.substring(start, end);
+          const data = JSON.parse(jsonStr);
+          const entity = data?.props?.pageProps?.state?.data?.entity;
+          const title = entity?.name || entity?.title || '';
+          const artist = (entity?.artists || []).map(a => a.name).filter(Boolean).join(', ');
+
+          if (title) {
+            return res.json({ title, artist });
+          }
+        }
+      }
+    }
+
+    // 2. Fallback to public Spotify oEmbed
+    const oembedUrl = `https://open.spotify.com/oembed?url=${encodeURIComponent(`https://open.spotify.com/track/${trackId}`)}`;
+    const oembedRes = await fetch(oembedUrl);
+    if (oembedRes.ok) {
+      const odata = await oembedRes.json();
+      if (odata && odata.title) {
+        return res.json({ title: odata.title, artist: '' });
+      }
+    }
+
+    return res.json({ title: '', artist: '' });
+  } catch (err) {
+    console.error('Spotify metadata fetch error:', err);
+    return res.json({ title: '', artist: '' });
+  }
+});
+
 // Export the app for Vercel Serverless
 export default app;

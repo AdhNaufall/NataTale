@@ -14,6 +14,9 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
   const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [mood, setMood] = useState('🥰');
   const [spotifyUrl, setSpotifyUrl] = useState('');
+  const [spotifyTitle, setSpotifyTitle] = useState('');
+  const [spotifyArtist, setSpotifyArtist] = useState('');
+  const [isFetchingSpotify, setIsFetchingSpotify] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
@@ -47,6 +50,8 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
       setMood(editingMemory.mood || '🥰');
       setRating(editingMemory.rating || 5);
       setSpotifyUrl(editingMemory.spotifyUrl || '');
+      setSpotifyTitle(editingMemory.spotifyTitle || '');
+      setSpotifyArtist(editingMemory.spotifyArtist || '');
     }
     
     // Clear edit mode when unmounting (e.g. clicking away to Timeline)
@@ -54,6 +59,84 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
       if (setEditingMemory) setEditingMemory(null);
     };
   }, [editingMemory, setEditingMemory]);
+
+  // Auto-detect Spotify metadata when URL changes
+  React.useEffect(() => {
+    const trimmed = spotifyUrl.trim();
+    if (!trimmed) {
+      setSpotifyTitle('');
+      setSpotifyArtist('');
+      setIsFetchingSpotify(false);
+      return;
+    }
+
+    if (!isSpotifyUrlValid(trimmed)) {
+      setSpotifyTitle('');
+      setSpotifyArtist('');
+      setIsFetchingSpotify(false);
+      return;
+    }
+
+    // If editing and URL is unchanged from stored memory, don't re-fetch if we already have title
+    if (editingMemory && editingMemory.spotifyUrl === trimmed && (spotifyTitle || editingMemory.spotifyTitle)) {
+      return;
+    }
+
+    let isCancelled = false;
+    setIsFetchingSpotify(true);
+
+    const timer = setTimeout(async () => {
+      try {
+        const API_BASE_URL = (import.meta as any).env.VITE_API_URL || '';
+        let titleFound = '';
+        let artistFound = '';
+
+        // 1. Try backend endpoint first
+        try {
+          const res = await fetch(`${API_BASE_URL}/api/spotify-metadata?url=${encodeURIComponent(trimmed)}`);
+          if (res.ok) {
+            const data = await res.json();
+            if (data?.title) {
+              titleFound = data.title;
+              artistFound = data.artist || '';
+            }
+          }
+        } catch (backendErr) {
+          // Backend offline or error - try direct client fallback
+        }
+
+        // 2. Direct Spotify oEmbed fallback if backend didn't return title
+        if (!titleFound) {
+          try {
+            const oembedRes = await fetch(`https://open.spotify.com/oembed?url=${encodeURIComponent(trimmed)}`);
+            if (oembedRes.ok) {
+              const odata = await oembedRes.json();
+              if (odata?.title) {
+                titleFound = odata.title;
+              }
+            }
+          } catch (oembedErr) {
+            // Silently fallback - spotifyUrl will still be saved
+          }
+        }
+
+        if (!isCancelled) {
+          setSpotifyTitle(titleFound);
+          setSpotifyArtist(artistFound);
+          setIsFetchingSpotify(false);
+        }
+      } catch (err) {
+        if (!isCancelled) {
+          setIsFetchingSpotify(false);
+        }
+      }
+    }, 500);
+
+    return () => {
+      isCancelled = true;
+      clearTimeout(timer);
+    };
+  }, [spotifyUrl, editingMemory]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,7 +173,9 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
         category,
         mood,
         rating,
-        spotifyUrl: spotifyUrl.trim()
+        spotifyUrl: spotifyUrl.trim(),
+        spotifyTitle: spotifyTitle.trim(),
+        spotifyArtist: spotifyArtist.trim()
       };
 
       if (editingMemory && onUpdate) {
@@ -531,20 +616,41 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
               </motion.p>
             )}
 
-            {/* Small live preview if URL is valid */}
+            {/* Live preview with auto-detected metadata or loading status */}
             {spotifyUrl.trim() && !hasInvalidSpotifyUrl && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="p-3 bg-gradient-to-r from-lavender/10 via-rose-50/40 to-softblue/10 border border-lavender/20 rounded-2xl flex items-center justify-between gap-3 text-xs"
+                className="p-3.5 bg-gradient-to-r from-lavender/15 via-rose-50/50 to-softblue/15 border border-lavender/30 rounded-2xl flex items-center justify-between gap-3 text-xs"
               >
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-8 h-8 rounded-xl bg-white shadow-xs border border-lavender/20 flex items-center justify-center text-lavender shrink-0">
-                    <Music2 className="w-4 h-4 text-slate animate-pulse" />
+                <div className="flex items-center gap-3 min-w-0">
+                  <div className="w-9 h-9 rounded-xl bg-white shadow-xs border border-lavender/25 flex items-center justify-center text-lavender shrink-0">
+                    {isFetchingSpotify ? (
+                      <div className="w-4 h-4 border-2 border-lavender border-t-transparent rounded-full animate-spin" />
+                    ) : (
+                      <Music2 className="w-4.5 h-4.5 text-lavender animate-pulse" />
+                    )}
                   </div>
                   <div className="min-w-0">
-                    <p className="font-serif font-bold text-slate text-xs truncate">Our Song Attached ♡</p>
-                    <p className="text-[10px] text-slate/50 truncate font-mono">{spotifyUrl}</p>
+                    {isFetchingSpotify ? (
+                      <div>
+                        <p className="font-serif font-bold text-slate text-xs">Fetching song info...</p>
+                        <p className="text-[10px] text-slate/50 font-serif italic">Getting title and artist from Spotify ♡</p>
+                      </div>
+                    ) : spotifyTitle ? (
+                      <div>
+                        <p className="font-serif font-bold text-slate text-sm truncate">“{spotifyTitle}”</p>
+                        <p className="text-[11px] text-slate/60 font-sans truncate">{spotifyArtist || 'Spotify Track'}</p>
+                        <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60 inline-block mt-0.5">
+                          Song detected ♡
+                        </span>
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="font-serif font-bold text-slate text-xs truncate">Our Song Attached ♡</p>
+                        <p className="text-[10px] text-slate/50 truncate font-mono">{spotifyUrl}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -552,9 +658,9 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
                   href={spotifyUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3 py-1.5 bg-white/80 hover:bg-white text-slate text-[11px] font-bold rounded-xl border border-slate/10 shadow-xs flex items-center gap-1 shrink-0 transition-all hover:scale-105 active:scale-95"
+                  className="px-3.5 py-1.5 bg-white/90 hover:bg-white text-slate text-[11px] font-bold rounded-xl border border-slate/10 shadow-xs flex items-center gap-1.5 shrink-0 transition-all hover:scale-105 active:scale-95"
                 >
-                  <span>Preview</span>
+                  <span>Open</span>
                   <ExternalLink className="w-3 h-3 text-lavender" />
                 </a>
               </motion.div>

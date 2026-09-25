@@ -314,10 +314,21 @@ export default function Us({ memories, navigate }: UsProps) {
                       href={currentRandomMemory.spotifyUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1.5 px-3 py-1 bg-lavender/10 hover:bg-lavender/20 text-slate border border-lavender/20 rounded-full text-[11px] font-bold transition-all active:scale-95 shadow-2xs"
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-lavender/15 to-softblue/15 hover:from-lavender/25 hover:to-softblue/25 text-slate border border-lavender/25 rounded-xl text-[11px] font-bold transition-all active:scale-95 shadow-2xs group max-w-full"
                     >
-                      <Music2 className="w-3 h-3 text-lavender" />
-                      <span>Our Song: Listen on Spotify ↗</span>
+                      <Music2 className="w-3.5 h-3.5 text-lavender shrink-0 group-hover:scale-110 transition-transform" />
+                      <span className="truncate">
+                        {currentRandomMemory.spotifyTitle ? (
+                          <>
+                            <span className="font-serif font-bold text-slate">“{currentRandomMemory.spotifyTitle}”</span>
+                            {currentRandomMemory.spotifyArtist && (
+                              <span className="text-slate/60 font-normal font-sans ml-1">· {currentRandomMemory.spotifyArtist}</span>
+                            )}
+                          </>
+                        ) : (
+                          <span>Our Song: Listen on Spotify ↗</span>
+                        )}
+                      </span>
                     </a>
                   </div>
                 )}
