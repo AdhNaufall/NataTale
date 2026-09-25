@@ -367,7 +367,7 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true, margin: "-30px" }}
                                 transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-                                className="relative group"
+                                className="relative group max-w-[340px] sm:max-w-[320px] mx-auto"
                               >
                                 {/* Multi-Photo Stack Layer Background Visual (When memory has multiple photos) */}
                                 {hasMultiplePhotos && !isExpanded && (
@@ -376,8 +376,8 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                     className={cn(
                                       "absolute inset-0 bg-[#F9F7F5] rounded-xs border border-gray-200/70 shadow-2xs pointer-events-none transition-transform duration-250",
                                       isEven
-                                        ? "rotate-1 translate-x-1 translate-y-1 group-hover:rotate-2 group-hover:translate-x-1.5 group-hover:translate-y-1.5"
-                                        : "-rotate-1 -translate-x-1 translate-y-1 group-hover:-rotate-2 group-hover:-translate-x-1.5 group-hover:translate-y-1.5"
+                                        ? "rotate-1 translate-x-1.5 translate-y-1.5 group-hover:rotate-2 group-hover:translate-x-2 group-hover:translate-y-2"
+                                        : "-rotate-1 -translate-x-1.5 translate-y-1.5 group-hover:-rotate-2 group-hover:-translate-x-2 group-hover:translate-y-2"
                                     )}
                                   />
                                 )}
@@ -390,7 +390,7 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                     : "bg-softblue/40 border-softblue/30 rotate-2 group-hover:rotate-0"
                                 )} />
 
-                                {/* Polaroid Paper Frame */}
+                                {/* Polaroid Paper Frame with Natural Vertical Proportions */}
                                 <motion.div
                                   role="button"
                                   tabIndex={0}
@@ -406,14 +406,14 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                   whileHover={!isExpanded ? { y: -4, scale: 1.012, rotate: 0 } : undefined}
                                   transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                                   className={cn(
-                                    "bg-[#FEFCFA] p-3.5 pb-7 sm:p-4.5 sm:pb-9 rounded-xs border border-[#EAE6DF] relative cursor-pointer text-left transition-shadow duration-250",
+                                    "bg-[#FEFCFA] p-3 sm:p-4 pb-7 sm:pb-9 rounded-xs border border-[#EAE6DF] relative cursor-pointer text-left transition-shadow duration-250",
                                     isExpanded
                                       ? "shadow-[0_20px_50px_-15px_rgba(44,53,69,0.14)] ring-2 ring-lavender/30 z-30"
                                       : "shadow-[0_10px_25px_-5px_rgba(44,53,69,0.06),0_2px_8px_-2px_rgba(44,53,69,0.03)] hover:shadow-xl"
                                   )}
                                 >
                                   {/* Mobile Date Header inside card */}
-                                  <div className="flex sm:hidden items-center justify-between gap-2 mb-2.5 pb-2 border-b border-gray-100">
+                                  <div className="flex sm:hidden items-center justify-between gap-2 mb-2 pb-1.5 border-b border-gray-100">
                                     <span className="text-[10px] font-bold uppercase tracking-wider text-lavender flex items-center gap-1">
                                       <CalendarIcon className="w-3 h-3 text-lavender" />
                                       {memoryDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -434,21 +434,21 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                     </div>
                                   )}
 
-                                  {/* PHOTO AS PRIMARY VISUAL FOCAL POINT (Polaroid Window) */}
+                                  {/* PHOTO AS PRIMARY VISUAL FOCAL POINT (Polaroid Window - Zero Cropping) */}
                                   {hasPhotos ? (
-                                    <div className="relative rounded-xs overflow-hidden mb-3.5 bg-[#F0EDE6] aspect-[4/3] sm:aspect-[4/3] group/photo border border-black/5 shadow-inner">
+                                    <div className="relative rounded-xs overflow-hidden mb-3 bg-[#181614]/5 group/photo border border-black/5 shadow-inner">
                                       {isExpanded ? (
                                         /* Expanded View: Full Interactive Carousel */
-                                        <div className="w-full h-full">
+                                        <div className="w-full">
                                           <Carousel images={imagesList} />
                                         </div>
                                       ) : (
-                                        /* Collapsed View: Photo Wall Polaroid Display */
-                                        <div className="relative w-full h-full">
+                                        /* Collapsed View: Natural Polaroid Window (Entire Photo Visible) */
+                                        <div className="relative w-full max-h-[340px] sm:max-h-[360px] min-h-[190px] sm:min-h-[220px] flex items-center justify-center overflow-hidden bg-[#181614]/5">
                                           <img
                                             src={imagesList[0]}
                                             alt={memory.title || "Memory Photo"}
-                                            className="w-full h-full object-cover group-hover/photo:scale-103 transition-transform duration-400 ease-out"
+                                            className="w-full h-auto max-h-[340px] sm:max-h-[360px] object-contain group-hover/photo:scale-102 transition-transform duration-400 ease-out block mx-auto"
                                             loading="lazy"
                                             decoding="async"
                                           />
@@ -462,7 +462,7 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                           )}
 
                                           {/* Desktop Hover Overlay with romantic details */}
-                                          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
+                                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
                                             <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
                                               <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-pink-200 block mb-0.5">
                                                 Our Story ♡
