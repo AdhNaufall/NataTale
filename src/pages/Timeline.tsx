@@ -11,8 +11,7 @@ import {
   ChevronDown,
   BookOpen,
   Plus,
-  ArrowUp,
-  Image as ImageIcon
+  ArrowUp
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
@@ -169,7 +168,7 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
         </AnimatePresence>
       </div>
 
-      {/* 1. HERO SECTION */}
+      {/* 1. EDITORIAL SCRAPBOOK HERO */}
       <div ref={heroRef} className="pt-8 pb-14 text-center max-w-2xl mx-auto relative select-none">
         {/* Cute Scrapbook Ribbon Badge */}
         <motion.div
@@ -179,7 +178,7 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
           className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/75 backdrop-blur-md rounded-full border border-lavender/25 shadow-xs text-xs font-bold uppercase tracking-[0.2em] text-lavender mb-5"
         >
           <Sparkles className="w-3.5 h-3.5 text-lavender" />
-          <span>OUR STORY ♡</span>
+          <span>OUR STORY TIMELINE</span>
           <Heart className="w-3.5 h-3.5 fill-rose/50 text-rose" />
         </motion.div>
 
@@ -190,9 +189,8 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
           transition={{ delay: 0.15, duration: 0.7 }}
           className="font-serif text-4xl sm:text-6xl font-bold text-slate tracking-tight mb-3"
         >
-          Our Story Wall <br className="hidden sm:inline" />
+          Little Moments... <br className="hidden sm:inline" />
           <span className="font-handwriting text-5xl sm:text-7xl font-normal text-lavender block sm:inline sm:ml-2">
-            in Polaroids
           </span>
         </motion.h1>
 
@@ -203,7 +201,7 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
           transition={{ delay: 0.3, duration: 0.7 }}
           className="font-serif italic text-sm sm:text-base text-slate/60 max-w-md mx-auto leading-relaxed mb-6"
         >
-          “little moments, captured along the way.”
+          “A quiet collection of every place we went, laugh we shared, and heartbeat we decided to keep forever.”
         </motion.p>
 
         {/* Memory Counter Pill */}
@@ -237,9 +235,9 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
           </div>
 
           <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate/40 block mb-1">
-            OUR STORY STARTS HERE ♡
+            Our Story Starts Here
           </span>
-          <h3 className="font-serif text-2xl font-bold text-slate mb-2">Every love story begins with one little memory.</h3>
+          <h3 className="font-serif text-2xl font-bold text-slate mb-2">Every beautiful story has a first page.</h3>
           <p className="font-serif italic text-xs text-slate/60 leading-relaxed mb-6">
             Write down your very first memory, attach a photo, and start building your romantic scrapbook.
           </p>
@@ -252,13 +250,13 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
               className="px-6 py-3.5 bg-slate text-white rounded-2xl text-xs font-bold uppercase tracking-widest hover:bg-[#1A202C] transition-all shadow-lg shadow-slate/20 flex items-center justify-center gap-2 mx-auto cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              <span>Write Our First Memory</span>
+              <span>Write First Memory</span>
             </motion.button>
           )}
         </motion.div>
       )}
 
-      {/* 3. CHRONOLOGICAL TIMELINE PHOTO WALL */}
+      {/* 3. EDITORIAL SCRAPBOOK TIMELINE */}
       {memories.length > 0 && (
         <div className="relative">
 
@@ -311,15 +309,8 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                         const memoryDate = new Date(memory.date);
                         const isEven = memIdx % 2 === 0;
 
-                        // Deterministic subtle rotation angles for scrapbook polaroid wall feel (-2deg, -1deg, 1deg, 2deg)
-                        const rotationAngles = [-1.8, 1.5, -1.2, 1.8];
-                        const baseRotation = rotationAngles[memIdx % rotationAngles.length];
-                        const currentRotation = isExpanded ? 0 : baseRotation;
-
-                        // Photos list
-                        const imagesList: string[] = (memory.images?.length > 0 ? memory.images : (memory.image ? [memory.image] : [])).filter(Boolean);
-                        const hasPhotos = imagesList.length > 0;
-                        const hasMultiplePhotos = imagesList.length > 1;
+                        // Slight rotation angle for organic feel
+                        const rotationDeg = isExpanded ? 0 : (isEven ? -1.2 : 1.2);
 
                         return (
                           <div
@@ -332,10 +323,8 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                             {/* Central Timeline Dot (Desktop & Mobile) */}
                             <div className="absolute left-4 sm:left-1/2 -translate-x-1/2 top-7 z-20 flex flex-col items-center pointer-events-none">
                               <div className={cn(
-                                "w-4 h-4 rounded-full border-2 border-white shadow-md transition-all duration-300",
-                                isExpanded
-                                  ? "scale-125 ring-4 ring-lavender/30 bg-lavender"
-                                  : "bg-lavender hover:scale-110"
+                                "w-4 h-4 rounded-full border-2 border-white bg-lavender shadow-md transition-all duration-300",
+                                isExpanded ? "scale-125 ring-4 ring-lavender/30 bg-lavender" : "hover:scale-110"
                               )} />
                             </div>
 
@@ -352,7 +341,7 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                   {memoryDate.getDate()} {month.substring(0, 3)}
                                 </span>
                                 {memory.category && (
-                                  <span className="text-[10px] text-slate/45 font-serif italic block">
+                                  <span className="text-[10px] text-slate/40 font-serif italic block">
                                     ✦ {memory.category}
                                   </span>
                                 )}
@@ -367,30 +356,17 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true, margin: "-30px" }}
                                 transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
-                                className="relative group max-w-[340px] sm:max-w-[320px] mx-auto"
+                                className="relative group"
                               >
-                                {/* Multi-Photo Stack Layer Background Visual (When memory has multiple photos) */}
-                                {hasMultiplePhotos && !isExpanded && (
-                                  <div
-                                    aria-hidden="true"
-                                    className={cn(
-                                      "absolute inset-0 bg-[#F9F7F5] rounded-xs border border-gray-200/70 shadow-2xs pointer-events-none transition-transform duration-250",
-                                      isEven
-                                        ? "rotate-1 translate-x-1.5 translate-y-1.5 group-hover:rotate-2 group-hover:translate-x-2 group-hover:translate-y-2"
-                                        : "-rotate-1 -translate-x-1.5 translate-y-1.5 group-hover:-rotate-2 group-hover:-translate-x-2 group-hover:translate-y-2"
-                                    )}
-                                  />
-                                )}
-
-                                {/* Scrapbook Washi Tape on Top */}
+                                {/* Washi Tape Decoration on Polaroid Top */}
                                 <div className={cn(
-                                  "absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-5.5 backdrop-blur-xs z-30 transition-transform duration-200 pointer-events-none border shadow-2xs",
+                                  "absolute -top-3 left-1/2 -translate-x-1/2 w-14 h-5 backdrop-blur-xs z-30 transition-transform duration-200 pointer-events-none border shadow-2xs",
                                   isEven
                                     ? "bg-rose/40 border-rose/30 -rotate-2 group-hover:rotate-0"
                                     : "bg-softblue/40 border-softblue/30 rotate-2 group-hover:rotate-0"
                                 )} />
 
-                                {/* Polaroid Paper Frame with Natural Vertical Proportions */}
+                                {/* Polaroid Paper Frame */}
                                 <motion.div
                                   role="button"
                                   tabIndex={0}
@@ -402,18 +378,18 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                       setExpandedId(isExpanded ? null : memory.id);
                                     }
                                   }}
-                                  animate={{ rotate: currentRotation }}
+                                  animate={{ rotate: rotationDeg }}
                                   whileHover={!isExpanded ? { y: -4, scale: 1.012, rotate: 0 } : undefined}
                                   transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                                   className={cn(
-                                    "bg-[#FEFCFA] p-3 sm:p-4 pb-7 sm:pb-9 rounded-xs border border-[#EAE6DF] relative cursor-pointer text-left transition-shadow duration-250",
+                                    "bg-white p-3.5 pb-8 sm:p-5 sm:pb-10 rounded-sm border border-gray-100/90 relative cursor-pointer text-left transition-shadow duration-250",
                                     isExpanded
                                       ? "shadow-[0_20px_50px_-15px_rgba(44,53,69,0.14)] ring-2 ring-lavender/30 z-30"
                                       : "shadow-[0_10px_25px_-5px_rgba(44,53,69,0.06),0_2px_8px_-2px_rgba(44,53,69,0.03)] hover:shadow-xl"
                                   )}
                                 >
                                   {/* Mobile Date Header inside card */}
-                                  <div className="flex sm:hidden items-center justify-between gap-2 mb-2 pb-1.5 border-b border-gray-100">
+                                  <div className="flex sm:hidden items-center justify-between gap-2 mb-2.5 pb-2 border-b border-gray-100">
                                     <span className="text-[10px] font-bold uppercase tracking-wider text-lavender flex items-center gap-1">
                                       <CalendarIcon className="w-3 h-3 text-lavender" />
                                       {memoryDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -434,79 +410,20 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                     </div>
                                   )}
 
-                                  {/* PHOTO AS PRIMARY VISUAL FOCAL POINT (Polaroid Window - Zero Cropping) */}
-                                  {hasPhotos ? (
-                                    <div className="relative rounded-xs overflow-hidden mb-3 bg-[#181614]/5 group/photo border border-black/5 shadow-inner">
-                                      {isExpanded ? (
-                                        /* Expanded View: Full Interactive Carousel */
-                                        <div className="w-full">
-                                          <Carousel images={imagesList} />
-                                        </div>
-                                      ) : (
-                                        /* Collapsed View: Natural Polaroid Window (Entire Photo Visible) */
-                                        <div className="relative w-full max-h-[340px] sm:max-h-[360px] min-h-[190px] sm:min-h-[220px] flex items-center justify-center overflow-hidden bg-[#181614]/5">
-                                          <img
-                                            src={imagesList[0]}
-                                            alt={memory.title || "Memory Photo"}
-                                            className="w-full h-auto max-h-[340px] sm:max-h-[360px] object-contain group-hover/photo:scale-102 transition-transform duration-400 ease-out block mx-auto"
-                                            loading="lazy"
-                                            decoding="async"
-                                          />
-
-                                          {/* Multiple Photos Badge Count */}
-                                          {hasMultiplePhotos && (
-                                            <div className="absolute top-2.5 left-2.5 z-10 px-2.5 py-1 bg-black/60 backdrop-blur-md rounded-full text-white text-[10px] font-bold tracking-wider flex items-center gap-1.5 shadow-sm">
-                                              <ImageIcon className="w-3 h-3 text-white" />
-                                              <span>1/{imagesList.length}</span>
-                                            </div>
-                                          )}
-
-                                          {/* Desktop Hover Overlay with romantic details */}
-                                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/25 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
-                                            <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                                              <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-pink-200 block mb-0.5">
-                                                Our Story ♡
-                                              </span>
-                                              <p className="font-handwriting text-xl font-bold leading-tight truncate text-white drop-shadow-sm">
-                                                {memory.title}
-                                              </p>
-                                              <div className="mt-2 flex items-center justify-between text-[11px] font-semibold text-white/90">
-                                                <span>{memoryDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
-                                                <span className="inline-flex items-center gap-1 text-pink-200 font-bold">
-                                                  Open Memory →
-                                                </span>
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      )}
-                                    </div>
-                                  ) : (
-                                    /* SCRAPBOOK TEXT CARD FOR MEMORIES WITHOUT PHOTO */
-                                    <div className="p-4 sm:p-5 rounded-xs bg-[#FAF7F2] border border-dashed border-[#DFD9CD] mb-3.5 relative overflow-hidden">
-                                      <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.2em] text-lavender mb-2">
-                                        <span>Chapter Note ✦</span>
-                                        <Heart className="w-3 h-3 fill-rose/30 text-rose" />
-                                      </div>
-                                      {memory.story ? (
-                                        <p className="font-serif italic text-xs sm:text-sm text-slate/75 line-clamp-3 leading-relaxed">
-                                          “{memory.story.replace(/[#*`_]/g, '')}”
-                                        </p>
-                                      ) : (
-                                        <p className="font-serif italic text-xs text-slate/50">
-                                          “A precious quiet memory written in our hearts.”
-                                        </p>
-                                      )}
+                                  {/* Photo Section with Carousel */}
+                                  {(memory.images?.length > 0 || memory.image) && (
+                                    <div className="relative rounded-sm overflow-hidden mb-3 bg-gray-50">
+                                      <Carousel images={memory.images || [memory.image]} />
                                     </div>
                                   )}
 
-                                  {/* Polaroid Bottom Margin Info (Title, Location, Category, Rating, Song preview) */}
-                                  <div className="px-1 mt-1">
+                                  {/* Title & Location Header */}
+                                  <div className="px-1 mt-2">
                                     <h3 className="font-handwriting text-2xl sm:text-3xl font-bold text-slate mb-1 leading-snug">
                                       {memory.title}
                                     </h3>
 
-                                    {/* Location & Star Rating & Spotify Mini Badges */}
+                                    {/* Location & Star Rating Pills */}
                                     <div className="flex flex-wrap items-center gap-1.5 mt-2">
                                       {memory.location && (
                                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-softblue/10 text-blue-600 rounded-full text-[10px] font-bold tracking-wide border border-softblue/20">
@@ -533,18 +450,18 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                       )}
                                     </div>
 
-                                    {/* Collapsed Short Excerpt preview for photo memories */}
-                                    {!isExpanded && hasPhotos && memory.story && (
-                                      <p className="font-serif italic text-xs text-slate/65 mt-2.5 line-clamp-2 leading-relaxed">
+                                    {/* Collapsed Short Excerpt preview if not expanded */}
+                                    {!isExpanded && memory.story && (
+                                      <p className="font-serif italic text-xs text-slate/65 mt-3 line-clamp-2 leading-relaxed">
                                         "{memory.story.replace(/[#*`_]/g, '')}"
                                       </p>
                                     )}
 
-                                    {/* Hint to expand / read more */}
+                                    {/* Small hint to expand */}
                                     {!isExpanded && (
-                                      <div className="mt-3.5 pt-2 border-t border-dashed border-gray-200/80 flex items-center justify-between text-[10px] text-slate/45 font-serif italic">
+                                      <div className="mt-3.5 pt-2 border-t border-dashed border-gray-100 flex items-center justify-between text-[10px] text-slate/40 font-serif italic">
                                         <span>Click to open memory chapter</span>
-                                        <span className="text-lavender font-sans font-bold">Open Memory →</span>
+                                        <span className="text-lavender font-sans font-bold">Read more →</span>
                                       </div>
                                     )}
 
@@ -629,7 +546,7 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                               transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                                               className="my-5 p-4 rounded-2xl bg-gradient-to-br from-lavender/15 via-rose-50/40 to-softblue/15 border border-lavender/30 backdrop-blur-md shadow-xs text-left relative overflow-hidden"
                                             >
-                                              <div className="absolute -top-8 -right-8 w-24 h-24 bg-lavender/15 rounded-full blur-xl pointer-events-none" />
+                                              <div className="absolute -top-8 -right-8 w-24 h-24 bg-lavender/20 rounded-full blur-xl pointer-events-none" />
 
                                               <div className="flex items-center justify-between gap-3 mb-2 relative z-10">
                                                 <div className="flex items-center gap-2">
@@ -680,7 +597,7 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                             </motion.div>
                                           )}
 
-                                          {/* Action Buttons (Edit & Delete) */}
+                                          {/* Soft Glass Action Buttons (Edit & Delete) */}
                                           <div className="mt-6 pt-4 border-t border-slate/10 flex items-center justify-between">
                                             <span className="text-[11px] text-slate/40 font-serif italic">
                                               Created with love ♡

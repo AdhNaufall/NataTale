@@ -16,11 +16,11 @@ export function Carousel({ images }: CarouselProps) {
   if (!images || images.length === 0) return null;
   if (images.length === 1) {
     return (
-      <div className="w-full max-h-[380px] sm:max-h-[440px] flex items-center justify-center overflow-hidden bg-[#181614]/5 rounded-xs mb-4">
+      <div className="w-full aspect-square overflow-hidden bg-gray-100 mb-4">
         <img 
           src={images[0]} 
           alt="Memory" 
-          className="w-full h-auto max-h-[380px] sm:max-h-[440px] object-contain block mx-auto" 
+          className="w-full h-full object-cover" 
           loading="lazy" 
           decoding="async" 
         />
@@ -29,7 +29,7 @@ export function Carousel({ images }: CarouselProps) {
   }
 
   return (
-    <div className="relative mb-4 group w-full max-h-[380px] sm:max-h-[440px] min-h-[220px] flex items-center justify-center overflow-hidden bg-[#181614]/5 rounded-xs cursor-pointer select-none" onClick={nextImage}>
+    <div className="relative mb-4 group aspect-square overflow-hidden bg-gray-100 cursor-pointer" onClick={nextImage}>
       <AnimatePresence mode="wait">
         <motion.img
           key={currentIndex}
@@ -39,7 +39,7 @@ export function Carousel({ images }: CarouselProps) {
           exit={{ opacity: 0 }}
           transition={{ duration: 0.2 }}
           alt={`Memory ${currentIndex}`}
-          className="w-full h-auto max-h-[380px] sm:max-h-[440px] object-contain block mx-auto"
+          className="w-full h-full object-cover absolute inset-0"
           loading="lazy"
           decoding="async"
         />
