@@ -33,6 +33,9 @@ const memorySchema = new mongoose.Schema({
   category: { type: String, required: true },
   mood: { type: String, required: false },
   rating: { type: Number, default: 5 },
+  spotifyUrl: { type: String, default: '' },
+  spotifyTitle: { type: String, default: '' },
+  spotifyArtist: { type: String, default: '' },
   createdAt: { type: Date, default: Date.now }
 });
 
@@ -54,7 +57,10 @@ app.get('/api/memories', async (req, res) => {
       images: m.images,
       category: m.category,
       mood: m.mood,
-      rating: m.rating
+      rating: m.rating,
+      spotifyUrl: m.spotifyUrl || '',
+      spotifyTitle: m.spotifyTitle || '',
+      spotifyArtist: m.spotifyArtist || ''
     }));
     res.json(formatted);
   } catch (error) {

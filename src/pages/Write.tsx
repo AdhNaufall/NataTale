@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { UploadCloud, X, Star } from 'lucide-react';
+import { UploadCloud, X, Star, Music2, ExternalLink } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -13,12 +13,22 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
   const [rating, setRating] = useState(5);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [mood, setMood] = useState('🥰');
+  const [spotifyUrl, setSpotifyUrl] = useState('');
   const [showCategories, setShowCategories] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const MOOD_EMOJIS = ['🥰', '🤪', '🥹', '😴', '😡', '🥳', '😎'];
 
   const [isDragging, setIsDragging] = useState(false);
+
+  // Helper for Spotify URL validation
+  const isSpotifyUrlValid = (url: string) => {
+    const trimmed = url.trim();
+    if (!trimmed) return true; // Empty is allowed
+    return /^https?:\/\/(open\.)?spotify\.com\/track\/[a-zA-Z0-9]+(\?.*)?$/i.test(trimmed);
+  };
+
+  const hasInvalidSpotifyUrl = Boolean(spotifyUrl.trim() && !isSpotifyUrlValid(spotifyUrl));
 
   // Extract unique categories from existing memories for autocomplete suggestions
   const existingCategories = Array.from(new Set(memories.map(m => m.category))).filter(Boolean);
@@ -36,6 +46,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
       setCategory(editingMemory.category || '');
       setMood(editingMemory.mood || '🥰');
       setRating(editingMemory.rating || 5);
+      setSpotifyUrl(editingMemory.spotifyUrl || '');
     }
     
     // Clear edit mode when unmounting (e.g. clicking away to Timeline)
@@ -78,7 +89,8 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
         images: images.map(img => img.url),
         category,
         mood,
-        rating
+        rating,
+        spotifyUrl: spotifyUrl.trim()
       };
 
       if (editingMemory && onUpdate) {
@@ -468,6 +480,86 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
             </span>
           </div>
           <p className="text-[10px] text-gray-400 mt-1.5">How special was this memory to you?</p>
+        </div>
+
+        {/* Our Song Section */}
+        <div className="pt-2">
+          <div className="flex items-center justify-between mb-1 mt-2">
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/50 flex items-center gap-1.5">
+              <Music2 className="w-3.5 h-3.5 text-lavender" />
+              <span>Our Song ♡</span>
+            </label>
+            <span className="text-[10px] text-slate/40 italic font-serif">
+              Optional
+            </span>
+          </div>
+          <p className="text-xs text-slate/60 font-serif italic mb-3">
+            “A song that reminds us of this memory...”
+          </p>
+
+          <div className="space-y-2">
+            <div className="relative">
+              <input
+                type="url"
+                value={spotifyUrl}
+                onChange={e => setSpotifyUrl(e.target.value)}
+                placeholder="Paste a Spotify song link... (e.g. https://open.spotify.com/track/...)"
+                className={cn(
+                  "w-full px-4 py-3 bg-gray-50/50 border rounded-2xl focus:ring-2 focus:ring-lavender/50 outline-none text-xs sm:text-sm transition-all focus:bg-white text-slate placeholder:text-gray-300 font-sans",
+                  hasInvalidSpotifyUrl ? "border-rose-300 focus:ring-rose-200" : "border-gray-100"
+                )}
+              />
+              {spotifyUrl && (
+                <button
+                  type="button"
+                  onClick={() => setSpotifyUrl('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-gray-200/60 hover:bg-gray-200 text-slate/60 flex items-center justify-center text-xs transition-colors"
+                  title="Clear Spotify link"
+                >
+                  <X className="w-3 h-3" />
+                </button>
+              )}
+            </div>
+
+            {hasInvalidSpotifyUrl && (
+              <motion.p 
+                initial={{ opacity: 0, y: -4 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-[11px] text-rose-500 font-medium pl-1 flex items-center gap-1"
+              >
+                <span>Please enter a valid Spotify song link ♡</span>
+              </motion.p>
+            )}
+
+            {/* Small live preview if URL is valid */}
+            {spotifyUrl.trim() && !hasInvalidSpotifyUrl && (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.98 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="p-3 bg-gradient-to-r from-lavender/10 via-rose-50/40 to-softblue/10 border border-lavender/20 rounded-2xl flex items-center justify-between gap-3 text-xs"
+              >
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-8 h-8 rounded-xl bg-white shadow-xs border border-lavender/20 flex items-center justify-center text-lavender shrink-0">
+                    <Music2 className="w-4 h-4 text-slate animate-pulse" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-serif font-bold text-slate text-xs truncate">Our Song Attached ♡</p>
+                    <p className="text-[10px] text-slate/50 truncate font-mono">{spotifyUrl}</p>
+                  </div>
+                </div>
+
+                <a
+                  href={spotifyUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-1.5 bg-white/80 hover:bg-white text-slate text-[11px] font-bold rounded-xl border border-slate/10 shadow-xs flex items-center gap-1 shrink-0 transition-all hover:scale-105 active:scale-95"
+                >
+                  <span>Preview</span>
+                  <ExternalLink className="w-3 h-3 text-lavender" />
+                </a>
+              </motion.div>
+            )}
+          </div>
         </div>
 
         <div>

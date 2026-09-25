@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Sparkles, ExternalLink, Dices, ArrowRight, Heart, MapPin, Calendar, Camera, Music } from 'lucide-react';
+import { Sparkles, ExternalLink, Dices, ArrowRight, Heart, MapPin, Calendar, Camera, Music, Music2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { calculateRelationshipDuration } from '../lib/relationship';
 
@@ -307,6 +307,20 @@ export default function Us({ memories, navigate }: UsProps) {
                 <p className="text-xs text-slate/75 leading-relaxed line-clamp-2 font-sans italic">
                   "{currentRandomMemory.story.replace(/[#*`_]/g, '')}"
                 </p>
+
+                {currentRandomMemory.spotifyUrl && (
+                  <div className="pt-2">
+                    <a
+                      href={currentRandomMemory.spotifyUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1.5 px-3 py-1 bg-lavender/10 hover:bg-lavender/20 text-slate border border-lavender/20 rounded-full text-[11px] font-bold transition-all active:scale-95 shadow-2xs"
+                    >
+                      <Music2 className="w-3 h-3 text-lavender" />
+                      <span>Our Song: Listen on Spotify ↗</span>
+                    </a>
+                  </div>
+                )}
 
                 {navigate && (
                   <div className="mt-3 pt-2 border-t border-dashed border-gray-100 flex justify-end">

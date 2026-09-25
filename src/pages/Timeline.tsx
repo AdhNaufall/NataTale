@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
-import { Calendar as CalendarIcon, MapPin, Edit, Trash2, Star } from 'lucide-react';
+import { Calendar as CalendarIcon, MapPin, Edit, Trash2, Star, Music2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 import { cn } from '../lib/utils';
@@ -253,6 +253,63 @@ export default function Timeline({ memories, onEdit, onDelete }: { memories: any
                                   {memory.story}
                                 </ReactMarkdown>
                               </div>
+
+                              {/* Our Song Card ♡ */}
+                              {memory.spotifyUrl && (
+                                <motion.div
+                                  initial={{ opacity: 0, y: 10 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  className="my-5 p-4 rounded-2xl bg-gradient-to-br from-lavender/10 via-pink-50/30 to-softblue/10 border border-lavender/25 backdrop-blur-md shadow-xs text-left relative overflow-hidden"
+                                >
+                                  <div className="absolute -top-6 -right-6 w-20 h-20 bg-lavender/15 rounded-full blur-xl pointer-events-none" />
+                                  <div className="flex items-center justify-between gap-3 mb-2">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-7 h-7 rounded-xl bg-white/90 border border-lavender/20 flex items-center justify-center text-slate shadow-xs">
+                                        <Music2 className="w-3.5 h-3.5 text-lavender animate-pulse" />
+                                      </div>
+                                      <div>
+                                        <span className="text-[10px] font-bold uppercase tracking-[0.18em] text-slate/50 block leading-tight">
+                                          Our Song ♡
+                                        </span>
+                                      </div>
+                                    </div>
+                                    <span className="text-[10px] font-serif italic text-slate/40 hidden sm:inline">
+                                      Soundtrack
+                                    </span>
+                                  </div>
+
+                                  <div className="mb-3 pl-1">
+                                    {memory.spotifyTitle ? (
+                                      <div>
+                                        <p className="font-serif font-bold text-slate text-sm">“{memory.spotifyTitle}”</p>
+                                        {memory.spotifyArtist && (
+                                          <p className="text-xs text-slate/60 font-sans mt-0.5">{memory.spotifyArtist}</p>
+                                        )}
+                                      </div>
+                                    ) : (
+                                      <p className="font-serif italic text-slate/75 text-xs">
+                                        “A little soundtrack for this memory...”
+                                      </p>
+                                    )}
+                                  </div>
+
+                                  <div className="pt-2 border-t border-slate/10 flex items-center justify-between gap-2">
+                                    <span className="text-[10px] text-slate/40 italic font-serif truncate">
+                                      Listen on Spotify
+                                    </span>
+                                    <a
+                                      href={memory.spotifyUrl}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      onClick={(e) => e.stopPropagation()}
+                                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#1DB954]/10 hover:bg-[#1DB954]/20 text-[#1DB954] hover:text-[#189945] border border-[#1DB954]/30 rounded-full text-xs font-bold transition-all active:scale-95 shadow-xs cursor-pointer"
+                                    >
+                                      <Music2 className="w-3.5 h-3.5" />
+                                      <span>Listen on Spotify ↗</span>
+                                    </a>
+                                  </div>
+                                </motion.div>
+                              )}
 
                               {/* Soft Glass Pill Action Buttons */}
                               <div className="mt-6 pt-4 border-t border-slate/10 flex justify-end gap-2">
