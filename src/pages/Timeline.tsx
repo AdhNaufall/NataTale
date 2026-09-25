@@ -1,16 +1,16 @@
 import { useEffect, useRef, useState, useMemo } from 'react';
-import { 
-  Calendar as CalendarIcon, 
-  MapPin, 
-  Edit, 
-  Trash2, 
-  Star, 
-  Music2, 
-  Heart, 
-  Sparkles, 
-  ChevronDown, 
-  BookOpen, 
-  Plus, 
+import {
+  Calendar as CalendarIcon,
+  MapPin,
+  Edit,
+  Trash2,
+  Star,
+  Music2,
+  Heart,
+  Sparkles,
+  ChevronDown,
+  BookOpen,
+  Plus,
   ArrowUp
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -169,7 +169,7 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
 
       {/* 1. EDITORIAL SCRAPBOOK HERO */}
       <div ref={heroRef} className="pt-8 pb-14 text-center max-w-2xl mx-auto relative select-none">
-        
+
         {/* Cute Scrapbook Washi Ribbon Badge */}
         <motion.div
           initial={{ opacity: 0, y: -12, scale: 0.95 }}
@@ -189,9 +189,8 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
           transition={{ delay: 0.15, duration: 0.7 }}
           className="font-serif text-4xl sm:text-6xl font-bold text-slate tracking-tight mb-3"
         >
-          Little Moments, <br className="hidden sm:inline" />
+          Little Moments... <br className="hidden sm:inline" />
           <span className="font-handwriting text-5xl sm:text-7xl font-normal text-lavender block sm:inline sm:ml-2">
-            Big Memories ♡
           </span>
         </motion.h1>
 
@@ -314,8 +313,8 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                         const rotationDeg = isExpanded ? 0 : (isEven ? -1.2 : 1.2);
 
                         return (
-                          <div 
-                            key={memory.id} 
+                          <div
+                            key={memory.id}
                             className={cn(
                               "relative flex flex-col sm:flex-row items-start",
                               isEven ? "sm:flex-row-reverse" : ""
@@ -362,8 +361,8 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                 {/* Washi Tape Decoration on Polaroid Top */}
                                 <div className={cn(
                                   "absolute -top-3 left-1/2 -translate-x-1/2 w-14 h-5 backdrop-blur-xs z-30 transition-transform pointer-events-none border shadow-2xs",
-                                  isEven 
-                                    ? "bg-rose/40 border-rose/30 -rotate-3 group-hover:rotate-0" 
+                                  isEven
+                                    ? "bg-rose/40 border-rose/30 -rotate-3 group-hover:rotate-0"
                                     : "bg-softblue/40 border-softblue/30 rotate-2 group-hover:rotate-0"
                                 )} />
 
@@ -384,8 +383,8 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                   transition={{ type: "spring", stiffness: 350, damping: 25 }}
                                   className={cn(
                                     "bg-white p-3.5 pb-8 sm:p-5 sm:pb-10 rounded-sm border border-gray-100/90 relative cursor-pointer text-left transition-all duration-300",
-                                    isExpanded 
-                                      ? "shadow-[0_25px_60px_-15px_rgba(44,53,69,0.18)] ring-2 ring-lavender/30 z-30" 
+                                    isExpanded
+                                      ? "shadow-[0_25px_60px_-15px_rgba(44,53,69,0.18)] ring-2 ring-lavender/30 z-30"
                                       : "shadow-[0_15px_35px_-5px_rgba(44,53,69,0.06),0_4px_12px_-2px_rgba(44,53,69,0.03)] hover:shadow-2xl"
                                   )}
                                 >
@@ -595,23 +594,23 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                             </span>
 
                                             <div className="flex items-center gap-2">
-                                              <button 
-                                                onClick={(e) => { e.stopPropagation(); onEdit?.(memory); }} 
+                                              <button
+                                                onClick={(e) => { e.stopPropagation(); onEdit?.(memory); }}
                                                 className="px-3.5 py-1.5 text-xs font-semibold text-slate/75 hover:text-blue-600 bg-white/80 hover:bg-softblue/15 border border-slate/10 hover:border-softblue/30 backdrop-blur-md rounded-full shadow-2xs transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
                                               >
-                                                <Edit className="w-3.5 h-3.5 text-softblue" /> 
+                                                <Edit className="w-3.5 h-3.5 text-softblue" />
                                                 <span>Edit</span>
                                               </button>
-                                              <button 
-                                                onClick={(e) => { 
-                                                  e.stopPropagation(); 
+                                              <button
+                                                onClick={(e) => {
+                                                  e.stopPropagation();
                                                   if (window.confirm('Are you sure you want to delete this precious memory?')) {
                                                     onDelete?.(memory.id);
                                                   }
-                                                }} 
+                                                }}
                                                 className="px-3.5 py-1.5 text-xs font-semibold text-rose-600/80 hover:text-rose-700 bg-white/80 hover:bg-rose-50/80 border border-rose-200/60 hover:border-rose-300 backdrop-blur-md rounded-full shadow-2xs transition-all active:scale-95 flex items-center gap-1.5 cursor-pointer"
                                               >
-                                                <Trash2 className="w-3.5 h-3.5 text-rose-400" /> 
+                                                <Trash2 className="w-3.5 h-3.5 text-rose-400" />
                                                 <span>Delete</span>
                                               </button>
                                             </div>
