@@ -11,7 +11,8 @@ import {
   ChevronDown,
   BookOpen,
   Plus,
-  ArrowUp
+  ArrowUp,
+  Image as ImageIcon
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
@@ -31,9 +32,8 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
   const [showScrollTop, setShowScrollTop] = useState(false);
   const heroRef = useRef<HTMLDivElement>(null);
 
-  // Group memories by Year -> Month
+  // Group memories chronologically: Year -> Month
   const groupedByYearAndMonth = useMemo(() => {
-    // Sort memories ascending by date for chronological timeline flow
     const sorted = [...memories].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
     const structure: { [year: string]: { [month: string]: any[] } } = {};
 
@@ -108,7 +108,7 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
               whileTap={{ scale: 0.94 }}
               onClick={() => setShowMonthPicker(prev => !prev)}
               aria-label="Jump to timeline month"
-              className="px-3.5 py-2 bg-white/80 hover:bg-white backdrop-blur-xl shadow-[0_10px_25px_-5px_rgba(44,53,69,0.08)] rounded-full flex items-center gap-2 text-xs font-bold text-slate border border-white/80 cursor-pointer transition-all"
+              className="px-3.5 py-2 bg-white/85 hover:bg-white backdrop-blur-xl shadow-[0_10px_25px_-5px_rgba(44,53,69,0.08)] rounded-full flex items-center gap-2 text-xs font-bold text-slate border border-white/80 cursor-pointer transition-all"
             >
               <CalendarIcon className="w-4 h-4 text-lavender" />
               <span className="hidden sm:inline text-[11px] uppercase tracking-wider text-slate/70">Jump to</span>
@@ -159,7 +159,7 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
               whileTap={{ scale: 0.9 }}
               onClick={scrollToTop}
               aria-label="Back to top"
-              className="w-10 h-10 bg-white/80 hover:bg-white backdrop-blur-xl shadow-[0_10px_25px_-5px_rgba(44,53,69,0.08)] rounded-full flex items-center justify-center text-slate/70 hover:text-lavender border border-white/80 cursor-pointer transition-all"
+              className="w-10 h-10 bg-white/85 hover:bg-white backdrop-blur-xl shadow-[0_10px_25px_-5px_rgba(44,53,69,0.08)] rounded-full flex items-center justify-center text-slate/70 hover:text-lavender border border-white/80 cursor-pointer transition-all"
             >
               <ArrowUp className="w-4 h-4" />
             </motion.button>
@@ -167,10 +167,9 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
         </AnimatePresence>
       </div>
 
-      {/* 1. EDITORIAL SCRAPBOOK HERO */}
+      {/* 1. HERO SECTION */}
       <div ref={heroRef} className="pt-8 pb-14 text-center max-w-2xl mx-auto relative select-none">
-
-        {/* Cute Scrapbook Washi Ribbon Badge */}
+        {/* Cute Scrapbook Ribbon Badge */}
         <motion.div
           initial={{ opacity: 0, y: -12, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -178,7 +177,7 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
           className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/75 backdrop-blur-md rounded-full border border-lavender/25 shadow-xs text-xs font-bold uppercase tracking-[0.2em] text-lavender mb-5"
         >
           <Sparkles className="w-3.5 h-3.5 text-lavender" />
-          <span>Our Story Timeline</span>
+          <span>OUR STORY ♡</span>
           <Heart className="w-3.5 h-3.5 fill-rose/50 text-rose" />
         </motion.div>
 
@@ -189,8 +188,9 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
           transition={{ delay: 0.15, duration: 0.7 }}
           className="font-serif text-4xl sm:text-6xl font-bold text-slate tracking-tight mb-3"
         >
-          Little Moments... <br className="hidden sm:inline" />
+          Our Story Wall <br className="hidden sm:inline" />
           <span className="font-handwriting text-5xl sm:text-7xl font-normal text-lavender block sm:inline sm:ml-2">
+            in Polaroids
           </span>
         </motion.h1>
 
@@ -201,7 +201,7 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
           transition={{ delay: 0.3, duration: 0.7 }}
           className="font-serif italic text-sm sm:text-base text-slate/60 max-w-md mx-auto leading-relaxed mb-6"
         >
-          “A quiet collection of every place we went, laugh we shared, and heartbeat we decided to keep forever.”
+          “little moments, captured along the way.”
         </motion.p>
 
         {/* Memory Counter Pill */}
@@ -209,7 +209,7 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.45, duration: 0.5 }}
-          className="inline-flex items-center gap-3 px-5 py-2 bg-white/70 backdrop-blur-xl border border-white/80 rounded-full shadow-xs text-xs font-semibold text-slate/75"
+          className="inline-flex items-center gap-3 px-5 py-2 bg-white/75 backdrop-blur-xl border border-white/80 rounded-full shadow-xs text-xs font-semibold text-slate/75"
         >
           <span className="flex items-center gap-1.5">
             <BookOpen className="w-3.5 h-3.5 text-softblue" />
@@ -220,24 +220,24 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
         </motion.div>
       </div>
 
-      {/* 2. EMPTY STATE (When no memories exist yet) */}
+      {/* 2. EMPTY STATE */}
       {memories.length === 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="max-w-md mx-auto my-12 p-8 sm:p-10 bg-white/80 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-xl text-center relative overflow-hidden"
+          className="max-w-md mx-auto my-12 p-8 sm:p-10 bg-white/85 backdrop-blur-xl rounded-[2.5rem] border border-white shadow-xl text-center relative overflow-hidden"
         >
           {/* Decorative washi tape at top */}
-          <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-20 h-6 bg-lavender/30 backdrop-blur-sm -rotate-2 border border-lavender/30" />
+          <div className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-6 bg-lavender/35 backdrop-blur-sm -rotate-2 border border-lavender/30 shadow-xs" />
 
           <div className="w-16 h-16 rounded-3xl bg-lavender/15 text-lavender flex items-center justify-center mx-auto mb-5 shadow-inner ring-1 ring-lavender/25">
             <Heart className="w-8 h-8 fill-lavender/30" />
           </div>
 
           <span className="text-[10px] font-bold uppercase tracking-[0.25em] text-slate/40 block mb-1">
-            Our Story Starts Here
+            OUR STORY STARTS HERE ♡
           </span>
-          <h3 className="font-serif text-2xl font-bold text-slate mb-2">Every beautiful story has a first page.</h3>
+          <h3 className="font-serif text-2xl font-bold text-slate mb-2">Every love story begins with one little memory.</h3>
           <p className="font-serif italic text-xs text-slate/60 leading-relaxed mb-6">
             Write down your very first memory, attach a photo, and start building your romantic scrapbook.
           </p>
@@ -250,17 +250,17 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
               className="px-6 py-3.5 bg-slate text-white rounded-2xl text-xs font-bold uppercase tracking-widest hover:bg-[#1A202C] transition-all shadow-lg shadow-slate/20 flex items-center justify-center gap-2 mx-auto cursor-pointer"
             >
               <Plus className="w-4 h-4" />
-              <span>Write First Memory</span>
+              <span>Write Our First Memory</span>
             </motion.button>
           )}
         </motion.div>
       )}
 
-      {/* 3. EDITORIAL SCRAPBOOK TIMELINE */}
+      {/* 3. CHRONOLOGICAL TIMELINE PHOTO WALL */}
       {memories.length > 0 && (
         <div className="relative">
 
-          {/* Central Vertical Spine Line (Desktop) & Left Spine Line (Mobile) */}
+          {/* Central Timeline Spine Line (Desktop) & Left Spine Line (Mobile) */}
           <div className="absolute left-4 sm:left-1/2 -translate-x-1/2 top-4 bottom-12 w-[2px] bg-gradient-to-b from-lavender/40 via-softblue/30 to-transparent rounded-full pointer-events-none" />
 
           {/* Iterate Years */}
@@ -273,7 +273,7 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                   initial={{ opacity: 0, scale: 0.9, y: -10 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   transition={{ delay: 0.1 * yearIdx }}
-                  className="pointer-events-auto px-5 py-2 bg-white/90 backdrop-blur-2xl border border-white/80 rounded-full shadow-[0_12px_30px_-5px_rgba(44,53,69,0.08)] text-slate flex items-center gap-2"
+                  className="pointer-events-auto px-5 py-2 bg-white/95 backdrop-blur-2xl border border-white/90 rounded-full shadow-[0_12px_30px_-5px_rgba(44,53,69,0.08)] text-slate flex items-center gap-2"
                 >
                   <span className="w-2 h-2 rounded-full bg-lavender animate-ping" />
                   <span className="font-serif text-sm font-bold tracking-widest text-slate uppercase">
@@ -290,12 +290,12 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                 return (
                   <div key={sectionKey} id={`section-${sectionKey}`} className="mb-14 scroll-mt-20">
 
-                    {/* Month Separator Banner with Dotted Accents */}
+                    {/* Month Separator Banner */}
                     <div className="flex items-center justify-center gap-3 mb-8 sm:mb-12">
                       <div className="hidden sm:block h-[1px] flex-1 bg-gradient-to-r from-transparent via-lavender/30 to-lavender/50 max-w-xs" />
-                      <div className="inline-flex items-center gap-2 px-4 py-1 bg-white/70 backdrop-blur-md rounded-full border border-lavender/20 text-[11px] font-bold uppercase tracking-[0.18em] text-slate/70 shadow-2xs">
+                      <div className="inline-flex items-center gap-2 px-4 py-1 bg-white/80 backdrop-blur-md rounded-full border border-lavender/25 text-[11px] font-bold uppercase tracking-[0.18em] text-slate/75 shadow-2xs">
                         <span>{month}</span>
-                        <span className="px-2 py-0.5 bg-lavender/15 text-lavender text-[9px] rounded-full">
+                        <span className="px-2 py-0.5 bg-lavender/15 text-lavender text-[9px] font-bold rounded-full">
                           {monthMemories.length}
                         </span>
                       </div>
@@ -309,8 +309,15 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                         const memoryDate = new Date(memory.date);
                         const isEven = memIdx % 2 === 0;
 
-                        // Slight rotation angle for organic Polaroid feel
-                        const rotationDeg = isExpanded ? 0 : (isEven ? -1.2 : 1.2);
+                        // Deterministic subtle rotation angles for scrapbook polaroid wall feel (-2deg, -1deg, 1deg, 2deg)
+                        const rotationAngles = [-1.8, 1.5, -1.2, 1.8];
+                        const baseRotation = rotationAngles[memIdx % rotationAngles.length];
+                        const currentRotation = isExpanded ? 0 : baseRotation;
+
+                        // Photos list
+                        const imagesList: string[] = (memory.images?.length > 0 ? memory.images : (memory.image ? [memory.image] : [])).filter(Boolean);
+                        const hasPhotos = imagesList.length > 0;
+                        const hasMultiplePhotos = imagesList.length > 1;
 
                         return (
                           <div
@@ -323,8 +330,10 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                             {/* Central Timeline Dot (Desktop & Mobile) */}
                             <div className="absolute left-4 sm:left-1/2 -translate-x-1/2 top-7 z-20 flex flex-col items-center pointer-events-none">
                               <div className={cn(
-                                "w-4 h-4 rounded-full border-2 border-white bg-lavender shadow-md transition-all duration-300",
-                                isExpanded ? "scale-125 ring-4 ring-lavender/30 bg-lavender" : "hover:scale-110"
+                                "w-4 h-4 rounded-full border-2 border-white shadow-md transition-all duration-300",
+                                isExpanded
+                                  ? "scale-125 ring-4 ring-lavender/30 bg-lavender"
+                                  : "bg-lavender hover:scale-110"
                               )} />
                             </div>
 
@@ -341,7 +350,7 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                   {memoryDate.getDate()} {month.substring(0, 3)}
                                 </span>
                                 {memory.category && (
-                                  <span className="text-[10px] text-slate/40 font-serif italic block">
+                                  <span className="text-[10px] text-slate/45 font-serif italic block">
                                     ✦ {memory.category}
                                   </span>
                                 )}
@@ -358,9 +367,22 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                 transition={{ duration: 0.5, ease: "easeOut" }}
                                 className="relative group"
                               >
-                                {/* Washi Tape Decoration on Polaroid Top */}
+                                {/* Multi-Photo Stack Layer Background Visual (When memory has multiple photos) */}
+                                {hasMultiplePhotos && !isExpanded && (
+                                  <div
+                                    aria-hidden="true"
+                                    className={cn(
+                                      "absolute inset-0 bg-[#F9F7F5] rounded-xs border border-gray-200/70 shadow-sm pointer-events-none transition-transform duration-300",
+                                      isEven
+                                        ? "rotate-2 translate-x-1.5 translate-y-1.5 group-hover:rotate-3 group-hover:translate-x-2.5 group-hover:translate-y-2.5"
+                                        : "-rotate-2 -translate-x-1.5 translate-y-1.5 group-hover:-rotate-3 group-hover:-translate-x-2.5 group-hover:translate-y-2.5"
+                                    )}
+                                  />
+                                )}
+
+                                {/* Scrapbook Washi Tape on Top */}
                                 <div className={cn(
-                                  "absolute -top-3 left-1/2 -translate-x-1/2 w-14 h-5 backdrop-blur-xs z-30 transition-transform pointer-events-none border shadow-2xs",
+                                  "absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-5.5 backdrop-blur-xs z-30 transition-transform pointer-events-none border shadow-2xs",
                                   isEven
                                     ? "bg-rose/40 border-rose/30 -rotate-3 group-hover:rotate-0"
                                     : "bg-softblue/40 border-softblue/30 rotate-2 group-hover:rotate-0"
@@ -378,14 +400,14 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                       setExpandedId(isExpanded ? null : memory.id);
                                     }
                                   }}
-                                  animate={{ rotate: rotationDeg }}
-                                  whileHover={!isExpanded ? { y: -6, scale: 1.015, rotate: 0 } : undefined}
+                                  animate={{ rotate: currentRotation }}
+                                  whileHover={!isExpanded ? { y: -6, scale: 1.02, rotate: 0 } : undefined}
                                   transition={{ type: "spring", stiffness: 350, damping: 25 }}
                                   className={cn(
-                                    "bg-white p-3.5 pb-8 sm:p-5 sm:pb-10 rounded-sm border border-gray-100/90 relative cursor-pointer text-left transition-all duration-300",
+                                    "bg-[#FEFCFA] p-3.5 pb-7 sm:p-4.5 sm:pb-9 rounded-xs border border-[#EAE6DF] relative cursor-pointer text-left transition-all duration-300",
                                     isExpanded
                                       ? "shadow-[0_25px_60px_-15px_rgba(44,53,69,0.18)] ring-2 ring-lavender/30 z-30"
-                                      : "shadow-[0_15px_35px_-5px_rgba(44,53,69,0.06),0_4px_12px_-2px_rgba(44,53,69,0.03)] hover:shadow-2xl"
+                                      : "shadow-[0_15px_35px_-5px_rgba(44,53,69,0.08),0_4px_12px_-2px_rgba(44,53,69,0.04)] hover:shadow-2xl"
                                   )}
                                 >
                                   {/* Mobile Date Header inside card */}
@@ -405,26 +427,85 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                   {memory.mood && (
                                     <motion.div
                                       whileHover={{ scale: 1.15, rotate: 10 }}
-                                      className="absolute -top-3.5 -right-3.5 z-40 bg-white/95 backdrop-blur-md w-12 h-12 rounded-2xl shadow-lg border border-pink-100 flex items-center justify-center text-3xl select-none"
+                                      className="absolute -top-3.5 -right-3.5 z-40 bg-white/95 backdrop-blur-md w-11 h-11 sm:w-12 sm:h-12 rounded-2xl shadow-lg border border-pink-100 flex items-center justify-center text-2xl sm:text-3xl select-none"
                                     >
                                       <span className="transform -rotate-6">{memory.mood}</span>
                                     </motion.div>
                                   )}
 
-                                  {/* Photo Section with Carousel / Stacked Look */}
-                                  {(memory.images?.length > 0 || memory.image) && (
-                                    <div className="relative rounded-sm overflow-hidden mb-3 bg-gray-50">
-                                      <Carousel images={memory.images || [memory.image]} />
+                                  {/* PHOTO AS PRIMARY VISUAL FOCAL POINT (Polaroid Window) */}
+                                  {hasPhotos ? (
+                                    <div className="relative rounded-xs overflow-hidden mb-3.5 bg-[#F0EDE6] aspect-[4/3] sm:aspect-[4/3] group/photo border border-black/5 shadow-inner">
+                                      {isExpanded ? (
+                                        /* Expanded View: Full Interactive Carousel */
+                                        <div className="w-full h-full">
+                                          <Carousel images={imagesList} />
+                                        </div>
+                                      ) : (
+                                        /* Collapsed View: Photo Wall Polaroid Display */
+                                        <div className="relative w-full h-full">
+                                          <img
+                                            src={imagesList[0]}
+                                            alt={memory.title || "Memory Photo"}
+                                            className="w-full h-full object-cover group-hover/photo:scale-105 transition-transform duration-500 ease-out"
+                                            loading="lazy"
+                                            decoding="async"
+                                          />
+
+                                          {/* Multiple Photos Badge Count */}
+                                          {hasMultiplePhotos && (
+                                            <div className="absolute top-2.5 left-2.5 z-10 px-2.5 py-1 bg-black/60 backdrop-blur-md rounded-full text-white text-[10px] font-bold tracking-wider flex items-center gap-1.5 shadow-sm">
+                                              <ImageIcon className="w-3 h-3 text-white" />
+                                              <span>1/{imagesList.length}</span>
+                                            </div>
+                                          )}
+
+                                          {/* Desktop Hover Overlay with romantic details */}
+                                          <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 text-white">
+                                            <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                                              <span className="text-[10px] uppercase font-bold tracking-[0.2em] text-pink-200 block mb-0.5">
+                                                Our Story ♡
+                                              </span>
+                                              <p className="font-handwriting text-xl font-bold leading-tight truncate text-white drop-shadow-sm">
+                                                {memory.title}
+                                              </p>
+                                              <div className="mt-2 flex items-center justify-between text-[11px] font-semibold text-white/90">
+                                                <span>{memoryDate.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</span>
+                                                <span className="inline-flex items-center gap-1 text-pink-200 font-bold">
+                                                  Open Memory →
+                                                </span>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                  ) : (
+                                    /* SCRAPBOOK TEXT CARD FOR MEMORIES WITHOUT PHOTO */
+                                    <div className="p-4 sm:p-5 rounded-xs bg-[#FAF7F2] border border-dashed border-[#DFD9CD] mb-3.5 relative overflow-hidden">
+                                      <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-[0.2em] text-lavender mb-2">
+                                        <span>Chapter Note ✦</span>
+                                        <Heart className="w-3 h-3 fill-rose/30 text-rose" />
+                                      </div>
+                                      {memory.story ? (
+                                        <p className="font-serif italic text-xs sm:text-sm text-slate/75 line-clamp-3 leading-relaxed">
+                                          “{memory.story.replace(/[#*`_]/g, '')}”
+                                        </p>
+                                      ) : (
+                                        <p className="font-serif italic text-xs text-slate/50">
+                                          “A precious quiet memory written in our hearts.”
+                                        </p>
+                                      )}
                                     </div>
                                   )}
 
-                                  {/* Title & Location Header */}
-                                  <div className="px-1 mt-2">
+                                  {/* Polaroid Bottom Margin Info (Title, Location, Category, Rating, Song preview) */}
+                                  <div className="px-1 mt-1">
                                     <h3 className="font-handwriting text-2xl sm:text-3xl font-bold text-slate mb-1 leading-snug">
                                       {memory.title}
                                     </h3>
 
-                                    {/* Location & Star Rating Pills */}
+                                    {/* Location & Star Rating & Spotify Mini Badges */}
                                     <div className="flex flex-wrap items-center gap-1.5 mt-2">
                                       {memory.location && (
                                         <span className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-softblue/10 text-blue-600 rounded-full text-[10px] font-bold tracking-wide border border-softblue/20">
@@ -439,20 +520,30 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                           <span>{memory.rating}/5</span>
                                         </span>
                                       )}
+
+                                      {/* Collapsed Mini Spotify Badge if memory has song */}
+                                      {!isExpanded && memory.spotifyUrl && (
+                                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-[#1DB954]/10 text-[#1DB954] rounded-full text-[10px] font-bold border border-[#1DB954]/25 truncate max-w-[160px]">
+                                          <Music2 className="w-3 h-3 flex-shrink-0" />
+                                          <span className="truncate">
+                                            {memory.spotifyTitle || 'Our Song ♡'}
+                                          </span>
+                                        </span>
+                                      )}
                                     </div>
 
-                                    {/* Collapsed Short Excerpt preview if not expanded */}
-                                    {!isExpanded && memory.story && (
-                                      <p className="font-serif italic text-xs text-slate/65 mt-3 line-clamp-2 leading-relaxed">
+                                    {/* Collapsed Short Excerpt preview for photo memories */}
+                                    {!isExpanded && hasPhotos && memory.story && (
+                                      <p className="font-serif italic text-xs text-slate/65 mt-2.5 line-clamp-2 leading-relaxed">
                                         "{memory.story.replace(/[#*`_]/g, '')}"
                                       </p>
                                     )}
 
-                                    {/* Small hint to expand */}
+                                    {/* Hint to expand / read more */}
                                     {!isExpanded && (
-                                      <div className="mt-3.5 pt-2 border-t border-dashed border-gray-100 flex items-center justify-between text-[10px] text-slate/40 font-serif italic">
+                                      <div className="mt-3.5 pt-2 border-t border-dashed border-gray-200/80 flex items-center justify-between text-[10px] text-slate/45 font-serif italic">
                                         <span>Click to open memory chapter</span>
-                                        <span className="text-lavender font-sans font-bold">Read more →</span>
+                                        <span className="text-lavender font-sans font-bold">Open Memory →</span>
                                       </div>
                                     )}
 
@@ -587,7 +678,7 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                             </motion.div>
                                           )}
 
-                                          {/* Soft Glass Action Buttons (Edit & Delete) */}
+                                          {/* Action Buttons (Edit & Delete) */}
                                           <div className="mt-6 pt-4 border-t border-slate/10 flex items-center justify-between">
                                             <span className="text-[11px] text-slate/40 font-serif italic">
                                               Created with love ♡
