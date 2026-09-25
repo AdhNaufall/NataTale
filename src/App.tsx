@@ -184,7 +184,7 @@ function App() {
             exit="exit"
             className="w-full h-full"
           >
-            {currentPath === '/' && <Timeline memories={memories} onEdit={handleEdit} onDelete={deleteMemory} />}
+            {currentPath === '/' && <Timeline memories={memories} onEdit={handleEdit} onDelete={deleteMemory} navigate={navigate} />}
             {currentPath === '/archive' && <Archive memories={memories} />}
             {currentPath === '/write' && <Write onSave={addMemory} onUpdate={updateMemory} navigate={navigate} memories={memories} editingMemory={editingMemory} setEditingMemory={setEditingMemory} />}
             {currentPath === '/story' && <Story memories={memories} navigate={navigate} />}
