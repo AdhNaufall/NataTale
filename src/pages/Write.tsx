@@ -476,13 +476,13 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
           <div className="flex gap-3 flex-wrap items-center">
             {MOOD_EMOJIS.map(emoji => (
               <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
                 key={emoji}
                 type="button"
                 onClick={() => setMood(emoji)}
                 className={cn(
-                  "w-12 h-12 text-3xl flex items-center justify-center rounded-xl transition-all duration-300",
+                  "w-12 h-12 text-3xl flex items-center justify-center rounded-xl transition-all duration-200",
                   mood === emoji ? "bg-lavender/15 shadow-sm ring-1 ring-lavender/30" : "hover:bg-gray-50 grayscale hover:grayscale-0 opacity-50 hover:opacity-100"
                 )}
               >
@@ -501,9 +501,9 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
               placeholder="+"
               title="Ketik emoji kustom dari keyboard"
               className={cn(
-                "w-12 h-12 text-3xl text-center rounded-xl transition-all duration-300 outline-none placeholder:text-gray-300 placeholder:text-2xl border-2",
+                "w-12 h-12 text-3xl text-center rounded-xl transition-all duration-200 outline-none placeholder:text-gray-300 placeholder:text-2xl border-2",
                 !MOOD_EMOJIS.includes(mood) && mood 
-                  ? "bg-lavender/15 border-lavender/30 scale-110 shadow-sm ring-1 ring-lavender/30" 
+                  ? "bg-lavender/15 border-lavender/30 scale-105 shadow-sm ring-1 ring-lavender/30" 
                   : "border-dashed border-gray-200 bg-transparent hover:bg-gray-50 focus:border-lavender focus:bg-lavender/5"
               )}
             />
@@ -537,11 +537,11 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
                     onFocus={() => setHoverRating(star)}
                     onBlur={() => setHoverRating(null)}
                     aria-label={`Rate ${star} of 5 stars`}
-                    className="p-1 rounded-xl text-amber-400 hover:scale-115 active:scale-95 transition-all duration-150 focus:outline-none focus:ring-2 focus:ring-lavender/40 cursor-pointer"
+                    className="p-1 rounded-xl text-amber-400 hover:scale-105 active:scale-95 transition-transform duration-150 focus:outline-none focus:ring-2 focus:ring-lavender/40 cursor-pointer"
                   >
                     <Star
                       className={cn(
-                        "w-7 h-7 sm:w-8 sm:h-8 transition-all duration-150",
+                        "w-7 h-7 sm:w-8 sm:h-8 transition-colors duration-150",
                         isFilled
                           ? "fill-amber-400 text-amber-400 drop-shadow-[0_2px_6px_rgba(251,191,36,0.35)]"
                           : "fill-transparent text-gray-300 hover:text-amber-200"
@@ -628,7 +628,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
                     {isFetchingSpotify ? (
                       <div className="w-4 h-4 border-2 border-lavender border-t-transparent rounded-full animate-spin" />
                     ) : (
-                      <Music2 className="w-4.5 h-4.5 text-lavender animate-pulse" />
+                      <Music2 className="w-4.5 h-4.5 text-lavender" />
                     )}
                   </div>
                   <div className="min-w-0">
@@ -658,7 +658,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
                   href={spotifyUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3.5 py-1.5 bg-white/90 hover:bg-white text-slate text-[11px] font-bold rounded-xl border border-slate/10 shadow-xs flex items-center gap-1.5 shrink-0 transition-all hover:scale-105 active:scale-95"
+                  className="px-3.5 py-1.5 bg-white/90 hover:bg-white text-slate text-[11px] font-bold rounded-xl border border-slate/10 shadow-xs flex items-center gap-1.5 shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98]"
                 >
                   <span>Open</span>
                   <ExternalLink className="w-3 h-3 text-lavender" />

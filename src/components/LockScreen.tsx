@@ -57,41 +57,24 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-background bg-noise p-6 overflow-hidden select-none">
       
       {/* Dynamic Ambient Background Orbs */}
-      <motion.div 
-        animate={{ 
-          scale: [1, 1.15, 1],
-          x: [0, 20, 0],
-          y: [0, -20, 0]
-        }}
-        transition={{ repeat: Infinity, duration: 8, ease: "easeInOut" }}
-        className="absolute top-1/4 left-1/4 w-[28rem] h-[28rem] bg-gradient-to-tr from-lavender/25 to-rose/20 rounded-full blur-[90px] -z-10 pointer-events-none" 
+      <div 
+        className="absolute top-1/4 left-1/4 w-[28rem] h-[28rem] bg-gradient-to-tr from-lavender/20 to-rose/15 rounded-full blur-[90px] -z-10 pointer-events-none" 
       />
-      <motion.div 
-        animate={{ 
-          scale: [1, 1.2, 1],
-          x: [0, -25, 0],
-          y: [0, 25, 0]
-        }}
-        transition={{ repeat: Infinity, duration: 10, ease: "easeInOut", delay: 1 }}
-        className="absolute bottom-1/4 right-1/4 w-[28rem] h-[28rem] bg-gradient-to-br from-softblue/25 to-mint/20 rounded-full blur-[90px] -z-10 pointer-events-none" 
+      <div 
+        className="absolute bottom-1/4 right-1/4 w-[28rem] h-[28rem] bg-gradient-to-br from-softblue/20 to-mint/15 rounded-full blur-[90px] -z-10 pointer-events-none" 
       />
 
       {/* Main Glass Card Container */}
       <motion.div
-        initial={{ opacity: 0, scale: 0.92, y: 20 }}
+        initial={{ opacity: 0, scale: 0.98, y: 12 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         className="w-full max-w-sm bg-white/75 backdrop-blur-2xl p-8 sm:p-9 rounded-[2.5rem] shadow-[0_25px_60px_-15px_rgba(44,53,69,0.12),0_0_0_1px_rgba(255,255,255,0.8)] border border-white/80 flex flex-col items-center mx-4 relative"
       >
-        {/* Pulsing Heart Emblem */}
-        <motion.div
-          animate={{ scale: [1, 1.12, 1] }}
-          transition={{ repeat: Infinity, duration: 2.2, ease: "easeInOut" }}
-          className="mb-3 relative"
-        >
-          <div className="absolute inset-0 bg-softblue/30 rounded-full blur-xl animate-pulse" />
+        {/* Heart Emblem */}
+        <div className="mb-3 relative">
           <Heart className="w-11 h-11 text-softblue fill-softblue/30 drop-shadow-md relative z-10" />
-        </motion.div>
+        </div>
 
         {/* Title */}
         <h1 className="font-serif text-3xl font-bold tracking-wider text-slate mb-1 drop-shadow-sm">NataTale</h1>
@@ -101,41 +84,25 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
 
         <form onSubmit={handleSubmit} className="flex flex-col items-center w-full">
           
-          {/* Pulsing PIN Indicator Dots with Spring Physics */}
+          {/* PIN Indicator Dots */}
           <motion.div
-            animate={error ? { x: [-16, 16, -12, 12, -6, 6, 0] } : {}}
-            transition={{ duration: 0.45, ease: "easeInOut" }}
+            animate={error ? { x: [-10, 10, -8, 8, -4, 4, 0] } : {}}
+            transition={{ duration: 0.35, ease: "easeInOut" }}
             className="flex gap-4 sm:gap-5 mb-10 h-7 items-center justify-center"
           >
             {Array.from({ length: SECRET_PIN.length }).map((_, index) => {
               const isFilled = pin.length > index;
               return (
                 <div key={index} className="relative flex items-center justify-center">
-                  <motion.div
-                    animate={
-                      error
-                        ? { scale: [1, 1.2, 1], backgroundColor: "#F43F5E", borderColor: "#E11D48" }
-                        : isFilled
-                        ? { scale: [0.8, 1.25, 1.1], transition: { type: "spring", stiffness: 500, damping: 20 } }
-                        : { scale: 1 }
-                    }
+                  <div
                     className={cn(
-                      "w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full border-2 transition-colors duration-200",
+                      "w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full border-2 transition-all duration-200",
                       isFilled
-                        ? "bg-gradient-to-tr from-slate to-slate/80 border-slate shadow-[0_0_12px_rgba(44,53,69,0.35)]"
+                        ? "bg-slate border-slate scale-105 shadow-xs"
                         : "border-slate/25 bg-white/40 shadow-inner",
-                      error && "shadow-[0_0_15px_rgba(244,63,94,0.6)]"
+                      error && "border-rose-500 bg-rose-500"
                     )}
                   />
-                  {/* Subtle Glow Ripple when just filled */}
-                  {isFilled && !error && (
-                    <motion.div
-                      initial={{ scale: 0.8, opacity: 0.8 }}
-                      animate={{ scale: 1.8, opacity: 0 }}
-                      transition={{ duration: 0.4 }}
-                      className="absolute inset-0 rounded-full bg-softblue/50 pointer-events-none"
-                    />
-                  )}
                 </div>
               );
             })}
@@ -161,9 +128,9 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
               <motion.button
                 key={num}
                 type="button"
-                whileHover={{ scale: 1.04, y: -2 }}
-                whileTap={{ scale: 0.90, y: 2 }}
-                transition={{ type: "spring", stiffness: 500, damping: 25 }}
+                whileHover={{ scale: 1.02, y: -1 }}
+                whileTap={{ scale: 0.97, y: 1 }}
+                transition={{ duration: 0.15 }}
                 onClick={() => handleKeyPress(num)}
                 className={cn(
                   "w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] mx-auto rounded-full",
@@ -187,9 +154,9 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
             {/* Zero Button */}
             <motion.button
               type="button"
-              whileHover={{ scale: 1.04, y: -2 }}
-              whileTap={{ scale: 0.90, y: 2 }}
-              transition={{ type: "spring", stiffness: 500, damping: 25 }}
+              whileHover={{ scale: 1.02, y: -1 }}
+              whileTap={{ scale: 0.97, y: 1 }}
+              transition={{ duration: 0.15 }}
               onClick={() => handleKeyPress('0')}
               className={cn(
                 "w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] mx-auto rounded-full",
@@ -208,11 +175,11 @@ export default function LockScreen({ onUnlock }: LockScreenProps) {
               {pin.length > 0 ? (
                 <motion.button
                   type="button"
-                  initial={{ opacity: 0, scale: 0.8 }}
+                  initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  whileHover={{ scale: 1.08 }}
-                  whileTap={{ scale: 0.88 }}
+                  exit={{ opacity: 0, scale: 0.9 }}
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.96 }}
                   onClick={() => setPin(p => p.slice(0, -1))}
                   className="w-16 h-16 sm:w-[4.5rem] sm:h-[4.5rem] mx-auto rounded-full flex items-center justify-center text-slate/60 hover:text-slate hover:bg-white/60 transition-colors cursor-pointer"
                 >

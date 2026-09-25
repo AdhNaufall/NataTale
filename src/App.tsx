@@ -165,9 +165,9 @@ function App() {
   }
 
   const pageVariants = {
-    initial: { opacity: 0, scale: 0.95, filter: "blur(8px)", y: 10 },
-    animate: { opacity: 1, scale: 1, filter: "blur(0px)", y: 0, transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] } },
-    exit: { opacity: 0, scale: 1.05, filter: "blur(8px)", transition: { duration: 0.3, ease: "easeInOut" } }
+    initial: { opacity: 0, y: 8 },
+    animate: { opacity: 1, y: 0, transition: { duration: 0.28, ease: [0.22, 1, 0.36, 1] } },
+    exit: { opacity: 0, y: -4, transition: { duration: 0.18, ease: "easeOut" } }
   };
 
   return (

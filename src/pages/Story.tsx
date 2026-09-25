@@ -224,10 +224,10 @@ export default function Story({ memories, navigate }: StoryProps) {
       {/* Top 4 Stat Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4 mb-8">
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="bg-white/70 backdrop-blur-xl p-5 rounded-[2rem] border border-white/80 shadow-sm flex flex-col items-center text-center hover:bg-white/90 transition-all hover:scale-[1.02]"
+          transition={{ delay: 0.15, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          className="bg-white/70 backdrop-blur-xl p-5 rounded-[2rem] border border-white/80 shadow-sm flex flex-col items-center text-center hover:bg-white/90 transition-all hover:-translate-y-0.5"
         >
           <div className="w-10 h-10 rounded-2xl bg-lavender/15 flex items-center justify-center text-lavender mb-3 shadow-inner ring-1 ring-lavender/25">
             <Heart className="w-5 h-5 fill-lavender/30" />
@@ -237,10 +237,10 @@ export default function Story({ memories, navigate }: StoryProps) {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.35 }}
-          className="bg-white/70 backdrop-blur-xl p-5 rounded-[2rem] border border-white/80 shadow-sm flex flex-col items-center text-center hover:bg-white/90 transition-all hover:scale-[1.02]"
+          transition={{ delay: 0.2, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          className="bg-white/70 backdrop-blur-xl p-5 rounded-[2rem] border border-white/80 shadow-sm flex flex-col items-center text-center hover:bg-white/90 transition-all hover:-translate-y-0.5"
         >
           <div className="w-10 h-10 rounded-2xl bg-softblue/15 flex items-center justify-center text-softblue mb-3 shadow-inner ring-1 ring-softblue/25">
             <Camera className="w-5 h-5" />
@@ -250,10 +250,10 @@ export default function Story({ memories, navigate }: StoryProps) {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-          className="bg-white/70 backdrop-blur-xl p-5 rounded-[2rem] border border-white/80 shadow-sm flex flex-col items-center text-center hover:bg-white/90 transition-all hover:scale-[1.02]"
+          transition={{ delay: 0.25, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          className="bg-white/70 backdrop-blur-xl p-5 rounded-[2rem] border border-white/80 shadow-sm flex flex-col items-center text-center hover:bg-white/90 transition-all hover:-translate-y-0.5"
         >
           <div className="w-10 h-10 rounded-2xl bg-mint/20 flex items-center justify-center text-emerald-600 mb-3 shadow-inner ring-1 ring-mint/30">
             <MapPin className="w-5 h-5" />
@@ -263,10 +263,10 @@ export default function Story({ memories, navigate }: StoryProps) {
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.45 }}
-          className="bg-white/70 backdrop-blur-xl p-5 rounded-[2rem] border border-white/80 shadow-sm flex flex-col items-center text-center hover:bg-white/90 transition-all hover:scale-[1.02]"
+          transition={{ delay: 0.3, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          className="bg-white/70 backdrop-blur-xl p-5 rounded-[2rem] border border-white/80 shadow-sm flex flex-col items-center text-center hover:bg-white/90 transition-all hover:-translate-y-0.5"
         >
           <div className="w-10 h-10 rounded-2xl bg-rose/25 flex items-center justify-center text-rose-500 mb-3 shadow-inner ring-1 ring-rose/30">
             <Layers className="w-5 h-5" />

@@ -109,22 +109,21 @@ export default function Us({ memories, navigate }: UsProps) {
           {randomPhotos.map((img, idx) => (
             <motion.div
               key={idx}
-              initial={{ opacity: 0, scale: 0.5, y: -40, rotate: 0 }}
+              initial={{ opacity: 0, scale: 0.9, y: 15, rotate: 0 }}
               animate={{ opacity: 1, scale: 1, y: 0, rotate: rotations[idx] }}
               transition={{
-                type: "spring",
-                stiffness: 120,
-                damping: 14,
-                delay: idx * 0.12
+                duration: 0.45,
+                ease: [0.22, 1, 0.36, 1],
+                delay: idx * 0.08
               }}
               whileHover={{
-                scale: 1.15,
+                scale: 1.06,
                 rotate: 0,
                 zIndex: 50,
-                y: -15,
-                transition: { type: "spring", stiffness: 400, damping: 25 }
+                y: -8,
+                transition: { duration: 0.2, ease: [0.22, 1, 0.36, 1] }
               }}
-              className="absolute w-32 sm:w-40 aspect-[3/4] bg-white p-2 pb-7 sm:pb-9 shadow-polaroid border border-gray-100 rounded-sm cursor-pointer"
+              className="absolute w-32 sm:w-40 aspect-[3/4] bg-white p-2 pb-7 sm:pb-9 shadow-polaroid border border-gray-100 rounded-sm cursor-pointer transition-shadow"
               style={{
                 left: `calc(50% - 64px + ${(idx - 1.5) * 36}px)`,
                 zIndex: 10 + idx

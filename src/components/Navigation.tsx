@@ -30,7 +30,7 @@ export function Navigation({ currentPath, navigate }: NavigationProps) {
               key={item.path}
               onClick={() => navigate(item.path)}
               className={cn(
-                "relative flex flex-col items-center gap-0.5 sm:gap-1 transition-all duration-300 w-14 sm:w-16 z-10 cursor-pointer",
+                "relative flex flex-col items-center gap-0.5 sm:gap-1 transition-all duration-200 w-14 sm:w-16 z-10 cursor-pointer",
                 isActive ? "text-slate" : "text-gray-400 hover:text-softblue"
               )}
             >
@@ -38,25 +38,27 @@ export function Navigation({ currentPath, navigate }: NavigationProps) {
                 <motion.div
                   layoutId="nav-pill"
                   className="absolute -inset-x-1.5 -inset-y-1.5 bg-softblue/15 rounded-2xl -z-10"
-                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                  transition={{ type: "spring", stiffness: 450, damping: 35 }}
                 />
               )}
               <motion.div
-                animate={isActive ? { y: -2, scale: 1.1 } : { y: 0, scale: 1 }}
-                transition={{ type: "spring", stiffness: 400, damping: 20 }}
+                animate={isActive ? { y: -1, scale: 1.04 } : { y: 0, scale: 1 }}
+                transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
                 className={cn(
-                  "p-1 rounded-2xl transition-colors duration-300",
+                  "p-1 rounded-2xl transition-colors duration-200",
                   isActive ? "text-softblue" : ""
                 )}
               >
-                <Icon className={cn("w-5 h-5 sm:w-6 sm:h-6", isActive ? "stroke-[2.5px]" : "stroke-2")} />
+                <Icon className={cn("w-5 h-5 sm:w-6 sm:h-6", isActive ? "stroke-[2.25px]" : "stroke-2")} />
               </motion.div>
-              <motion.span 
-                animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0.6, y: 0 }}
-                className="text-[8.5px] sm:text-[9px] font-bold uppercase tracking-wider sm:tracking-widest mt-0.5"
+              <span 
+                className={cn(
+                  "text-[8.5px] sm:text-[9px] font-bold uppercase tracking-wider sm:tracking-widest mt-0.5 transition-opacity duration-200",
+                  isActive ? "opacity-100" : "opacity-60"
+                )}
               >
                 {item.label}
-              </motion.span>
+              </span>
             </button>
           );
         })}

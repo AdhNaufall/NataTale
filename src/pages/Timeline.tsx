@@ -104,8 +104,8 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
         {monthSections.length > 0 && (
           <div className="relative">
             <motion.button
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.94 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => setShowMonthPicker(prev => !prev)}
               aria-label="Jump to timeline month"
               className="px-3.5 py-2 bg-white/85 hover:bg-white backdrop-blur-xl shadow-[0_10px_25px_-5px_rgba(44,53,69,0.08)] rounded-full flex items-center gap-2 text-xs font-bold text-slate border border-white/80 cursor-pointer transition-all"
@@ -119,9 +119,10 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
             <AnimatePresence>
               {showMonthPicker && (
                 <motion.div
-                  initial={{ opacity: 0, scale: 0.92, y: -8 }}
+                  initial={{ opacity: 0, scale: 0.96, y: -4 }}
                   animate={{ opacity: 1, scale: 1, y: 0 }}
-                  exit={{ opacity: 0, scale: 0.92, y: -8 }}
+                  exit={{ opacity: 0, scale: 0.96, y: -4 }}
+                  transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
                   className="absolute right-0 mt-2.5 w-60 bg-white/95 backdrop-blur-2xl rounded-3xl shadow-2xl border border-white p-3 z-50 space-y-1"
                 >
                   <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate/40 px-3 py-1.5 border-b border-gray-100 flex items-center justify-between">
@@ -152,11 +153,12 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
         <AnimatePresence>
           {showScrollTop && (
             <motion.button
-              initial={{ opacity: 0, scale: 0.7 }}
+              initial={{ opacity: 0, scale: 0.85 }}
               animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.7 }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
+              exit={{ opacity: 0, scale: 0.85 }}
+              transition={{ duration: 0.2 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={scrollToTop}
               aria-label="Back to top"
               className="w-10 h-10 bg-white/85 hover:bg-white backdrop-blur-xl shadow-[0_10px_25px_-5px_rgba(44,53,69,0.08)] rounded-full flex items-center justify-center text-slate/70 hover:text-lavender border border-white/80 cursor-pointer transition-all"
@@ -361,10 +363,10 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                             <div className="w-full sm:w-1/2 pl-10 sm:pl-0 sm:px-8">
                               <motion.div
                                 layout
-                                initial={{ opacity: 0, y: 25 }}
+                                initial={{ opacity: 0, y: 14 }}
                                 whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true, margin: "-40px" }}
-                                transition={{ duration: 0.5, ease: "easeOut" }}
+                                viewport={{ once: true, margin: "-30px" }}
+                                transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
                                 className="relative group"
                               >
                                 {/* Multi-Photo Stack Layer Background Visual (When memory has multiple photos) */}
@@ -372,19 +374,19 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                   <div
                                     aria-hidden="true"
                                     className={cn(
-                                      "absolute inset-0 bg-[#F9F7F5] rounded-xs border border-gray-200/70 shadow-sm pointer-events-none transition-transform duration-300",
+                                      "absolute inset-0 bg-[#F9F7F5] rounded-xs border border-gray-200/70 shadow-2xs pointer-events-none transition-transform duration-250",
                                       isEven
-                                        ? "rotate-2 translate-x-1.5 translate-y-1.5 group-hover:rotate-3 group-hover:translate-x-2.5 group-hover:translate-y-2.5"
-                                        : "-rotate-2 -translate-x-1.5 translate-y-1.5 group-hover:-rotate-3 group-hover:-translate-x-2.5 group-hover:translate-y-2.5"
+                                        ? "rotate-1 translate-x-1 translate-y-1 group-hover:rotate-2 group-hover:translate-x-1.5 group-hover:translate-y-1.5"
+                                        : "-rotate-1 -translate-x-1 translate-y-1 group-hover:-rotate-2 group-hover:-translate-x-1.5 group-hover:translate-y-1.5"
                                     )}
                                   />
                                 )}
 
                                 {/* Scrapbook Washi Tape on Top */}
                                 <div className={cn(
-                                  "absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-5.5 backdrop-blur-xs z-30 transition-transform pointer-events-none border shadow-2xs",
+                                  "absolute -top-3 left-1/2 -translate-x-1/2 w-16 h-5.5 backdrop-blur-xs z-30 transition-transform duration-200 pointer-events-none border shadow-2xs",
                                   isEven
-                                    ? "bg-rose/40 border-rose/30 -rotate-3 group-hover:rotate-0"
+                                    ? "bg-rose/40 border-rose/30 -rotate-2 group-hover:rotate-0"
                                     : "bg-softblue/40 border-softblue/30 rotate-2 group-hover:rotate-0"
                                 )} />
 
@@ -401,13 +403,13 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                     }
                                   }}
                                   animate={{ rotate: currentRotation }}
-                                  whileHover={!isExpanded ? { y: -6, scale: 1.02, rotate: 0 } : undefined}
-                                  transition={{ type: "spring", stiffness: 350, damping: 25 }}
+                                  whileHover={!isExpanded ? { y: -4, scale: 1.012, rotate: 0 } : undefined}
+                                  transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                                   className={cn(
-                                    "bg-[#FEFCFA] p-3.5 pb-7 sm:p-4.5 sm:pb-9 rounded-xs border border-[#EAE6DF] relative cursor-pointer text-left transition-all duration-300",
+                                    "bg-[#FEFCFA] p-3.5 pb-7 sm:p-4.5 sm:pb-9 rounded-xs border border-[#EAE6DF] relative cursor-pointer text-left transition-shadow duration-250",
                                     isExpanded
-                                      ? "shadow-[0_25px_60px_-15px_rgba(44,53,69,0.18)] ring-2 ring-lavender/30 z-30"
-                                      : "shadow-[0_15px_35px_-5px_rgba(44,53,69,0.08),0_4px_12px_-2px_rgba(44,53,69,0.04)] hover:shadow-2xl"
+                                      ? "shadow-[0_20px_50px_-15px_rgba(44,53,69,0.14)] ring-2 ring-lavender/30 z-30"
+                                      : "shadow-[0_10px_25px_-5px_rgba(44,53,69,0.06),0_2px_8px_-2px_rgba(44,53,69,0.03)] hover:shadow-xl"
                                   )}
                                 >
                                   {/* Mobile Date Header inside card */}
@@ -425,12 +427,11 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
 
                                   {/* Mood Emoji Sticker pinned on top corner */}
                                   {memory.mood && (
-                                    <motion.div
-                                      whileHover={{ scale: 1.15, rotate: 10 }}
-                                      className="absolute -top-3.5 -right-3.5 z-40 bg-white/95 backdrop-blur-md w-11 h-11 sm:w-12 sm:h-12 rounded-2xl shadow-lg border border-pink-100 flex items-center justify-center text-2xl sm:text-3xl select-none"
+                                    <div
+                                      className="absolute -top-3.5 -right-3.5 z-40 bg-white/95 backdrop-blur-md w-11 h-11 sm:w-12 sm:h-12 rounded-2xl shadow-md border border-pink-100 flex items-center justify-center text-2xl sm:text-3xl select-none transition-transform duration-200 group-hover:scale-105"
                                     >
                                       <span className="transform -rotate-6">{memory.mood}</span>
-                                    </motion.div>
+                                    </div>
                                   )}
 
                                   {/* PHOTO AS PRIMARY VISUAL FOCAL POINT (Polaroid Window) */}
@@ -447,7 +448,7 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                           <img
                                             src={imagesList[0]}
                                             alt={memory.title || "Memory Photo"}
-                                            className="w-full h-full object-cover group-hover/photo:scale-105 transition-transform duration-500 ease-out"
+                                            className="w-full h-full object-cover group-hover/photo:scale-103 transition-transform duration-400 ease-out"
                                             loading="lazy"
                                             decoding="async"
                                           />
@@ -623,16 +624,17 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                           {/* OUR SONG CARD ♡ */}
                                           {memory.spotifyUrl && (
                                             <motion.div
-                                              initial={{ opacity: 0, y: 10 }}
+                                              initial={{ opacity: 0, y: 6 }}
                                               animate={{ opacity: 1, y: 0 }}
+                                              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                                               className="my-5 p-4 rounded-2xl bg-gradient-to-br from-lavender/15 via-rose-50/40 to-softblue/15 border border-lavender/30 backdrop-blur-md shadow-xs text-left relative overflow-hidden"
                                             >
-                                              <div className="absolute -top-8 -right-8 w-24 h-24 bg-lavender/20 rounded-full blur-xl pointer-events-none" />
+                                              <div className="absolute -top-8 -right-8 w-24 h-24 bg-lavender/15 rounded-full blur-xl pointer-events-none" />
 
                                               <div className="flex items-center justify-between gap-3 mb-2 relative z-10">
                                                 <div className="flex items-center gap-2">
                                                   <div className="w-8 h-8 rounded-xl bg-white shadow-xs border border-lavender/20 flex items-center justify-center text-slate">
-                                                    <Music2 className="w-4 h-4 text-lavender animate-pulse" />
+                                                    <Music2 className="w-4 h-4 text-lavender" />
                                                   </div>
                                                   <div>
                                                     <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate/50 block leading-tight">
