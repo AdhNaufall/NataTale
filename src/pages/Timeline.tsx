@@ -448,6 +448,26 @@ export default function Timeline({ memories, onEdit, onDelete, navigate }: Timel
                                           </span>
                                         </span>
                                       )}
+
+                                      {/* Offline / Sync Status Badge */}
+                                      {memory.syncStatus === 'pending' && (
+                                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-amber-50 text-amber-600 rounded-full text-[10px] font-semibold border border-amber-200/60" title="Saved locally on this device. Will sync when connected.">
+                                          <span className="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse" />
+                                          <span>Saved on device</span>
+                                        </span>
+                                      )}
+                                      {memory.syncStatus === 'syncing' && (
+                                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-blue-50 text-blue-600 rounded-full text-[10px] font-semibold border border-blue-200/60">
+                                          <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-ping" />
+                                          <span>Syncing...</span>
+                                        </span>
+                                      )}
+                                      {memory.syncStatus === 'failed' && (
+                                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 bg-rose-50 text-rose-500 rounded-full text-[10px] font-semibold border border-rose-200/60" title="Couldn't sync yet — we'll try again later.">
+                                          <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                                          <span>Pending sync</span>
+                                        </span>
+                                      )}
                                     </div>
 
                                     {/* Collapsed Short Excerpt preview if not expanded */}

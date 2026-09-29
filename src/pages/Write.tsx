@@ -8,7 +8,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
   const [date, setDate] = useState('');
   const [location, setLocation] = useState('');
   const [story, setStory] = useState('');
-  const [images, setImages] = useState<{ url: string; isUploading: boolean; id: string }[]>([]);
+  const [images, setImages] = useState<{ url: string; isUploading: boolean; id: string; blob?: Blob }[]>([]);
   const [category, setCategory] = useState('');
   const [rating, setRating] = useState(5);
   const [hoverRating, setHoverRating] = useState<number | null>(null);
@@ -142,27 +142,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
     e.preventDefault();
     setIsSubmitting(true);
 
-    const cloudName = (import.meta as any).env.VITE_CLOUDINARY_CLOUD_NAME;
-    const uploadPreset = (import.meta as any).env.VITE_CLOUDINARY_UPLOAD_PRESET;
-    
-    // Hanya blokir jika ada gambar Base64 BARU (bukan gambar lama dari memori yang sedang diedit)
-    const originalImages = editingMemory?.images || [];
-    const hasNewBase64 = images.some(img => 
-      img.url.startsWith('data:') && !originalImages.includes(img.url)
-    );
-
-    if (hasNewBase64) {
-      if (!cloudName || !uploadPreset) {
-        alert('Gagal menyimpan: Konfigurasi Cloudinary tidak ditemukan di server/Vercel. Pastikan sudah memasukkan VITE_CLOUDINARY_CLOUD_NAME & VITE_CLOUDINARY_UPLOAD_PRESET di Settings Vercel dan melakukan Redeploy.');
-        setIsSubmitting(false);
-        return;
-      } else {
-        alert('Beberapa gambar baru gagal diunggah ke Cloudinary. Coba periksa koneksi internet HP kamu atau pastikan kredensial Cloudinary di Vercel sudah benar.');
-        setIsSubmitting(false);
-        return;
-      }
-    }
-    
+    // Save locally first! Pass Blobs & preview URLs seamlessly
     setTimeout(() => {
       const memData = {
         title,
@@ -170,6 +150,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
         location,
         story,
         images: images.map(img => img.url),
+        imageBlobs: images.map(img => img.blob).filter(Boolean),
         category,
         mood,
         rating,
@@ -185,7 +166,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
       }
       
       navigate('/');
-    }, 1200);
+    }, 600);
   };
 
   const processFiles = async (files: FileList | null) => {
@@ -245,46 +226,54 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
               const ctx = canvas.getContext('2d');
               ctx?.drawImage(img, 0, 0, width, height);
 
-              // Compress to JPEG with 70% quality
-              const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
-              
-              const tempId = Math.random().toString(36).substring(2, 9);
-              setImages(prev => [...prev, { url: compressedBase64, isUploading: true, id: tempId }]);
-              URL.revokeObjectURL(objectUrl);
-              resolve();
+              canvas.toBlob((blob) => {
+                if (!blob) {
+                  resolve();
+                  return;
+                }
 
-              // Background Cloudinary Upload
-              const cloudName = (import.meta as any).env.VITE_CLOUDINARY_CLOUD_NAME;
-              const uploadPreset = (import.meta as any).env.VITE_CLOUDINARY_UPLOAD_PRESET;
+                // Create persistent local Object URL for instant preview
+                const previewUrl = URL.createObjectURL(blob);
+                const tempId = Math.random().toString(36).substring(2, 9);
 
-              if (cloudName && uploadPreset) {
-                const formData = new FormData();
-                formData.append('file', compressedBase64);
-                formData.append('upload_preset', uploadPreset);
+                // Add to state immediately with Blob for IndexedDB storage
+                const isOnline = typeof navigator !== 'undefined' && navigator.onLine;
+                setImages(prev => [...prev, { url: previewUrl, isUploading: isOnline, id: tempId, blob }]);
+                URL.revokeObjectURL(objectUrl);
+                resolve();
 
-                fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
-                  method: 'POST',
-                  body: formData
-                })
-                  .then(res => {
-                    if (!res.ok) throw new Error('Cloudinary response error');
-                    return res.json();
+                // If online, optionally attempt background upload to Cloudinary directly
+                const cloudName = (import.meta as any).env.VITE_CLOUDINARY_CLOUD_NAME;
+                const uploadPreset = (import.meta as any).env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+                if (isOnline && cloudName && uploadPreset) {
+                  const formData = new FormData();
+                  formData.append('file', blob);
+                  formData.append('upload_preset', uploadPreset);
+
+                  fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+                    method: 'POST',
+                    body: formData
                   })
-                  .then(data => {
-                    if (data.secure_url) {
-                      setImages(prev => prev.map(img => img.id === tempId ? { ...img, url: data.secure_url, isUploading: false } : img));
-                    } else {
-                      throw new Error('No secure url in response');
-                    }
-                  })
-                  .catch(err => {
-                    console.error('Cloudinary upload failed, using Base64 fallback:', err);
-                    setImages(prev => prev.map(img => img.id === tempId ? { ...img, isUploading: false } : img));
-                  });
-              } else {
-                // If environment variables are missing, fallback to Base64 immediately
-                setImages(prev => prev.map(img => img.id === tempId ? { ...img, isUploading: false } : img));
-              }
+                    .then(res => {
+                      if (!res.ok) throw new Error('Cloudinary response error');
+                      return res.json();
+                    })
+                    .then(data => {
+                      if (data.secure_url) {
+                        setImages(prev => prev.map(imgItem => imgItem.id === tempId ? { ...imgItem, url: data.secure_url, isUploading: false } : imgItem));
+                      } else {
+                        throw new Error('No secure url in response');
+                      }
+                    })
+                    .catch(err => {
+                      console.log('Background Cloudinary upload skipped/failed; will sync via queue:', err);
+                      setImages(prev => prev.map(imgItem => imgItem.id === tempId ? { ...imgItem, isUploading: false } : imgItem));
+                    });
+                } else {
+                  setImages(prev => prev.map(imgItem => imgItem.id === tempId ? { ...imgItem, isUploading: false } : imgItem));
+                }
+              }, 'image/jpeg', 0.75);
             } catch (err) {
               URL.revokeObjectURL(objectUrl);
               reject(err);
@@ -674,16 +663,16 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
         </div>
 
         <motion.button 
-          whileHover={!(images.some(img => img.isUploading) || isSubmitting) ? { scale: 1.02 } : undefined}
-          whileTap={!(images.some(img => img.isUploading) || isSubmitting) ? { scale: 0.98 } : undefined}
+          whileHover={!isSubmitting ? { scale: 1.02 } : undefined}
+          whileTap={!isSubmitting ? { scale: 0.98 } : undefined}
           type="submit" 
-          disabled={images.some(img => img.isUploading) || isSubmitting}
+          disabled={isSubmitting}
           className={cn(
-            "w-full py-4 bg-slate text-white rounded-2xl font-bold tracking-widest uppercase hover:bg-[#1A202C] transition-colors mt-8 shadow-lg shadow-slate/20",
-            (images.some(img => img.isUploading) || isSubmitting) && "opacity-50 cursor-not-allowed"
+            "w-full py-4 bg-slate text-white rounded-2xl font-bold tracking-widest uppercase hover:bg-[#1A202C] transition-colors mt-8 shadow-lg shadow-slate/20 cursor-pointer",
+            isSubmitting && "opacity-50 cursor-not-allowed"
           )}
         >
-          {images.some(img => img.isUploading) ? 'Uploading Images...' : (editingMemory ? 'Update Chapter' : 'Save Chapter')}
+          {isSubmitting ? 'Saving to Device...' : (editingMemory ? 'Update Chapter' : 'Save Chapter')}
         </motion.button>
       </form>
     </div>
