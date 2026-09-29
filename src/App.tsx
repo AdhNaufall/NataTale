@@ -20,6 +20,7 @@ import {
   OfflineMemory,
   saveOfflineLetter,
   getAllOfflineLetters,
+  deleteOfflineLetter,
   OfflineLetter
 } from './lib/offlineDb';
 import { syncPendingMemories, syncPendingLetters, onSyncStatusChange } from './lib/syncEngine';
@@ -376,6 +377,85 @@ function App() {
     }
   };
 
+  // 3. DELETE LETTER: Offline-First Flow
+  const deleteLetter = async (letterId: string) => {
+    const target = letters.find(l => l.id === letterId || l.localId === letterId);
+    if (!target) return;
+
+    const localId = target.localId || letterId;
+    const serverId = target.serverId || (!letterId.startsWith('let_') ? letterId : undefined);
+
+    if (navigator.onLine && serverId) {
+      // Online with serverId: attempt online delete directly
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/letters/${serverId}`, {
+          method: 'DELETE'
+        });
+
+        if (!res.ok && res.status !== 404) {
+          throw new Error(`Failed to delete letter on server (${res.status})`);
+        }
+
+        // Successfully deleted on server -> delete from local DB
+        await deleteOfflineLetter(localId);
+      } catch (err: any) {
+        console.error('Online letter delete error, queueing offline deletion:', err);
+        // If server failed, mark as pending delete in IndexedDB
+        await saveOfflineLetter({
+          localId,
+          serverId,
+          id: serverId,
+          sender: target.sender,
+          recipient: target.recipient,
+          title: target.title,
+          content: target.content,
+          category: target.category,
+          signature: target.signature || '',
+          isOpened: target.isOpened,
+          openedAt: target.openedAt,
+          syncStatus: 'pending',
+          syncAction: 'delete',
+          createdAt: target.createdAt,
+          updatedAt: new Date().toISOString()
+        });
+      }
+    } else if (serverId) {
+      // Offline with serverId: mark for sync deletion when reconnecting
+      await saveOfflineLetter({
+        localId,
+        serverId,
+        id: serverId,
+        sender: target.sender,
+        recipient: target.recipient,
+        title: target.title,
+        content: target.content,
+        category: target.category,
+        signature: target.signature || '',
+        isOpened: target.isOpened,
+        openedAt: target.openedAt,
+        syncStatus: 'pending',
+        syncAction: 'delete',
+        createdAt: target.createdAt,
+        updatedAt: new Date().toISOString()
+      });
+    } else {
+      // Local-only letter that was never synced to server: immediately delete from IndexedDB
+      await deleteOfflineLetter(localId);
+    }
+
+    // Immediately remove from active state and local cache
+    const updated = letters.filter(l => l.id !== letterId && l.localId !== letterId);
+    setLetters(updated);
+    localStorage.setItem('natatale_letters', JSON.stringify(updated));
+
+    // Trigger sync if online
+    if (navigator.onLine) {
+      syncPendingLetters(() => {
+        fetchLetters();
+      });
+    }
+  };
+
   // 1. ADD MEMORY: Offline-First Flow
   const addMemory = async (newMemory: any) => {
     const localId = 'local_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
@@ -639,7 +719,7 @@ function App() {
             {currentPath === '/' && <Timeline memories={memories} onEdit={handleEdit} onDelete={deleteMemory} navigate={navigate} />}
             {currentPath === '/archive' && <Archive memories={memories} />}
             {currentPath === '/write' && <Write onSave={addMemory} onUpdate={updateMemory} navigate={navigate} memories={memories} editingMemory={editingMemory} setEditingMemory={setEditingMemory} />}
-            {currentPath === '/letters' && <Letters letters={letters} onSaveLetter={addLetter} onOpenLetter={openLetter} navigate={navigate} />}
+            {currentPath === '/letters' && <Letters letters={letters} onSaveLetter={addLetter} onOpenLetter={openLetter} onDeleteLetter={deleteLetter} navigate={navigate} />}
             {currentPath === '/story' && <Story memories={memories} navigate={navigate} />}
             {currentPath === '/us' && <Us memories={memories} navigate={navigate} />}
           </motion.div>

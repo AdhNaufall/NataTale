@@ -4,7 +4,8 @@ import {
   Sparkles, 
   Plus, 
   X, 
-  Dices
+  Dices,
+  Trash2
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { cn } from '../lib/utils';
@@ -12,6 +13,7 @@ import { cn } from '../lib/utils';
 export interface LetterItem {
   id: string;
   localId?: string;
+  serverId?: string;
   sender: string;
   recipient: string;
   title: string;
@@ -28,6 +30,7 @@ interface LettersProps {
   letters: LetterItem[];
   onSaveLetter: (letter: Omit<LetterItem, 'id' | 'createdAt' | 'isOpened'>) => Promise<void> | void;
   onOpenLetter: (id: string) => Promise<void> | void;
+  onDeleteLetter?: (id: string) => Promise<void> | void;
   navigate?: (path: string) => void;
 }
 
@@ -50,7 +53,7 @@ export const normalizePersonName = (name: string): 'Naufal' | 'Tasya' => {
   return 'Naufal';
 };
 
-export default function Letters({ letters, onSaveLetter, onOpenLetter }: LettersProps) {
+export default function Letters({ letters, onSaveLetter, onOpenLetter, onDeleteLetter }: LettersProps) {
   const [activeTab, setActiveTab] = useState<'all' | 'unopened' | 'from_naufal' | 'from_tasya'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   
@@ -59,6 +62,8 @@ export default function Letters({ letters, onSaveLetter, onOpenLetter }: Letters
   const [readingLetter, setReadingLetter] = useState<LetterItem | null>(null);
   const [isOpeningAnimation, setIsOpeningAnimation] = useState(false);
   const [openingCandidate, setOpeningCandidate] = useState<LetterItem | null>(null);
+  const [letterToDelete, setLetterToDelete] = useState<LetterItem | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Form State - default Naufal -> Tasya
@@ -142,6 +147,27 @@ export default function Letters({ letters, onSaveLetter, onOpenLetter }: Letters
         onOpenLetter(letter.id);
       }
     }, 700);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!letterToDelete || !onDeleteLetter) return;
+
+    setIsDeleting(true);
+    try {
+      await onDeleteLetter(letterToDelete.id);
+      
+      // If currently reading the deleted letter, close modal
+      if (readingLetter?.id === letterToDelete.id) {
+        setReadingLetter(null);
+      }
+      setLetterToDelete(null);
+      showToast("Letter removed from our collection ♡");
+    } catch (err) {
+      console.error('Failed to delete letter:', err);
+      showToast("Couldn't delete this letter yet. We'll try again when you're back online.");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleFormSubmit = async (e: React.FormEvent) => {
@@ -556,11 +582,88 @@ export default function Letters({ letters, onSaveLetter, onOpenLetter }: Letters
                 {readingLetter.content}
               </div>
 
-              {/* Letter Signature / Footer */}
-              <div className="mt-8 pt-4 border-t border-[#EBE3D5] text-right">
-                <p className="font-handwriting text-2xl text-slate font-bold">
-                  {readingLetter.signature || `With all my love,\n${normalizePersonName(readingLetter.sender)} ♡`}
-                </p>
+              {/* Letter Signature / Footer & Actions */}
+              <div className="mt-8 pt-4 border-t border-[#EBE3D5] flex items-center justify-between">
+                <div>
+                  {onDeleteLetter && (
+                    <button
+                      type="button"
+                      onClick={() => setLetterToDelete(readingLetter)}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate/40 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors cursor-pointer"
+                      title="Delete letter"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Delete letter</span>
+                    </button>
+                  )}
+                </div>
+
+                <div className="text-right">
+                  <p className="font-handwriting text-2xl text-slate font-bold">
+                    {readingLetter.signature || `With all my love,\n${normalizePersonName(readingLetter.sender)} ♡`}
+                  </p>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* DELETE CONFIRMATION MODAL */}
+      <AnimatePresence>
+        {letterToDelete && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[100] flex items-center justify-center bg-slate/60 backdrop-blur-xs p-4"
+            onClick={() => !isDeleting && setLetterToDelete(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.92, y: 15, opacity: 0 }}
+              animate={{ scale: 1, y: 0, opacity: 1 }}
+              exit={{ scale: 0.92, y: 15, opacity: 0 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white max-w-sm w-full p-6 sm:p-7 rounded-[2rem] shadow-2xl border border-rose-100 text-center relative overflow-hidden"
+            >
+              {/* Subtle top rose accent */}
+              <div className="w-12 h-12 rounded-full bg-rose-50 border border-rose-200 text-rose-500 mx-auto flex items-center justify-center mb-3.5">
+                <Trash2 className="w-5 h-5" />
+              </div>
+
+              <h3 className="font-serif text-xl sm:text-2xl font-bold text-slate">
+                Let this letter go?
+              </h3>
+              <p className="text-xs sm:text-sm text-slate/60 font-handwriting text-base sm:text-lg mt-1.5 mb-6">
+                This little letter will be removed from your collection. ♡
+              </p>
+
+              <div className="grid grid-cols-2 gap-2.5">
+                <button
+                  type="button"
+                  disabled={isDeleting}
+                  onClick={() => setLetterToDelete(null)}
+                  className="py-2.5 sm:py-3 px-4 rounded-xl border border-slate/15 bg-white text-slate/70 font-semibold text-xs hover:bg-slate/5 transition-colors cursor-pointer"
+                >
+                  Keep Letter
+                </button>
+                
+                <button
+                  type="button"
+                  disabled={isDeleting}
+                  onClick={handleDeleteConfirm}
+                  className="py-2.5 sm:py-3 px-4 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs shadow-md shadow-rose-500/20 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                >
+                  {isDeleting ? (
+                    <span>Deleting...</span>
+                  ) : (
+                    <>
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Delete Letter</span>
+                    </>
+                  )}
+                </button>
               </div>
             </motion.div>
           </motion.div>
