@@ -68,118 +68,238 @@ function createPNG(width, height, drawFn) {
   return Buffer.concat([signature, ihdrChunk, idatChunk, iendChunk]);
 }
 
-// Distance to quadratic Bezier curve
-function sdBezier(pos, A, B, C) {
-  let minD2 = 1e9;
-  const STEPS = 32;
-  for (let i = 0; i <= STEPS; i++) {
-    const t = i / STEPS;
-    const omt = 1 - t;
-    const px = omt * omt * A.x + 2 * omt * t * B.x + t * t * C.x;
-    const py = omt * omt * A.y + 2 * omt * t * B.y + t * t * C.y;
-    const dx = pos.x - px;
-    const dy = pos.y - py;
-    const d2 = dx * dx + dy * dy;
-    if (d2 < minD2) minD2 = d2;
-  }
-  return Math.sqrt(minD2);
+function sdRoundedBox(px, py, bx, by, r) {
+  const qx = Math.abs(px) - bx + r;
+  const qy = Math.abs(py) - by + r;
+  return Math.min(Math.max(qx, qy), 0.0) + Math.sqrt(Math.max(qx, 0.0) ** 2 + Math.max(qy, 0.0) ** 2) - r;
 }
 
-// Distance to doodle heart stroke loop
-function doodleHeartDist(pos, cx, cy, size, angleRad) {
-  const cosA = Math.cos(angleRad);
-  const sinA = Math.sin(angleRad);
-  const dx = pos.x - cx;
-  const dy = pos.y - cy;
-  const lx = (dx * cosA + dy * sinA) / size;
-  const ly = (-dx * sinA + dy * cosA) / size;
-  const lPos = { x: lx, y: ly };
-
-  // 4 smooth segments defining cute playful doodle heart
-  const pBottom = { x: -0.01, y: 0.46 };
-  const pLeftCtrl = { x: -0.56, y: 0.12 };
-  const pLeftLobe = { x: -0.45, y: -0.45 };
-  const pLeftMid = { x: (pLeftCtrl.x + pLeftLobe.x) / 2, y: (pLeftCtrl.y + pLeftLobe.y) / 2 };
-
-  const pCenterDip = { x: -0.01, y: -0.16 };
-  const pRightLobe = { x: 0.44, y: -0.45 };
-  const pRightCtrl = { x: 0.56, y: 0.14 };
-  const pRightMid = { x: (pRightLobe.x + pRightCtrl.x) / 2, y: (pRightLobe.y + pRightCtrl.y) / 2 };
-
-  const d1 = sdBezier(lPos, pBottom, pLeftCtrl, pLeftMid);
-  const d2 = sdBezier(lPos, pLeftMid, pLeftLobe, pCenterDip);
-  const d3 = sdBezier(lPos, pCenterDip, pRightLobe, pRightMid);
-  const d4 = sdBezier(lPos, pRightMid, pRightCtrl, pBottom);
-
-  return Math.min(d1, d2, d3, d4) * size;
+function distSegment(px, py, ax, ay, bx, by) {
+  const pax = px - ax, pay = py - ay;
+  const bax = bx - ax, bay = by - ay;
+  const h = Math.max(0.0, Math.min(1.0, (pax * bax + pay * bay) / (bax * bax + bay * bay)));
+  const dx = pax - bax * h;
+  const dy = pay - bay * h;
+  return Math.sqrt(dx * dx + dy * dy);
 }
 
-const HEARTS = [
-  { cx: 0.48, cy: 0.43, size: 0.33, angle: -0.12, stroke: 0.038 }, // Main center
-  { cx: 0.17, cy: 0.25, size: 0.15, angle: -0.22, stroke: 0.022 }, // Top-left
-  { cx: 0.83, cy: 0.16, size: 0.14, angle: 0.18, stroke: 0.021 },  // Top-right
-  { cx: 0.21, cy: 0.76, size: 0.20, angle: -0.15, stroke: 0.027 }, // Bottom-left
-  { cx: 0.52, cy: 0.83, size: 0.12, angle: 0.08, stroke: 0.020 },  // Bottom-middle
-  { cx: 0.81, cy: 0.76, size: 0.20, angle: 0.22, stroke: 0.027 }   // Bottom-right
+// Predefined smooth aesthetic polygon vertices for a cute chubby heart
+const HEART_POINTS = [
+  [0.0, -0.66],       // bottom tip
+  [0.15, -0.48],
+  [0.32, -0.28],
+  [0.48, -0.06],
+  [0.62, 0.14],       // right tangent
+  [0.72, 0.32],
+  [0.72, 0.50],
+  [0.64, 0.64],       // right peak outer
+  [0.48, 0.72],       // right peak top
+  [0.28, 0.68],       // right peak inner
+  [0.10, 0.56],
+  [0.0, 0.44],        // softer center cleft
+  [-0.10, 0.56],
+  [-0.28, 0.68],      // left peak inner
+  [-0.48, 0.72],      // left peak top
+  [-0.64, 0.64],      // left peak outer
+  [-0.72, 0.50],
+  [-0.72, 0.32],
+  [-0.62, 0.14],      // left tangent
+  [-0.48, -0.06],
+  [-0.32, -0.28],
+  [-0.15, -0.48]
 ];
 
-function drawWhiteDoodleIcon(x, y, w, h, isMaskable = false) {
-  const nx = x / w;
-  const ny = y / h;
+function evaluateHeartPoly(px, py) {
+  // Point in polygon test (ray casting)
+  let inside = false;
+  let minD = 1e9;
+  const n = HEART_POINTS.length;
 
-  // Background: Romantic Dreamy Gradient
-  // Soft Lavender (#BBA2E3) top-left -> Gentle Rose/Peach (#F4CFDF / #ECA7C3) bottom-right
-  const gradT = (nx + ny) / 2;
-  const bgR = Math.round(180 * (1 - gradT) + 242 * gradT);
-  const bgG = Math.round(160 * (1 - gradT) + 195 * gradT);
-  const bgB = Math.round(228 * (1 - gradT) + 220 * gradT);
+  for (let i = 0, j = n - 1; i < n; j = i++) {
+    const xi = HEART_POINTS[i][0], yi = HEART_POINTS[i][1];
+    const xj = HEART_POINTS[j][0], yj = HEART_POINTS[j][1];
 
-  // Maskable scale adjustment
-  const scale = isMaskable ? 0.76 : 0.90;
-  const centeredX = (nx - 0.5) / scale + 0.5;
-  const centeredY = (ny - 0.5) / scale + 0.5;
-  const pos = { x: centeredX, y: centeredY };
+    // Distance to edge
+    const dEdge = distSegment(px, py, xi, yi, xj, yj);
+    if (dEdge < minD) minD = dEdge;
 
-  let minStrokeDist = 1e9;
-  let strokeWidth = 0.025;
+    // Ray casting
+    const intersect = ((yi > py) !== (yj > py)) &&
+      (px < (xj - xi) * (py - yi) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
 
-  for (let i = 0; i < HEARTS.length; i++) {
-    const hInfo = HEARTS[i];
-    const d = doodleHeartDist(pos, hInfo.cx, hInfo.cy, hInfo.size, hInfo.angle);
-    if (d < minStrokeDist) {
-      minStrokeDist = d;
-      strokeWidth = hInfo.stroke;
+  return { isInside: inside, dBoundary: minD };
+}
+
+function drawCalendarStickerIcon(x, y, w, h, isMaskable = false) {
+  const nx = (x / w) * 2 - 1;
+  const ny = -((y / h) * 2 - 1); // UP is positive
+
+  // Background: Romantic Dreamy Soft Gradient (#FAF8FE -> #FFF6F9)
+  const bgT = (nx - ny + 2) / 4;
+  const bgR = Math.round(248 * (1 - bgT) + 254 * bgT);
+  const bgG = Math.round(245 * (1 - bgT) + 248 * bgT);
+  const bgB = Math.round(254 * (1 - bgT) + 252 * bgT);
+
+  const scale = isMaskable ? 0.74 : 0.88;
+  const cx = nx / scale;
+  const cy = ny / scale - 0.03;
+
+  const calW = 0.72;
+  const calH = 0.62;
+  const calCorner = 0.16;
+  const dCal = sdRoundedBox(cx, cy, calW, calH, calCorner);
+
+  const strokeW = 0.024;
+  const strokeColor = [44, 53, 69]; // #2C3545 Slate Black
+  const bannerY = 0.25;
+
+  // Binder Rings at top
+  const ringX = 0.40;
+  const ringY = calH - 0.01;
+  const ringW = 0.07;
+  const ringH = 0.16;
+  const dRing1 = sdRoundedBox(cx - ringX, cy - ringY, ringW, ringH, ringW);
+  const dRing2 = sdRoundedBox(cx + ringX, cy - ringY, ringW, ringH, ringW);
+  const dRings = Math.min(dRing1, dRing2);
+
+  // Sparkles
+  function sdSparkle(spX, spY, size) {
+    const dx = Math.abs(cx - spX);
+    const dy = Math.abs(cy - spY);
+    const dArm1 = Math.max(dx - size * 0.22, dy - size);
+    const dArm2 = Math.max(dx - size, dy - size * 0.22);
+    return Math.min(dArm1, dArm2);
+  }
+  const dSparkle1 = sdSparkle(0.24, 0.78, 0.07);
+  const dSparkle2 = sdSparkle(-0.64, -0.74, 0.06);
+  const dSparkles = Math.min(dSparkle1, dSparkle2);
+
+  // 1. Sparkles
+  if (dSparkles <= 0.015) {
+    const smooth = Math.max(0, Math.min(1, (0.015 - dSparkles) / 0.008));
+    return [
+      Math.round(187 * smooth + bgR * (1 - smooth)),
+      Math.round(162 * smooth + bgG * (1 - smooth)),
+      Math.round(227 * smooth + bgB * (1 - smooth)),
+      255
+    ];
+  }
+
+  // 2. Soft Calendar Drop Shadow
+  if (dCal > 0 && dCal < 0.15 && cy < 0.65) {
+    const shadowAlpha = (1 - dCal / 0.15) * 0.18;
+    return [
+      Math.round(bgR * (1 - shadowAlpha) + 160 * shadowAlpha),
+      Math.round(bgG * (1 - shadowAlpha) + 140 * shadowAlpha),
+      Math.round(bgB * (1 - shadowAlpha) + 200 * shadowAlpha),
+      255
+    ];
+  }
+
+  // 3. Binder Rings
+  if (dRings <= strokeW) {
+    if (dRings <= 0.0) {
+      return [255, 255, 255, 255]; // Pure White Ring
     }
+    const smooth = Math.max(0, Math.min(1, (strokeW - dRings) / 0.006));
+    return [
+      Math.round(strokeColor[0] * smooth + bgR * (1 - smooth)),
+      Math.round(strokeColor[1] * smooth + bgG * (1 - smooth)),
+      Math.round(strokeColor[2] * smooth + bgB * (1 - smooth)),
+      255
+    ];
   }
 
-  let r = bgR;
-  let g = bgG;
-  let b = bgB;
+  // 4. Inside Calendar Body
+  if (dCal <= 0.0) {
+    // Outer border stroke
+    if (dCal >= -strokeW) {
+      return [strokeColor[0], strokeColor[1], strokeColor[2], 255];
+    }
 
-  // Soft Drop Shadow with offset (down and right slightly for 3D sticker look)
-  const shadowDist = minStrokeDist - strokeWidth;
-  if (shadowDist > 0 && shadowDist < 0.04) {
-    const shadowAlpha = (1 - shadowDist / 0.04) * 0.18;
-    r = Math.round(r * (1 - shadowAlpha) + 120 * shadowAlpha);
-    g = Math.round(g * (1 - shadowAlpha) + 100 * shadowAlpha);
-    b = Math.round(b * (1 - shadowAlpha) + 160 * shadowAlpha);
+    // Top Header Banner
+    if (cy > bannerY) {
+      if (Math.abs(cy - bannerY) <= strokeW * 0.8) {
+        return [strokeColor[0], strokeColor[1], strokeColor[2], 255];
+      }
+
+      // Small cute pill highlight
+      const dPill = sdRoundedBox(cx + 0.30, cy - 0.44, 0.08, 0.016, 0.016);
+      if (dPill <= 0.0) {
+        return [255, 255, 255, 255];
+      }
+
+      // Soft Lavender Banner (#C3B1E1 to #BBA2E3)
+      const bannerT = (cx + 0.6) / 1.2;
+      const banR = Math.round(195 * (1 - bannerT) + 187 * bannerT);
+      const banG = Math.round(175 * (1 - bannerT) + 162 * bannerT);
+      const banB = Math.round(230 * (1 - bannerT) + 227 * bannerT);
+      return [banR, banG, banB, 255];
+    }
+
+    // --- Interlocking Hearts on Calendar Sheet ---
+    const hScale = 0.42;
+    const shiftX = 0.16;
+    const heartCenterY = -0.16;
+
+    // Left Heart (Blue)
+    const hLeft = evaluateHeartPoly((cx + shiftX) / hScale, (cy - heartCenterY) / hScale);
+    const distLeft = hLeft.dBoundary * hScale;
+
+    // Right Heart (Pink)
+    const hRight = evaluateHeartPoly((cx - shiftX) / hScale, (cy - heartCenterY) / hScale);
+    const distRight = hRight.dBoundary * hScale;
+
+    const strokeHeartW = 0.018;
+
+    // Color Palette:
+    // Left: Aesthetic Soft Sky Pastel Blue (#8EC5FC / #98CFF9)
+    const blueColor = [148, 205, 250];
+    // Right: Aesthetic Soft Rose Pink (#FBB6CE / #FFACBC)
+    const pinkColor = [255, 178, 198];
+    // Center Intersecting: Dreamy Lilac Purple (#C3A9F5)
+    const purpleColor = [205, 175, 245];
+
+    // Cute gloss shine pill on top-left lobe of left heart
+    const dDotShine = Math.sqrt((cx + 0.28) ** 2 + (cy - 0.05) ** 2) - 0.024;
+    // Cute gloss shine pill on top-right lobe of right heart
+    const dDotShineR = Math.sqrt((cx - 0.28) ** 2 + (cy - 0.05) ** 2) - 0.020;
+
+    // Heart Outline Strokes (Dark Slate)
+    if (distLeft <= strokeHeartW || distRight <= strokeHeartW) {
+      if (hLeft.isInside || hRight.isInside || distLeft <= strokeHeartW * 0.8 || distRight <= strokeHeartW * 0.8) {
+        return [strokeColor[0], strokeColor[1], strokeColor[2], 255];
+      }
+    }
+
+    // Intersecting Center Region (PURPLE ♡)
+    if (hLeft.isInside && hRight.isInside) {
+      return [purpleColor[0], purpleColor[1], purpleColor[2], 255];
+    }
+
+    // Left Heart (BLUE ♡)
+    if (hLeft.isInside) {
+      if (dDotShine <= 0.0) {
+        return [255, 255, 255, 255]; // Gloss shine dot
+      }
+      return [blueColor[0], blueColor[1], blueColor[2], 255];
+    }
+
+    // Right Heart (PINK ♡)
+    if (hRight.isInside) {
+      if (dDotShineR <= 0.0) {
+        return [255, 255, 255, 255]; // Gloss shine dot
+      }
+      return [pinkColor[0], pinkColor[1], pinkColor[2], 255];
+    }
+
+    // Pure Crisp White Calendar Sheet
+    return [255, 255, 255, 255];
   }
 
-  // Crisp, luminous white doodle heart stroke with subtle smooth antialiasing
-  if (minStrokeDist <= strokeWidth) {
-    const edge = strokeWidth - minStrokeDist;
-    const smooth = Math.min(1, edge / 0.006);
-
-    const strokeR = 255;
-    const strokeG = 255;
-    const strokeB = 255;
-
-    r = Math.round(strokeR * smooth + r * (1 - smooth));
-    g = Math.round(strokeG * smooth + g * (1 - smooth));
-    b = Math.round(strokeB * smooth + b * (1 - smooth));
-  }
-
-  return [Math.min(255, Math.max(0, r)), Math.min(255, Math.max(0, g)), Math.min(255, Math.max(0, b)), 255];
+  return [bgR, bgG, bgB, 255];
 }
 
 const iconsDir = path.join(process.cwd(), 'public', 'icons');
@@ -197,7 +317,7 @@ const configs = [
 ];
 
 for (const cfg of configs) {
-  const buf = createPNG(cfg.size, cfg.size, (x, y, w, h) => drawWhiteDoodleIcon(x, y, w, h, cfg.maskable));
+  const buf = createPNG(cfg.size, cfg.size, (x, y, w, h) => drawCalendarStickerIcon(x, y, w, h, cfg.maskable));
   const outPath = path.join(iconsDir, cfg.file);
   fs.writeFileSync(outPath, buf);
   console.log(`Generated ${cfg.file} (${cfg.size}x${cfg.size})`);
