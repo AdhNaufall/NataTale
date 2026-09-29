@@ -519,7 +519,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             className={cn(
-              "w-full border-2 border-dashed rounded-2xl p-4 sm:p-7 flex flex-col items-center justify-center cursor-pointer transition-all duration-200 text-center block relative group",
+              "w-full border-2 border-dashed rounded-2xl p-5 sm:p-7 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 relative group",
               isDragging 
                 ? "border-lavender bg-lavender/10 scale-[1.01]" 
                 : "border-slate/15 bg-[#FAF8FE]/60 hover:bg-[#FAF8FE] hover:border-lavender/60"
@@ -532,16 +532,16 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
               accept="image/*"
               className="hidden"
             />
-            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white shadow-xs border border-lavender/30 flex items-center justify-center text-lavender mb-2 group-hover:scale-105 transition-transform">
-              <Camera className="w-4 h-4 sm:w-5 sm:h-5 text-lavender" />
+            <div className="w-10 h-10 rounded-full bg-white shadow-xs border border-lavender/30 flex items-center justify-center text-lavender mb-2.5 mx-auto group-hover:scale-105 transition-transform">
+              <Camera className="w-5 h-5 text-lavender" />
             </div>
-            <p className="text-xs sm:text-sm font-semibold text-slate">
+            <p className="text-xs sm:text-sm font-semibold text-slate text-center w-full">
               Add the photos we'll want to look back on ♡
             </p>
-            <p className="text-[11px] text-slate/40 font-handwriting text-sm sm:text-base mt-0.5">
+            <p className="text-[11px] text-slate/40 font-handwriting text-sm sm:text-base mt-0.5 text-center w-full">
               Tap to browse or drop photos here
             </p>
-            <p className="text-[9px] text-slate/35 uppercase tracking-wider mt-1">
+            <p className="text-[9px] text-slate/35 uppercase tracking-wider mt-1 text-center w-full">
               JPG, PNG, WEBP or HEIC (Optimized automatically)
             </p>
           </label>
