@@ -1,7 +1,18 @@
 import React, { useState } from 'react';
-import { UploadCloud, X, Star, Music2, ExternalLink } from 'lucide-react';
+import { Camera, X, Star, Music2, ExternalLink, Calendar as CalendarIcon, MapPin, Tag, Sparkles, Heart } from 'lucide-react';
 import { cn } from '../lib/utils';
 import { motion, AnimatePresence } from 'framer-motion';
+
+// Curated scrapbook mood stamps with pastel tones and friendly labels
+const SCRAPBOOK_MOODS = [
+  { emoji: '🥰', label: 'Loved', bg: 'bg-rose/25', border: 'border-rose/40', text: 'text-rose-700' },
+  { emoji: '✨', label: 'Happy', bg: 'bg-amber-100/70', border: 'border-amber-200', text: 'text-amber-700' },
+  { emoji: '🥹', label: 'Soft', bg: 'bg-lavender/25', border: 'border-lavender/40', text: 'text-purple-700' },
+  { emoji: '🌙', label: 'Sleepy', bg: 'bg-indigo-50', border: 'border-indigo-200/60', text: 'text-indigo-700' },
+  { emoji: '☁️', label: 'Melancholy', bg: 'bg-blue-50', border: 'border-blue-200/60', text: 'text-blue-700' },
+  { emoji: '🥳', label: 'Excited', bg: 'bg-orange-50', border: 'border-orange-200/60', text: 'text-orange-700' },
+  { emoji: '😎', label: 'Chill', bg: 'bg-emerald-50', border: 'border-emerald-200/60', text: 'text-emerald-700' },
+];
 
 export default function Write({ onSave, onUpdate, navigate, memories = [], editingMemory, setEditingMemory }: { onSave: (memory: any) => void, onUpdate?: (id: string, m: any) => void, navigate: (p: string) => void, memories?: any[], editingMemory?: any, setEditingMemory?: (m: any) => void }) {
   const [title, setTitle] = useState('');
@@ -19,9 +30,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
   const [isFetchingSpotify, setIsFetchingSpotify] = useState(false);
   const [showCategories, setShowCategories] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const MOOD_EMOJIS = ['🥰', '🤪', '🥹', '😴', '😡', '🥳', '😎'];
-
+  const [isCustomMoodOpen, setIsCustomMoodOpen] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
 
   // Helper for Spotify URL validation
@@ -52,6 +61,11 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
       setSpotifyUrl(editingMemory.spotifyUrl || '');
       setSpotifyTitle(editingMemory.spotifyTitle || '');
       setSpotifyArtist(editingMemory.spotifyArtist || '');
+
+      const isDefaultMood = SCRAPBOOK_MOODS.some(m => m.emoji === editingMemory.mood);
+      if (editingMemory.mood && !isDefaultMood) {
+        setIsCustomMoodOpen(true);
+      }
     }
     
     // Clear edit mode when unmounting (e.g. clicking away to Timeline)
@@ -320,69 +334,195 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
     setImages(images.filter((img) => img.id !== idToRemove));
   };
 
+  // Subtle rotations for polaroid preview stack
+  const polaroidRotations = [-2.5, 2, -1.5, 2.5, -2, 1.5];
+
   return (
-    <div className="min-h-screen pt-12 pb-32 px-4 max-w-2xl mx-auto">
+    <div className="min-h-screen pt-8 sm:pt-12 pb-36 px-4 max-w-2xl mx-auto">
       
+      {/* Saving Submission Overlay */}
       <AnimatePresence>
         {isSubmitting && (
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white/80 backdrop-blur-md"
+            className="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-white/85 backdrop-blur-md"
           >
             <motion.div
-              initial={{ scale: 0.5, rotate: -20, opacity: 0 }}
-              animate={{ scale: [1, 1.2, 1], rotate: [0, 10, -10, 0], opacity: 1 }}
-              transition={{ duration: 0.8, ease: "easeOut" }}
-              className="text-8xl drop-shadow-2xl"
+              initial={{ scale: 0.6, rotate: -15, opacity: 0 }}
+              animate={{ scale: [1, 1.15, 1], rotate: [0, 8, -8, 0], opacity: 1 }}
+              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+              className="text-7xl drop-shadow-xl"
             >
                💌
             </motion.div>
             <motion.p 
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 }}
-              className="mt-6 font-serif text-slate font-bold text-xl tracking-widest uppercase"
+              transition={{ delay: 0.2 }}
+              className="mt-5 font-serif text-slate font-bold text-lg tracking-widest uppercase"
             >
-              Saving Memory...
+              Saving our memory...
             </motion.p>
+            <p className="text-xs text-slate/50 font-handwriting text-lg mt-1">Written with love in NataTale ♡</p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      <h2 className="font-serif text-4xl font-bold text-slate mb-8 text-center">
-        {editingMemory ? 'Edit Chapter' : 'Write a Story'}
-      </h2>
+      {/* Editorial Page Header */}
+      <motion.div 
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        className="text-center mb-7 sm:mb-9"
+      >
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-lavender/10 border border-lavender/20 text-slate/70 text-[11px] font-medium mb-3">
+          <Sparkles className="w-3 h-3 text-lavender" />
+          <span>Scrapbook Entry</span>
+        </div>
+        <h1 className="font-serif text-3xl sm:text-4xl font-bold text-slate tracking-tight">
+          {editingMemory ? 'Edit Chapter' : 'Write a Story'}
+        </h1>
+        <p className="font-handwriting text-lg sm:text-xl text-slate/60 mt-1.5 flex items-center justify-center gap-1.5">
+          <span>A little moment worth remembering</span>
+          <Heart className="w-3.5 h-3.5 fill-rose text-rose inline-block" />
+        </p>
+      </motion.div>
 
-      <form onSubmit={handleSubmit} className="bg-white p-5 md:p-10 rounded-[2rem] shadow-sm border border-gray-100 space-y-5 md:space-y-6">
+      {/* Main Continuous Scrapbook Card */}
+      <motion.form 
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        onSubmit={handleSubmit} 
+        className="bg-white/95 backdrop-blur-xs p-5 sm:p-8 md:p-10 rounded-[2rem] shadow-[0_10px_40px_-15px_rgba(44,53,69,0.06)] border border-slate/5 space-y-7 relative overflow-hidden"
+      >
+        {/* Subtle decorative washi tape accent at top */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-3 bg-lavender/20 border-b border-lavender/30 rounded-b-sm transform -rotate-1 opacity-75 pointer-events-none" />
+
+        {/* SECTION 1: OUR CHAPTER TITLE */}
         <div>
-          <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/50 mb-1">Title</label>
-          <input required type="text" value={title} onChange={e => setTitle(e.target.value)} className="w-full px-0 py-2 bg-transparent border-b-2 border-gray-100 focus:border-lavender outline-none font-serif text-2xl transition-colors placeholder:text-gray-300" placeholder="A day to remember..." />
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 flex items-center gap-1">
+              <span>Chapter Title</span>
+            </label>
+            <span className="text-[10px] font-handwriting text-slate/40 text-base">give it a name ♡</span>
+          </div>
+          <input 
+            required 
+            type="text" 
+            value={title} 
+            onChange={e => setTitle(e.target.value)} 
+            className="w-full px-0 py-2 bg-transparent border-b-2 border-slate/10 focus:border-lavender outline-none font-serif text-2xl sm:text-3xl text-slate font-medium transition-colors placeholder:text-slate/25 placeholder:font-serif placeholder:italic" 
+            placeholder="A day to remember..." 
+          />
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+        {/* SECTION 2: METADATA DETAILS (Date, Location, Category) */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-1">
           <div>
-            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/50 mb-1">Date</label>
-            <input required type="date" value={date} onChange={e => setDate(e.target.value)} className="w-full px-0 py-2 bg-transparent border-b-2 border-gray-100 focus:border-lavender outline-none text-sm transition-colors text-gray-700" />
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 mb-1.5 flex items-center gap-1.5">
+              <CalendarIcon className="w-3 h-3 text-lavender" />
+              <span>Date</span>
+            </label>
+            <input 
+              required 
+              type="date" 
+              value={date} 
+              onChange={e => setDate(e.target.value)} 
+              className="w-full px-3.5 py-2.5 bg-[#FAF8FE]/80 border border-slate/10 rounded-xl focus:border-lavender focus:bg-white focus:ring-2 focus:ring-lavender/20 outline-none text-xs sm:text-sm font-medium text-slate transition-all" 
+            />
           </div>
+
           <div>
-            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/50 mb-1">Location Name</label>
-            <input required type="text" value={location} onChange={e => setLocation(e.target.value)} className="w-full px-0 py-2 bg-transparent border-b-2 border-gray-100 focus:border-lavender outline-none text-sm transition-colors placeholder:text-gray-300" placeholder="Where did we go?" />
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 mb-1.5 flex items-center gap-1.5">
+              <MapPin className="w-3 h-3 text-rose-400" />
+              <span>Location</span>
+            </label>
+            <input 
+              required 
+              type="text" 
+              value={location} 
+              onChange={e => setLocation(e.target.value)} 
+              className="w-full px-3.5 py-2.5 bg-[#FAF8FE]/80 border border-slate/10 rounded-xl focus:border-lavender focus:bg-white focus:ring-2 focus:ring-lavender/20 outline-none text-xs sm:text-sm text-slate transition-all placeholder:text-slate/30" 
+              placeholder="Where did we go?" 
+            />
+          </div>
+
+          <div className="sm:col-span-2 relative">
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 mb-1.5 flex items-center gap-1.5">
+              <Tag className="w-3 h-3 text-softblue" />
+              <span>Category</span>
+            </label>
+            <input
+              required
+              type="text"
+              value={category}
+              onChange={e => setCategory(e.target.value)}
+              onFocus={() => setShowCategories(true)}
+              onBlur={() => setTimeout(() => setShowCategories(false), 200)}
+              className="w-full px-3.5 py-2.5 bg-[#FAF8FE]/80 border border-slate/10 rounded-xl focus:border-lavender focus:bg-white focus:ring-2 focus:ring-lavender/20 outline-none text-xs sm:text-sm text-slate transition-all placeholder:text-slate/30"
+              placeholder="e.g. Cafe Hopping, Road Trip, Anniversary"
+            />
+            <AnimatePresence>
+              {showCategories && filteredCategories.length > 0 && (
+                <motion.div 
+                  initial={{ opacity: 0, y: -6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -6 }}
+                  className="absolute z-50 w-full mt-1.5 py-1.5 bg-white rounded-2xl shadow-[0_12px_30px_-8px_rgba(44,53,69,0.12)] border border-slate/10 max-h-48 overflow-y-auto"
+                >
+                  {filteredCategories.map((cat, idx) => (
+                    <div 
+                      key={idx}
+                      onClick={() => {
+                        setCategory(cat as string);
+                        setShowCategories(false);
+                      }}
+                      className="px-4 py-2 text-xs sm:text-sm text-slate hover:bg-lavender/10 hover:text-purple-700 cursor-pointer transition-colors flex items-center gap-2"
+                    >
+                      <span className="text-slate/30">#</span>
+                      <span>{cat as string}</span>
+                    </div>
+                  ))}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </div>
 
-        <div>
-          <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/50 mb-2 mt-4">Photos</label>
+        {/* Subtle Scrapbook Divider */}
+        <div className="flex items-center justify-center gap-2 py-1 text-slate/20">
+          <div className="h-px bg-slate/10 flex-1" />
+          <span className="text-xs">♡</span>
+          <div className="h-px bg-slate/10 flex-1" />
+        </div>
 
-          {/* Drag & Drop Zone */}
+        {/* SECTION 3: POLAROID PHOTO UPLOADER */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 flex items-center gap-1.5">
+              <Camera className="w-3.5 h-3.5 text-lavender" />
+              <span>Memories in Frames</span>
+            </label>
+            {images.length > 0 && (
+              <span className="text-[11px] font-handwriting text-slate/60 text-base">
+                {images.length} {images.length === 1 ? 'photo' : 'photos'} saved ♡
+              </span>
+            )}
+          </div>
+
+          {/* Scrapbook Drag & Drop Zone */}
           <label
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             className={cn(
-              "w-full border-2 border-dashed rounded-2xl p-10 flex flex-col items-center justify-center cursor-pointer transition-all duration-300 text-center block",
-              isDragging ? "border-lavender bg-lavender/5 scale-[1.02]" : "border-gray-200 bg-gray-50/50 hover:bg-gray-50 hover:border-gray-300"
+              "w-full border-2 border-dashed rounded-2xl p-6 sm:p-7 flex flex-col items-center justify-center cursor-pointer transition-all duration-200 text-center block relative group",
+              isDragging 
+                ? "border-lavender bg-lavender/10 scale-[1.01]" 
+                : "border-slate/15 bg-[#FAF8FE]/60 hover:bg-[#FAF8FE] hover:border-lavender/60"
             )}
           >
             <input
@@ -392,127 +532,179 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
               accept="image/*"
               className="hidden"
             />
-            <div className="w-12 h-12 rounded-full bg-softblue/10 flex items-center justify-center text-softblue mb-3">
-              <UploadCloud className="w-6 h-6" />
+            <div className="w-10 h-10 rounded-full bg-white shadow-xs border border-lavender/30 flex items-center justify-center text-lavender mb-2.5 group-hover:scale-105 transition-transform">
+              <Camera className="w-5 h-5 text-lavender" />
             </div>
-            <p className="font-bold text-gray-700">Click to upload or drag and drop</p>
-            <p className="text-xs text-gray-400 mt-1">SVG, PNG, JPG or GIF (max. 800x400px)</p>
+            <p className="text-xs sm:text-sm font-semibold text-slate">
+              Add the photos we'll want to look back on ♡
+            </p>
+            <p className="text-[11px] text-slate/40 font-handwriting text-base mt-0.5">
+              Tap to browse or drop photos here
+            </p>
+            <p className="text-[9px] text-slate/35 uppercase tracking-wider mt-1.5">
+              JPG, PNG, WEBP or HEIC (Optimized automatically)
+            </p>
           </label>
 
-          {/* Image Previews */}
+          {/* Polaroid-Inspired Photo Previews */}
           {images.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 mt-4">
-              {images.map((img) => (
-                <div key={img.id} className="relative aspect-square rounded-xl overflow-hidden group shadow-sm">
-                  <img src={img.url} alt="Upload preview" className={cn("w-full h-full object-cover", img.isUploading && "opacity-40 blur-[1px]")} />
-                  {img.isUploading && (
-                    <div className="absolute inset-0 flex items-center justify-center bg-black/10">
-                      <div className="w-6 h-6 border-2 border-slate border-t-transparent rounded-full animate-spin"></div>
-                    </div>
-                  )}
-                  <button
-                    type="button"
-                    onClick={(e) => { e.stopPropagation(); removeImage(img.id); }}
-                    className="absolute top-2 right-2 w-6 h-6 bg-white/90 text-slate rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity shadow-sm z-10"
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 sm:gap-4 mt-4 pt-1">
+              {images.map((img, index) => {
+                const rot = polaroidRotations[index % polaroidRotations.length];
+                return (
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.9, y: 6 }}
+                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+                    key={img.id} 
+                    style={{ transform: `rotate(${rot}deg)` }}
+                    className="relative bg-white p-2 pb-5 rounded-xl shadow-[0_4px_16px_rgba(44,53,69,0.06)] border border-slate/10 group hover:rotate-0 hover:scale-[1.03] transition-all duration-200"
                   >
-                    <X className="w-3 h-3 font-bold" />
-                  </button>
-                </div>
-              ))}
+                    <div className="relative aspect-square rounded-lg overflow-hidden bg-slate/5">
+                      <img 
+                        src={img.url} 
+                        alt="Memory preview" 
+                        className={cn("w-full h-full object-cover", img.isUploading && "opacity-40 blur-[1px]")} 
+                      />
+                      {img.isUploading && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-white/40">
+                          <div className="w-5 h-5 border-2 border-lavender border-t-transparent rounded-full animate-spin" />
+                        </div>
+                      )}
+                    </div>
+                    
+                    {/* Cute Polaroid Bottom Note */}
+                    <div className="mt-1.5 px-1 flex items-center justify-between text-[10px] text-slate/40 font-handwriting text-sm truncate">
+                      <span>moment #{index + 1}</span>
+                      <span>♡</span>
+                    </div>
+
+                    {/* Delete Photo Button */}
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); removeImage(img.id); }}
+                      className="absolute -top-1.5 -right-1.5 w-6 h-6 bg-white text-slate/70 hover:text-rose-600 rounded-full flex items-center justify-center shadow-md border border-slate/10 opacity-90 sm:opacity-0 group-hover:opacity-100 transition-opacity z-10 cursor-pointer"
+                      title="Remove photo"
+                    >
+                      <X className="w-3 h-3 font-bold" />
+                    </button>
+                  </motion.div>
+                );
+              })}
             </div>
           )}
         </div>
 
-        <div className="relative">
-          <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/50 mb-1 mt-2">Category</label>
-          <input
-            required
-            type="text"
-            value={category}
-            onChange={e => setCategory(e.target.value)}
-            onFocus={() => setShowCategories(true)}
-            onBlur={() => setTimeout(() => setShowCategories(false), 200)}
-            className="w-full px-0 py-2 bg-transparent border-b-2 border-gray-100 focus:border-lavender outline-none text-sm transition-colors placeholder:text-gray-300"
-            placeholder="e.g. Cafe Hopping"
-          />
+        {/* Subtle Scrapbook Divider */}
+        <div className="flex items-center justify-center gap-2 py-1 text-slate/20">
+          <div className="h-px bg-slate/10 flex-1" />
+          <span className="text-xs">✦</span>
+          <div className="h-px bg-slate/10 flex-1" />
+        </div>
+
+        {/* SECTION 4: MOOD TODAY (Scrapbook Mood Stamps) */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 flex items-center gap-1.5">
+              <span>Mood Today</span>
+            </label>
+            <span className="text-[10px] font-handwriting text-slate/50 text-base">
+              how did it feel? ♡
+            </span>
+          </div>
+
+          <div className="grid grid-cols-4 sm:grid-cols-7 gap-2 sm:gap-2.5">
+            {SCRAPBOOK_MOODS.map(m => {
+              const isSelected = mood === m.emoji;
+              return (
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  key={m.emoji}
+                  type="button"
+                  onClick={() => {
+                    setMood(m.emoji);
+                  }}
+                  className={cn(
+                    "flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border transition-all duration-200 cursor-pointer relative",
+                    isSelected 
+                      ? `${m.bg} ${m.border} shadow-xs scale-[1.03] ring-1 ring-lavender/30` 
+                      : "bg-[#FAF8FE]/60 border-slate/10 hover:bg-[#FAF8FE] hover:border-slate/20 opacity-70 hover:opacity-100"
+                  )}
+                >
+                  <span className="text-2xl sm:text-2xl mb-1 leading-none">{m.emoji}</span>
+                  <span className={cn(
+                    "text-[10px] font-semibold tracking-tight",
+                    isSelected ? m.text : "text-slate/60"
+                  )}>
+                    {m.label}
+                  </span>
+                  {isSelected && (
+                    <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-lavender" />
+                  )}
+                </motion.button>
+              );
+            })}
+          </div>
+
+          {/* Custom Mood Trigger & Input */}
+          <div className="mt-3 pt-1 flex items-center justify-between">
+            <button
+              type="button"
+              onClick={() => setIsCustomMoodOpen(!isCustomMoodOpen)}
+              className="text-[11px] text-slate/50 hover:text-slate font-medium inline-flex items-center gap-1 transition-colors cursor-pointer"
+            >
+              <span>{isCustomMoodOpen ? '− Hide custom mood' : '＋ Type a custom emoji / mood'}</span>
+            </button>
+            {!SCRAPBOOK_MOODS.some(m => m.emoji === mood) && (
+              <span className="text-xs px-2.5 py-0.5 rounded-full bg-lavender/15 text-purple-700 font-medium border border-lavender/30 flex items-center gap-1">
+                <span>Active mood:</span>
+                <span className="text-sm">{mood}</span>
+              </span>
+            )}
+          </div>
+
           <AnimatePresence>
-            {showCategories && filteredCategories.length > 0 && (
-              <motion.div 
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="absolute z-50 w-full mt-2 py-2 bg-white rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.1)] border border-gray-100 max-h-48 overflow-y-auto"
+            {isCustomMoodOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden mt-2"
               >
-                {filteredCategories.map((cat, idx) => (
-                  <div 
-                    key={idx}
-                    onClick={() => {
-                      setCategory(cat as string);
-                      setShowCategories(false);
+                <div className="p-3 bg-[#FAF8FE] border border-slate/10 rounded-xl flex items-center gap-3">
+                  <input
+                    type="text"
+                    value={!SCRAPBOOK_MOODS.some(m => m.emoji === mood) ? mood : ''}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val) setMood(val);
+                      else setMood('🥰');
                     }}
-                    className="px-4 py-2.5 text-sm text-gray-700 hover:bg-softblue/10 hover:text-softblue cursor-pointer transition-colors"
-                  >
-                    {cat as string}
-                  </div>
-                ))}
+                    placeholder="Type emoji here (e.g. 🌻, ☕, 🏕️)"
+                    className="flex-1 bg-white px-3 py-2 border border-slate/10 rounded-lg text-xs sm:text-sm outline-none focus:border-lavender text-slate"
+                  />
+                  <span className="text-[11px] text-slate/40 font-handwriting text-sm shrink-0">Any emoji you like!</span>
+                </div>
               </motion.div>
             )}
           </AnimatePresence>
         </div>
 
+        {/* SECTION 5: HOW SPECIAL WAS THIS MEMORY (Rating) */}
         <div>
-          <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/50 mb-2 mt-4">Mood Today</label>
-          <div className="flex gap-3 flex-wrap items-center">
-            {MOOD_EMOJIS.map(emoji => (
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                key={emoji}
-                type="button"
-                onClick={() => setMood(emoji)}
-                className={cn(
-                  "w-12 h-12 text-3xl flex items-center justify-center rounded-xl transition-all duration-200",
-                  mood === emoji ? "bg-lavender/15 shadow-sm ring-1 ring-lavender/30" : "hover:bg-gray-50 grayscale hover:grayscale-0 opacity-50 hover:opacity-100"
-                )}
-              >
-                {emoji}
-              </motion.button>
-            ))}
-            <div className="w-[2px] h-8 bg-gray-100 mx-1 rounded-full"></div>
-            <input
-              type="text"
-              value={!MOOD_EMOJIS.includes(mood) ? mood : ''}
-              onChange={(e) => {
-                const val = e.target.value;
-                if (val) setMood(val);
-                else setMood('🥰'); // default back if cleared
-              }}
-              placeholder="+"
-              title="Ketik emoji kustom dari keyboard"
-              className={cn(
-                "w-12 h-12 text-3xl text-center rounded-xl transition-all duration-200 outline-none placeholder:text-gray-300 placeholder:text-2xl border-2",
-                !MOOD_EMOJIS.includes(mood) && mood 
-                  ? "bg-lavender/15 border-lavender/30 scale-105 shadow-sm ring-1 ring-lavender/30" 
-                  : "border-dashed border-gray-200 bg-transparent hover:bg-gray-50 focus:border-lavender focus:bg-lavender/5"
-              )}
-            />
-          </div>
-          <p className="text-[10px] text-gray-400 mt-2">Pilih dari atas atau ketik emoji sendiri di kotak paling kanan.</p>
-        </div>
-
-        {/* Interactive Star Rating Selector */}
-        <div>
-          <div className="flex items-center justify-between mb-2 mt-4">
-            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/50">
-              Memory Rating
+          <div className="flex items-center justify-between mb-2">
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 flex items-center gap-1">
+              <span>How Special Was This?</span>
             </label>
-            <span className="text-xs font-bold text-amber-600 bg-amber-50 px-2.5 py-0.5 rounded-full border border-amber-200/60 shadow-xs">
+            <span className="text-xs font-serif font-bold text-amber-600 bg-amber-50/90 px-3 py-0.5 rounded-full border border-amber-200/60">
               {hoverRating !== null ? hoverRating : rating} / 5 Stars
             </span>
           </div>
 
-          <div className="flex items-center justify-between p-3.5 bg-gray-50/50 border border-gray-100 rounded-2xl">
-            <div className="flex items-center gap-1.5">
+          <div className="flex items-center justify-between p-3.5 sm:p-4 bg-[#FAF8FE]/80 border border-slate/10 rounded-2xl">
+            <div className="flex items-center gap-1 sm:gap-2">
               {[1, 2, 3, 4, 5].map((star) => {
                 const currentScore = hoverRating !== null ? hoverRating : rating;
                 const isFilled = currentScore >= star;
@@ -526,14 +718,14 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
                     onFocus={() => setHoverRating(star)}
                     onBlur={() => setHoverRating(null)}
                     aria-label={`Rate ${star} of 5 stars`}
-                    className="p-1 rounded-xl text-amber-400 hover:scale-105 active:scale-95 transition-transform duration-150 focus:outline-none focus:ring-2 focus:ring-lavender/40 cursor-pointer"
+                    className="p-1 rounded-xl text-amber-400 hover:scale-110 active:scale-95 transition-transform duration-150 focus:outline-none cursor-pointer"
                   >
                     <Star
                       className={cn(
-                        "w-7 h-7 sm:w-8 sm:h-8 transition-colors duration-150",
+                        "w-6 h-6 sm:w-7 sm:h-7 transition-colors duration-150",
                         isFilled
                           ? "fill-amber-400 text-amber-400 drop-shadow-[0_2px_6px_rgba(251,191,36,0.35)]"
-                          : "fill-transparent text-gray-300 hover:text-amber-200"
+                          : "fill-transparent text-slate/20 hover:text-amber-200"
                       )}
                     />
                   </button>
@@ -541,7 +733,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
               })}
             </div>
 
-            <span className="text-[11px] text-slate/50 font-serif italic hidden sm:inline pr-2">
+            <span className="text-xs text-slate/50 font-handwriting text-base hidden sm:inline pr-1">
               {(hoverRating !== null ? hoverRating : rating) === 5
                 ? 'A truly magical moment ♡'
                 : (hoverRating !== null ? hoverRating : rating) === 4
@@ -553,41 +745,40 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
                 : 'A day we remember ☕'}
             </span>
           </div>
-          <p className="text-[10px] text-gray-400 mt-1.5">How special was this memory to you?</p>
         </div>
 
-        {/* Our Song Section */}
-        <div className="pt-2">
-          <div className="flex items-center justify-between mb-1 mt-2">
-            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/50 flex items-center gap-1.5">
+        {/* SECTION 6: OUR SONG (Memory Soundtrack) */}
+        <div>
+          <div className="flex items-center justify-between mb-1">
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 flex items-center gap-1.5">
               <Music2 className="w-3.5 h-3.5 text-lavender" />
-              <span>Our Song ♡</span>
+              <span>Our Song</span>
             </label>
-            <span className="text-[10px] text-slate/40 italic font-serif">
-              Optional
+            <span className="text-[10px] text-slate/40 font-handwriting text-sm">
+              optional soundtrack
             </span>
           </div>
-          <p className="text-xs text-slate/60 font-serif italic mb-3">
+          <p className="text-xs text-slate/50 font-serif italic mb-2.5">
             “A song that reminds us of this memory...”
           </p>
 
-          <div className="space-y-2">
+          <div className="space-y-2.5">
             <div className="relative">
               <input
                 type="url"
                 value={spotifyUrl}
                 onChange={e => setSpotifyUrl(e.target.value)}
-                placeholder="Paste a Spotify song link... (e.g. https://open.spotify.com/track/...)"
+                placeholder="Paste a Spotify song link (e.g. https://open.spotify.com/track/...)"
                 className={cn(
-                  "w-full px-4 py-3 bg-gray-50/50 border rounded-2xl focus:ring-2 focus:ring-lavender/50 outline-none text-xs sm:text-sm transition-all focus:bg-white text-slate placeholder:text-gray-300 font-sans",
-                  hasInvalidSpotifyUrl ? "border-rose-300 focus:ring-rose-200" : "border-gray-100"
+                  "w-full px-3.5 py-2.5 bg-[#FAF8FE]/80 border rounded-xl focus:border-lavender focus:bg-white focus:ring-2 focus:ring-lavender/20 outline-none text-xs sm:text-sm transition-all text-slate placeholder:text-slate/30 font-sans",
+                  hasInvalidSpotifyUrl ? "border-rose-300 focus:ring-rose-200" : "border-slate/10"
                 )}
               />
               {spotifyUrl && (
                 <button
                   type="button"
                   onClick={() => setSpotifyUrl('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-gray-200/60 hover:bg-gray-200 text-slate/60 flex items-center justify-center text-xs transition-colors"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-slate/10 hover:bg-slate/20 text-slate/60 flex items-center justify-center text-xs transition-colors cursor-pointer"
                   title="Clear Spotify link"
                 >
                   <X className="w-3 h-3" />
@@ -601,43 +792,40 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
                 animate={{ opacity: 1, y: 0 }}
                 className="text-[11px] text-rose-500 font-medium pl-1 flex items-center gap-1"
               >
-                <span>Please enter a valid Spotify song link ♡</span>
+                <span>Please enter a valid Spotify track link ♡</span>
               </motion.p>
             )}
 
-            {/* Live preview with auto-detected metadata or loading status */}
+            {/* Aesthetic Mini Music Soundtrack Card */}
             {spotifyUrl.trim() && !hasInvalidSpotifyUrl && (
               <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="p-3.5 bg-gradient-to-r from-lavender/15 via-rose-50/50 to-softblue/15 border border-lavender/30 rounded-2xl flex items-center justify-between gap-3 text-xs"
+                className="p-3 bg-gradient-to-r from-lavender/15 via-rose-50/40 to-softblue/15 border border-lavender/30 rounded-xl flex items-center justify-between gap-3 text-xs"
               >
-                <div className="flex items-center gap-3 min-w-0">
-                  <div className="w-9 h-9 rounded-xl bg-white shadow-xs border border-lavender/25 flex items-center justify-center text-lavender shrink-0">
+                <div className="flex items-center gap-2.5 min-w-0">
+                  <div className="w-8 h-8 rounded-lg bg-white shadow-xs border border-lavender/30 flex items-center justify-center text-lavender shrink-0">
                     {isFetchingSpotify ? (
-                      <div className="w-4 h-4 border-2 border-lavender border-t-transparent rounded-full animate-spin" />
+                      <div className="w-3.5 h-3.5 border-2 border-lavender border-t-transparent rounded-full animate-spin" />
                     ) : (
-                      <Music2 className="w-4.5 h-4.5 text-lavender" />
+                      <Music2 className="w-4 h-4 text-lavender" />
                     )}
                   </div>
                   <div className="min-w-0">
                     {isFetchingSpotify ? (
                       <div>
-                        <p className="font-serif font-bold text-slate text-xs">Fetching song info...</p>
-                        <p className="text-[10px] text-slate/50 font-serif italic">Getting title and artist from Spotify ♡</p>
+                        <p className="font-serif font-bold text-slate text-xs">Listening for song details...</p>
+                        <p className="text-[10px] text-slate/50 font-handwriting text-sm">finding track metadata ♡</p>
                       </div>
                     ) : spotifyTitle ? (
                       <div>
-                        <p className="font-serif font-bold text-slate text-sm truncate">“{spotifyTitle}”</p>
-                        <p className="text-[11px] text-slate/60 font-sans truncate">{spotifyArtist || 'Spotify Track'}</p>
-                        <span className="text-[9px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60 inline-block mt-0.5">
-                          Song detected ♡
-                        </span>
+                        <p className="font-serif font-bold text-slate text-xs truncate">“{spotifyTitle}”</p>
+                        <p className="text-[10px] text-slate/60 font-sans truncate">{spotifyArtist || 'Spotify Track'}</p>
                       </div>
                     ) : (
                       <div>
-                        <p className="font-serif font-bold text-slate text-xs truncate">Our Song Attached ♡</p>
-                        <p className="text-[10px] text-slate/50 truncate font-mono">{spotifyUrl}</p>
+                        <p className="font-serif font-bold text-slate text-xs truncate">Soundtrack Attached</p>
+                        <p className="text-[10px] text-slate/40 truncate font-mono">{spotifyUrl}</p>
                       </div>
                     )}
                   </div>
@@ -647,34 +835,57 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
                   href={spotifyUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-3.5 py-1.5 bg-white/90 hover:bg-white text-slate text-[11px] font-bold rounded-xl border border-slate/10 shadow-xs flex items-center gap-1.5 shrink-0 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  className="px-2.5 py-1 bg-white/90 hover:bg-white text-slate text-[10px] font-bold rounded-lg border border-slate/10 shadow-xs flex items-center gap-1 shrink-0 transition-transform hover:scale-105 active:scale-95"
                 >
                   <span>Open</span>
-                  <ExternalLink className="w-3 h-3 text-lavender" />
+                  <ExternalLink className="w-2.5 h-2.5 text-lavender" />
                 </a>
               </motion.div>
             )}
           </div>
         </div>
 
+        {/* SECTION 7: THE STORY JOURNAL */}
         <div>
-          <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/50 mb-2 mt-4">The Story</label>
-          <textarea required value={story} onChange={e => setStory(e.target.value)} rows={6} className="w-full px-4 py-4 bg-gray-50/50 border border-gray-100 rounded-2xl focus:ring-2 focus:ring-lavender/50 outline-none text-sm resize-none leading-relaxed transition-all focus:bg-white" placeholder="Write the memories... you can use **bold** or lists!"></textarea>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 flex items-center gap-1">
+              <span>The Story</span>
+            </label>
+            <span className="text-[10px] text-slate/40 font-handwriting text-base">markdown supported **bold**</span>
+          </div>
+          <textarea 
+            required 
+            value={story} 
+            onChange={e => setStory(e.target.value)} 
+            rows={6} 
+            className="w-full p-4 bg-[#FAF8FE]/80 border border-slate/10 rounded-2xl focus:border-lavender focus:bg-white focus:ring-2 focus:ring-lavender/20 outline-none text-xs sm:text-sm text-slate resize-none leading-relaxed transition-all placeholder:text-slate/30 font-sans" 
+            placeholder="Tell us what happened... the laughs, the little details, what made this day special ♡"
+          />
         </div>
 
-        <motion.button 
-          whileHover={!isSubmitting ? { scale: 1.02 } : undefined}
-          whileTap={!isSubmitting ? { scale: 0.98 } : undefined}
-          type="submit" 
-          disabled={isSubmitting}
-          className={cn(
-            "w-full py-4 bg-slate text-white rounded-2xl font-bold tracking-widest uppercase hover:bg-[#1A202C] transition-colors mt-8 shadow-lg shadow-slate/20 cursor-pointer",
-            isSubmitting && "opacity-50 cursor-not-allowed"
-          )}
-        >
-          {isSubmitting ? 'Saving to Device...' : (editingMemory ? 'Update Chapter' : 'Save Chapter')}
-        </motion.button>
-      </form>
+        {/* SECTION 8: SAVE BUTTON */}
+        <div className="pt-2">
+          <motion.button 
+            whileHover={!isSubmitting ? { scale: 1.01 } : undefined}
+            whileTap={!isSubmitting ? { scale: 0.98 } : undefined}
+            type="submit" 
+            disabled={isSubmitting}
+            className={cn(
+              "w-full py-3.5 sm:py-4 bg-slate text-white rounded-2xl font-bold tracking-widest uppercase hover:bg-[#1A202C] transition-all shadow-md shadow-slate/15 flex items-center justify-center gap-2 text-xs sm:text-sm cursor-pointer",
+              isSubmitting && "opacity-60 cursor-not-allowed"
+            )}
+          >
+            {isSubmitting ? (
+              <span>Saving to Scrapbook...</span>
+            ) : (
+              <>
+                <span>{editingMemory ? 'Update Chapter' : 'Save This Memory'}</span>
+                <Heart className="w-3.5 h-3.5 fill-white/80 text-white/80 inline-block" />
+              </>
+            )}
+          </motion.button>
+        </div>
+      </motion.form>
     </div>
   );
 }
