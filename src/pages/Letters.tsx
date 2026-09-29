@@ -43,8 +43,15 @@ export const LETTER_CATEGORIES = [
   { id: 'surprise', label: 'Surprise', emoji: '✨', moodQuery: '✨ Surprise me', desc: 'A little mystery for your heart' }
 ];
 
+// Helper to normalize and display sender/recipient nicely with backward compatibility
+export const normalizePersonName = (name: string): 'Naufal' | 'Tasya' => {
+  const lower = (name || '').toLowerCase().trim();
+  if (lower === 'tasya' || lower === 'partner') return 'Tasya';
+  return 'Naufal';
+};
+
 export default function Letters({ letters, onSaveLetter, onOpenLetter }: LettersProps) {
-  const [activeTab, setActiveTab] = useState<'all' | 'unopened' | 'from_nata' | 'from_partner'>('all');
+  const [activeTab, setActiveTab] = useState<'all' | 'unopened' | 'from_naufal' | 'from_tasya'>('all');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   
   // Modals & States
@@ -54,9 +61,9 @@ export default function Letters({ letters, onSaveLetter, onOpenLetter }: Letters
   const [openingCandidate, setOpeningCandidate] = useState<LetterItem | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
-  // Form State
-  const [sender, setSender] = useState<'Nata' | 'Partner'>('Nata');
-  const [recipient, setRecipient] = useState<'Partner' | 'Nata'>('Partner');
+  // Form State - default Naufal -> Tasya
+  const [sender, setSender] = useState<'Naufal' | 'Tasya'>('Naufal');
+  const [recipient, setRecipient] = useState<'Naufal' | 'Tasya'>('Tasya');
   const [title, setTitle] = useState('');
   const [category, setCategory] = useState('just_because');
   const [content, setContent] = useState('');
@@ -73,8 +80,10 @@ export default function Letters({ letters, onSaveLetter, onOpenLetter }: Letters
     return letters.filter(l => {
       // Tab filter
       if (activeTab === 'unopened' && l.isOpened) return false;
-      if (activeTab === 'from_nata' && l.sender !== 'Nata') return false;
-      if (activeTab === 'from_partner' && l.sender !== 'Partner') return false;
+      
+      const normalizedSender = normalizePersonName(l.sender);
+      if (activeTab === 'from_naufal' && normalizedSender !== 'Naufal') return false;
+      if (activeTab === 'from_tasya' && normalizedSender !== 'Tasya') return false;
 
       // Category filter
       if (selectedCategory && l.category !== selectedCategory) return false;
@@ -138,6 +147,11 @@ export default function Letters({ letters, onSaveLetter, onOpenLetter }: Letters
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
+
+    if (sender === recipient) {
+      showToast("Sender and recipient cannot be the same person ♡");
+      return;
+    }
 
     setIsSubmitting(true);
 
@@ -343,8 +357,8 @@ export default function Letters({ letters, onSaveLetter, onOpenLetter }: Letters
           {[
             { key: 'all', label: 'All' },
             { key: 'unopened', label: `Unopened (${unopenedCount})` },
-            { key: 'from_nata', label: 'From Nata' },
-            { key: 'from_partner', label: 'From Partner' },
+            { key: 'from_naufal', label: 'From Naufal' },
+            { key: 'from_tasya', label: 'From Tasya' },
           ].map(tab => (
             <button
               key={tab.key}
@@ -403,6 +417,9 @@ export default function Letters({ letters, onSaveLetter, onOpenLetter }: Letters
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
             {filteredLetters.map((l, index) => {
               const catObj = LETTER_CATEGORIES.find(c => c.id === l.category);
+              const senderDisplayName = normalizePersonName(l.sender);
+              const recipientDisplayName = normalizePersonName(l.recipient);
+
               return (
                 <motion.div
                   initial={{ opacity: 0, y: 6 }}
@@ -447,7 +464,7 @@ export default function Letters({ letters, onSaveLetter, onOpenLetter }: Letters
 
                   <div className="pt-2 border-t border-slate/5 flex items-center justify-between text-[10px] text-slate/45">
                     <span className="font-handwriting text-sm text-slate/60">
-                      From {l.sender} → {l.recipient}
+                      From {senderDisplayName} → {recipientDisplayName}
                     </span>
                     <span>{formatDate(l.createdAt)}</span>
                   </div>
@@ -480,7 +497,7 @@ export default function Letters({ letters, onSaveLetter, onOpenLetter }: Letters
               <div className="text-6xl mb-3 animate-bounce">💌</div>
               <h3 className="font-serif font-bold text-slate text-lg">Unsealing Letter...</h3>
               <p className="font-handwriting text-slate/60 text-lg mt-1">
-                {openingCandidate ? `From ${openingCandidate.sender} with love ♡` : 'Opening your letter...'}
+                {openingCandidate ? `From ${normalizePersonName(openingCandidate.sender)} with love ♡` : 'Opening your letter...'}
               </p>
             </motion.div>
           </motion.div>
@@ -527,7 +544,7 @@ export default function Letters({ letters, onSaveLetter, onOpenLetter }: Letters
                 </div>
                 
                 <p className="font-handwriting text-slate/70 text-xl">
-                  To: {readingLetter.recipient} ♡
+                  To: {normalizePersonName(readingLetter.recipient)} ♡
                 </p>
                 <h2 className="font-serif text-2xl sm:text-3xl font-bold text-slate mt-1">
                   {readingLetter.title}
@@ -542,7 +559,7 @@ export default function Letters({ letters, onSaveLetter, onOpenLetter }: Letters
               {/* Letter Signature / Footer */}
               <div className="mt-8 pt-4 border-t border-[#EBE3D5] text-right">
                 <p className="font-handwriting text-2xl text-slate font-bold">
-                  {readingLetter.signature || `With all my love,\n${readingLetter.sender} ♡`}
+                  {readingLetter.signature || `With all my love,\n${normalizePersonName(readingLetter.sender)} ♡`}
                 </p>
               </div>
             </motion.div>
@@ -599,14 +616,14 @@ export default function Letters({ letters, onSaveLetter, onOpenLetter }: Letters
                     <select
                       value={sender}
                       onChange={(e) => {
-                        const s = e.target.value as 'Nata' | 'Partner';
+                        const s = e.target.value as 'Naufal' | 'Tasya';
                         setSender(s);
-                        setRecipient(s === 'Nata' ? 'Partner' : 'Nata');
+                        setRecipient(s === 'Naufal' ? 'Tasya' : 'Naufal');
                       }}
-                      className="w-full px-3 py-2 bg-[#FAF8FE] border border-slate/10 rounded-xl outline-none focus:border-lavender text-slate font-medium"
+                      className="w-full px-3 py-2 bg-[#FAF8FE] border border-slate/10 rounded-xl outline-none focus:border-lavender text-slate font-medium cursor-pointer"
                     >
-                      <option value="Nata">Nata ♡</option>
-                      <option value="Partner">Partner ♡</option>
+                      <option value="Naufal">Naufal ♡</option>
+                      <option value="Tasya">Tasya ♡</option>
                     </select>
                   </div>
 
@@ -614,12 +631,18 @@ export default function Letters({ letters, onSaveLetter, onOpenLetter }: Letters
                     <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 mb-1">
                       To
                     </label>
-                    <input
-                      type="text"
-                      disabled
-                      value={recipient === 'Nata' ? 'Nata ♡' : 'Partner ♡'}
-                      className="w-full px-3 py-2 bg-slate/5 border border-slate/10 rounded-xl text-slate/60 font-medium"
-                    />
+                    <select
+                      value={recipient}
+                      onChange={(e) => {
+                        const r = e.target.value as 'Naufal' | 'Tasya';
+                        setRecipient(r);
+                        setSender(r === 'Tasya' ? 'Naufal' : 'Tasya');
+                      }}
+                      className="w-full px-3 py-2 bg-[#FAF8FE] border border-slate/10 rounded-xl outline-none focus:border-lavender text-slate font-medium cursor-pointer"
+                    >
+                      <option value="Tasya">Tasya ♡</option>
+                      <option value="Naufal">Naufal ♡</option>
+                    </select>
                   </div>
                 </div>
 
