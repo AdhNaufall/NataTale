@@ -420,10 +420,10 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
         </div>
 
         {/* SECTION 2: METADATA DETAILS (Date, Location, Category) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-5 pt-0.5">
+        <div className="grid grid-cols-2 gap-3 sm:gap-5 pt-0.5">
           <div>
-            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 mb-1 flex items-center gap-1.5">
-              <CalendarIcon className="w-3 h-3 text-lavender" />
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 mb-1 flex items-center gap-1.5 truncate">
+              <CalendarIcon className="w-3 h-3 text-lavender shrink-0" />
               <span>Date</span>
             </label>
             <input 
@@ -431,13 +431,13 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
               type="date" 
               value={date} 
               onChange={e => setDate(e.target.value)} 
-              className="w-full h-10 sm:h-11 px-3 py-2 bg-[#FAF8FE]/80 border border-slate/10 rounded-xl focus:border-lavender focus:bg-white focus:ring-2 focus:ring-lavender/20 outline-none text-xs sm:text-sm font-medium text-slate transition-all" 
+              className="w-full h-10 sm:h-11 px-2.5 sm:px-3 py-2 bg-[#FAF8FE]/80 border border-slate/10 rounded-xl focus:border-lavender focus:bg-white focus:ring-2 focus:ring-lavender/20 outline-none text-xs sm:text-sm font-medium text-slate transition-all appearance-none" 
             />
           </div>
 
           <div>
-            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 mb-1 flex items-center gap-1.5">
-              <MapPin className="w-3 h-3 text-rose-400" />
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 mb-1 flex items-center gap-1.5 truncate">
+              <MapPin className="w-3 h-3 text-rose-400 shrink-0" />
               <span>Location</span>
             </label>
             <input 
@@ -445,14 +445,14 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
               type="text" 
               value={location} 
               onChange={e => setLocation(e.target.value)} 
-              className="w-full h-10 sm:h-11 px-3 py-2 bg-[#FAF8FE]/80 border border-slate/10 rounded-xl focus:border-lavender focus:bg-white focus:ring-2 focus:ring-lavender/20 outline-none text-xs sm:text-sm text-slate transition-all placeholder:text-slate/30" 
+              className="w-full h-10 sm:h-11 px-2.5 sm:px-3 py-2 bg-[#FAF8FE]/80 border border-slate/10 rounded-xl focus:border-lavender focus:bg-white focus:ring-2 focus:ring-lavender/20 outline-none text-xs sm:text-sm text-slate transition-all placeholder:text-slate/30" 
               placeholder="Where did we go?" 
             />
           </div>
 
-          <div className="sm:col-span-2 relative">
+          <div className="col-span-2 relative">
             <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 mb-1 flex items-center gap-1.5">
-              <Tag className="w-3 h-3 text-softblue" />
+              <Tag className="w-3 h-3 text-softblue shrink-0" />
               <span>Category</span>
             </label>
             <input
