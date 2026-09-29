@@ -639,12 +639,12 @@ export default function Letters({ letters, onSaveLetter, onOpenLetter, onDeleteL
                 This little letter will be removed from your collection. ♡
               </p>
 
-              <div className="grid grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
                   disabled={isDeleting}
                   onClick={() => setLetterToDelete(null)}
-                  className="py-2.5 sm:py-3 px-4 rounded-xl border border-slate/15 bg-white text-slate/70 font-semibold text-xs hover:bg-slate/5 transition-colors cursor-pointer"
+                  className="py-2.5 sm:py-3 px-4 rounded-xl border border-slate/20 bg-white text-slate font-semibold text-xs hover:bg-slate/5 transition-colors cursor-pointer"
                 >
                   Keep Letter
                 </button>
@@ -653,14 +653,14 @@ export default function Letters({ letters, onSaveLetter, onOpenLetter, onDeleteL
                   type="button"
                   disabled={isDeleting}
                   onClick={handleDeleteConfirm}
-                  className="py-2.5 sm:py-3 px-4 rounded-xl bg-rose-500 hover:bg-rose-600 text-white font-bold text-xs shadow-md shadow-rose-500/20 transition-all cursor-pointer flex items-center justify-center gap-1.5"
+                  className="py-2.5 sm:py-3 px-4 rounded-xl bg-[#E11D48] hover:bg-[#BE123C] text-white font-bold text-xs shadow-md shadow-red-500/25 transition-all cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   {isDeleting ? (
                     <span>Deleting...</span>
                   ) : (
                     <>
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>Delete Letter</span>
+                      <Trash2 className="w-3.5 h-3.5 text-white stroke-[2.5]" />
+                      <span className="text-white">Delete Letter</span>
                     </>
                   )}
                 </button>
