@@ -99,7 +99,6 @@ export default function Us({ memories, navigate }: UsProps) {
           transition={{ delay: 0.2, duration: 0.6 }}
           className="font-handwriting text-2xl sm:text-3xl text-slate/75 mb-3"
         >
-          Two souls, one beautiful journey.
         </motion.p>
       </div>
 
