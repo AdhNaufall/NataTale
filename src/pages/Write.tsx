@@ -338,7 +338,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
   const polaroidRotations = [-2.5, 2, -1.5, 2.5, -2, 1.5];
 
   return (
-    <div className="min-h-screen pt-8 sm:pt-12 pb-36 px-4 max-w-2xl mx-auto">
+    <div className="min-h-screen pt-6 sm:pt-10 md:pt-12 pb-44 sm:pb-40 px-3.5 sm:px-6 max-w-2xl mx-auto font-sans text-slate pb-safe-nav">
       
       {/* Saving Submission Overlay */}
       <AnimatePresence>
@@ -375,16 +375,16 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-        className="text-center mb-7 sm:mb-9"
+        className="text-center mb-5 sm:mb-8"
       >
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-lavender/10 border border-lavender/20 text-slate/70 text-[11px] font-medium mb-3">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-lavender/10 border border-lavender/20 text-slate/70 text-[11px] font-medium mb-2.5">
           <Sparkles className="w-3 h-3 text-lavender" />
           <span>Scrapbook Entry</span>
         </div>
-        <h1 className="font-serif text-3xl sm:text-4xl font-bold text-slate tracking-tight">
+        <h1 className="font-serif text-2xl sm:text-4xl font-bold text-slate tracking-tight">
           {editingMemory ? 'Edit Chapter' : 'Write a Story'}
         </h1>
-        <p className="font-handwriting text-lg sm:text-xl text-slate/60 mt-1.5 flex items-center justify-center gap-1.5">
+        <p className="font-handwriting text-base sm:text-xl text-slate/60 mt-1 flex items-center justify-center gap-1.5">
           <span>A little moment worth remembering</span>
           <Heart className="w-3.5 h-3.5 fill-rose text-rose inline-block" />
         </p>
@@ -396,33 +396,33 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         onSubmit={handleSubmit} 
-        className="bg-white/95 backdrop-blur-xs p-5 sm:p-8 md:p-10 rounded-[2rem] shadow-[0_10px_40px_-15px_rgba(44,53,69,0.06)] border border-slate/5 space-y-7 relative overflow-hidden"
+        className="bg-white/95 backdrop-blur-xs p-4 sm:p-8 md:p-10 rounded-3xl sm:rounded-[2rem] shadow-[0_10px_40px_-15px_rgba(44,53,69,0.06)] border border-slate/5 space-y-5 sm:space-y-7 relative overflow-hidden"
       >
         {/* Subtle decorative washi tape accent at top */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-3 bg-lavender/20 border-b border-lavender/30 rounded-b-sm transform -rotate-1 opacity-75 pointer-events-none" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-20 sm:w-24 h-2.5 sm:h-3 bg-lavender/20 border-b border-lavender/30 rounded-b-sm transform -rotate-1 opacity-75 pointer-events-none" />
 
         {/* SECTION 1: OUR CHAPTER TITLE */}
         <div>
-          <div className="flex items-center justify-between mb-1.5">
+          <div className="flex items-center justify-between mb-1">
             <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 flex items-center gap-1">
               <span>Chapter Title</span>
             </label>
-            <span className="text-[10px] font-handwriting text-slate/40 text-base">give it a name ♡</span>
+            <span className="text-[10px] font-handwriting text-slate/40 text-sm sm:text-base">give it a name ♡</span>
           </div>
           <input 
             required 
             type="text" 
             value={title} 
             onChange={e => setTitle(e.target.value)} 
-            className="w-full px-0 py-2 bg-transparent border-b-2 border-slate/10 focus:border-lavender outline-none font-serif text-2xl sm:text-3xl text-slate font-medium transition-colors placeholder:text-slate/25 placeholder:font-serif placeholder:italic" 
+            className="w-full px-0 py-1.5 sm:py-2 bg-transparent border-b-2 border-slate/10 focus:border-lavender outline-none font-serif text-xl sm:text-3xl text-slate font-medium transition-colors placeholder:text-slate/25 placeholder:font-serif placeholder:italic" 
             placeholder="A day to remember..." 
           />
         </div>
 
         {/* SECTION 2: METADATA DETAILS (Date, Location, Category) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 pt-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-5 pt-0.5">
           <div>
-            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 mb-1.5 flex items-center gap-1.5">
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 mb-1 flex items-center gap-1.5">
               <CalendarIcon className="w-3 h-3 text-lavender" />
               <span>Date</span>
             </label>
@@ -431,12 +431,12 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
               type="date" 
               value={date} 
               onChange={e => setDate(e.target.value)} 
-              className="w-full px-3.5 py-2.5 bg-[#FAF8FE]/80 border border-slate/10 rounded-xl focus:border-lavender focus:bg-white focus:ring-2 focus:ring-lavender/20 outline-none text-xs sm:text-sm font-medium text-slate transition-all" 
+              className="w-full h-10 sm:h-11 px-3 py-2 bg-[#FAF8FE]/80 border border-slate/10 rounded-xl focus:border-lavender focus:bg-white focus:ring-2 focus:ring-lavender/20 outline-none text-xs sm:text-sm font-medium text-slate transition-all" 
             />
           </div>
 
           <div>
-            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 mb-1.5 flex items-center gap-1.5">
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 mb-1 flex items-center gap-1.5">
               <MapPin className="w-3 h-3 text-rose-400" />
               <span>Location</span>
             </label>
@@ -445,13 +445,13 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
               type="text" 
               value={location} 
               onChange={e => setLocation(e.target.value)} 
-              className="w-full px-3.5 py-2.5 bg-[#FAF8FE]/80 border border-slate/10 rounded-xl focus:border-lavender focus:bg-white focus:ring-2 focus:ring-lavender/20 outline-none text-xs sm:text-sm text-slate transition-all placeholder:text-slate/30" 
+              className="w-full h-10 sm:h-11 px-3 py-2 bg-[#FAF8FE]/80 border border-slate/10 rounded-xl focus:border-lavender focus:bg-white focus:ring-2 focus:ring-lavender/20 outline-none text-xs sm:text-sm text-slate transition-all placeholder:text-slate/30" 
               placeholder="Where did we go?" 
             />
           </div>
 
           <div className="sm:col-span-2 relative">
-            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 mb-1.5 flex items-center gap-1.5">
+            <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 mb-1 flex items-center gap-1.5">
               <Tag className="w-3 h-3 text-softblue" />
               <span>Category</span>
             </label>
@@ -462,7 +462,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
               onChange={e => setCategory(e.target.value)}
               onFocus={() => setShowCategories(true)}
               onBlur={() => setTimeout(() => setShowCategories(false), 200)}
-              className="w-full px-3.5 py-2.5 bg-[#FAF8FE]/80 border border-slate/10 rounded-xl focus:border-lavender focus:bg-white focus:ring-2 focus:ring-lavender/20 outline-none text-xs sm:text-sm text-slate transition-all placeholder:text-slate/30"
+              className="w-full h-10 sm:h-11 px-3 py-2 bg-[#FAF8FE]/80 border border-slate/10 rounded-xl focus:border-lavender focus:bg-white focus:ring-2 focus:ring-lavender/20 outline-none text-xs sm:text-sm text-slate transition-all placeholder:text-slate/30"
               placeholder="e.g. Cafe Hopping, Road Trip, Anniversary"
             />
             <AnimatePresence>
@@ -493,7 +493,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
         </div>
 
         {/* Subtle Scrapbook Divider */}
-        <div className="flex items-center justify-center gap-2 py-1 text-slate/20">
+        <div className="flex items-center justify-center gap-2 py-0.5 text-slate/20">
           <div className="h-px bg-slate/10 flex-1" />
           <span className="text-xs">♡</span>
           <div className="h-px bg-slate/10 flex-1" />
@@ -501,13 +501,13 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
 
         {/* SECTION 3: POLAROID PHOTO UPLOADER */}
         <div>
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-1.5">
             <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 flex items-center gap-1.5">
               <Camera className="w-3.5 h-3.5 text-lavender" />
               <span>Memories in Frames</span>
             </label>
             {images.length > 0 && (
-              <span className="text-[11px] font-handwriting text-slate/60 text-base">
+              <span className="text-[11px] font-handwriting text-slate/60 text-sm sm:text-base">
                 {images.length} {images.length === 1 ? 'photo' : 'photos'} saved ♡
               </span>
             )}
@@ -519,7 +519,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}
             className={cn(
-              "w-full border-2 border-dashed rounded-2xl p-6 sm:p-7 flex flex-col items-center justify-center cursor-pointer transition-all duration-200 text-center block relative group",
+              "w-full border-2 border-dashed rounded-2xl p-4 sm:p-7 flex flex-col items-center justify-center cursor-pointer transition-all duration-200 text-center block relative group",
               isDragging 
                 ? "border-lavender bg-lavender/10 scale-[1.01]" 
                 : "border-slate/15 bg-[#FAF8FE]/60 hover:bg-[#FAF8FE] hover:border-lavender/60"
@@ -532,23 +532,23 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
               accept="image/*"
               className="hidden"
             />
-            <div className="w-10 h-10 rounded-full bg-white shadow-xs border border-lavender/30 flex items-center justify-center text-lavender mb-2.5 group-hover:scale-105 transition-transform">
-              <Camera className="w-5 h-5 text-lavender" />
+            <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-white shadow-xs border border-lavender/30 flex items-center justify-center text-lavender mb-2 group-hover:scale-105 transition-transform">
+              <Camera className="w-4 h-4 sm:w-5 sm:h-5 text-lavender" />
             </div>
             <p className="text-xs sm:text-sm font-semibold text-slate">
               Add the photos we'll want to look back on ♡
             </p>
-            <p className="text-[11px] text-slate/40 font-handwriting text-base mt-0.5">
+            <p className="text-[11px] text-slate/40 font-handwriting text-sm sm:text-base mt-0.5">
               Tap to browse or drop photos here
             </p>
-            <p className="text-[9px] text-slate/35 uppercase tracking-wider mt-1.5">
+            <p className="text-[9px] text-slate/35 uppercase tracking-wider mt-1">
               JPG, PNG, WEBP or HEIC (Optimized automatically)
             </p>
           </label>
 
           {/* Polaroid-Inspired Photo Previews */}
           {images.length > 0 && (
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3.5 sm:gap-4 mt-4 pt-1">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4 mt-3 pt-0.5">
               {images.map((img, index) => {
                 const rot = polaroidRotations[index % polaroidRotations.length];
                 return (
@@ -559,7 +559,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
                     transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
                     key={img.id} 
                     style={{ transform: `rotate(${rot}deg)` }}
-                    className="relative bg-white p-2 pb-5 rounded-xl shadow-[0_4px_16px_rgba(44,53,69,0.06)] border border-slate/10 group hover:rotate-0 hover:scale-[1.03] transition-all duration-200"
+                    className="relative bg-white p-2 pb-4 sm:pb-5 rounded-xl shadow-[0_4px_16px_rgba(44,53,69,0.06)] border border-slate/10 group hover:rotate-0 hover:scale-[1.03] transition-all duration-200"
                   >
                     <div className="relative aspect-square rounded-lg overflow-hidden bg-slate/5">
                       <img 
@@ -575,7 +575,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
                     </div>
                     
                     {/* Cute Polaroid Bottom Note */}
-                    <div className="mt-1.5 px-1 flex items-center justify-between text-[10px] text-slate/40 font-handwriting text-sm truncate">
+                    <div className="mt-1 px-1 flex items-center justify-between text-[10px] text-slate/40 font-handwriting text-xs sm:text-sm truncate">
                       <span>moment #{index + 1}</span>
                       <span>♡</span>
                     </div>
@@ -597,7 +597,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
         </div>
 
         {/* Subtle Scrapbook Divider */}
-        <div className="flex items-center justify-center gap-2 py-1 text-slate/20">
+        <div className="flex items-center justify-center gap-2 py-0.5 text-slate/20">
           <div className="h-px bg-slate/10 flex-1" />
           <span className="text-xs">✦</span>
           <div className="h-px bg-slate/10 flex-1" />
@@ -605,16 +605,16 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
 
         {/* SECTION 4: MOOD TODAY (Scrapbook Mood Stamps) */}
         <div>
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-1.5">
             <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 flex items-center gap-1.5">
               <span>Mood Today</span>
             </label>
-            <span className="text-[10px] font-handwriting text-slate/50 text-base">
+            <span className="text-[10px] font-handwriting text-slate/50 text-sm sm:text-base">
               how did it feel? ♡
             </span>
           </div>
 
-          <div className="grid grid-cols-4 sm:grid-cols-7 gap-2 sm:gap-2.5">
+          <div className="grid grid-cols-4 sm:grid-cols-7 gap-1.5 sm:gap-2.5">
             {SCRAPBOOK_MOODS.map(m => {
               const isSelected = mood === m.emoji;
               return (
@@ -627,21 +627,21 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
                     setMood(m.emoji);
                   }}
                   className={cn(
-                    "flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl border transition-all duration-200 cursor-pointer relative",
+                    "flex flex-col items-center justify-center py-2 sm:py-2.5 px-1 rounded-2xl border transition-all duration-200 cursor-pointer relative",
                     isSelected 
-                      ? `${m.bg} ${m.border} shadow-xs scale-[1.03] ring-1 ring-lavender/30` 
-                      : "bg-[#FAF8FE]/60 border-slate/10 hover:bg-[#FAF8FE] hover:border-slate/20 opacity-70 hover:opacity-100"
+                      ? `${m.bg} ${m.border} shadow-xs scale-[1.02] sm:scale-[1.03] ring-1 ring-lavender/30` 
+                      : "bg-[#FAF8FE]/60 border-slate/10 hover:bg-[#FAF8FE] hover:border-slate/20 opacity-75 hover:opacity-100"
                   )}
                 >
-                  <span className="text-2xl sm:text-2xl mb-1 leading-none">{m.emoji}</span>
+                  <span className="text-xl sm:text-2xl mb-0.5 sm:mb-1 leading-none">{m.emoji}</span>
                   <span className={cn(
-                    "text-[10px] font-semibold tracking-tight",
+                    "text-[9px] sm:text-[10px] font-semibold tracking-tight",
                     isSelected ? m.text : "text-slate/60"
                   )}>
                     {m.label}
                   </span>
                   {isSelected && (
-                    <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-lavender" />
+                    <span className="absolute -top-0.5 -right-0.5 w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-lavender" />
                   )}
                 </motion.button>
               );
@@ -649,7 +649,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
           </div>
 
           {/* Custom Mood Trigger & Input */}
-          <div className="mt-3 pt-1 flex items-center justify-between">
+          <div className="mt-2.5 pt-0.5 flex items-center justify-between">
             <button
               type="button"
               onClick={() => setIsCustomMoodOpen(!isCustomMoodOpen)}
@@ -673,7 +673,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
                 exit={{ opacity: 0, height: 0 }}
                 className="overflow-hidden mt-2"
               >
-                <div className="p-3 bg-[#FAF8FE] border border-slate/10 rounded-xl flex items-center gap-3">
+                <div className="p-2.5 sm:p-3 bg-[#FAF8FE] border border-slate/10 rounded-xl flex items-center gap-3">
                   <input
                     type="text"
                     value={!SCRAPBOOK_MOODS.some(m => m.emoji === mood) ? mood : ''}
@@ -683,7 +683,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
                       else setMood('🥰');
                     }}
                     placeholder="Type emoji here (e.g. 🌻, ☕, 🏕️)"
-                    className="flex-1 bg-white px-3 py-2 border border-slate/10 rounded-lg text-xs sm:text-sm outline-none focus:border-lavender text-slate"
+                    className="flex-1 bg-white h-9 sm:h-10 px-3 py-1.5 border border-slate/10 rounded-lg text-xs sm:text-sm outline-none focus:border-lavender text-slate"
                   />
                   <span className="text-[11px] text-slate/40 font-handwriting text-sm shrink-0">Any emoji you like!</span>
                 </div>
@@ -694,16 +694,16 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
 
         {/* SECTION 5: HOW SPECIAL WAS THIS MEMORY (Rating) */}
         <div>
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex items-center justify-between mb-1.5">
             <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 flex items-center gap-1">
               <span>How Special Was This?</span>
             </label>
-            <span className="text-xs font-serif font-bold text-amber-600 bg-amber-50/90 px-3 py-0.5 rounded-full border border-amber-200/60">
+            <span className="text-xs font-serif font-bold text-amber-600 bg-amber-50/90 px-2.5 py-0.5 rounded-full border border-amber-200/60">
               {hoverRating !== null ? hoverRating : rating} / 5 Stars
             </span>
           </div>
 
-          <div className="flex items-center justify-between p-3.5 sm:p-4 bg-[#FAF8FE]/80 border border-slate/10 rounded-2xl">
+          <div className="flex items-center justify-between p-3 sm:p-4 bg-[#FAF8FE]/80 border border-slate/10 rounded-2xl">
             <div className="flex items-center gap-1 sm:gap-2">
               {[1, 2, 3, 4, 5].map((star) => {
                 const currentScore = hoverRating !== null ? hoverRating : rating;
@@ -722,7 +722,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
                   >
                     <Star
                       className={cn(
-                        "w-6 h-6 sm:w-7 sm:h-7 transition-colors duration-150",
+                        "w-5 h-5 sm:w-7 sm:h-7 transition-colors duration-150",
                         isFilled
                           ? "fill-amber-400 text-amber-400 drop-shadow-[0_2px_6px_rgba(251,191,36,0.35)]"
                           : "fill-transparent text-slate/20 hover:text-amber-200"
@@ -733,7 +733,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
               })}
             </div>
 
-            <span className="text-xs text-slate/50 font-handwriting text-base hidden sm:inline pr-1">
+            <span className="text-xs text-slate/50 font-handwriting text-sm sm:text-base hidden sm:inline pr-1">
               {(hoverRating !== null ? hoverRating : rating) === 5
                 ? 'A truly magical moment ♡'
                 : (hoverRating !== null ? hoverRating : rating) === 4
@@ -754,15 +754,15 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
               <Music2 className="w-3.5 h-3.5 text-lavender" />
               <span>Our Song</span>
             </label>
-            <span className="text-[10px] text-slate/40 font-handwriting text-sm">
+            <span className="text-[10px] text-slate/40 font-handwriting text-xs sm:text-sm">
               optional soundtrack
             </span>
           </div>
-          <p className="text-xs text-slate/50 font-serif italic mb-2.5">
+          <p className="text-[11px] sm:text-xs text-slate/50 font-serif italic mb-2">
             “A song that reminds us of this memory...”
           </p>
 
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             <div className="relative">
               <input
                 type="url"
@@ -770,7 +770,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
                 onChange={e => setSpotifyUrl(e.target.value)}
                 placeholder="Paste a Spotify song link (e.g. https://open.spotify.com/track/...)"
                 className={cn(
-                  "w-full px-3.5 py-2.5 bg-[#FAF8FE]/80 border rounded-xl focus:border-lavender focus:bg-white focus:ring-2 focus:ring-lavender/20 outline-none text-xs sm:text-sm transition-all text-slate placeholder:text-slate/30 font-sans",
+                  "w-full h-10 sm:h-11 px-3 py-2 bg-[#FAF8FE]/80 border rounded-xl focus:border-lavender focus:bg-white focus:ring-2 focus:ring-lavender/20 outline-none text-xs sm:text-sm transition-all text-slate placeholder:text-slate/30 font-sans",
                   hasInvalidSpotifyUrl ? "border-rose-300 focus:ring-rose-200" : "border-slate/10"
                 )}
               />
@@ -778,7 +778,7 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
                 <button
                   type="button"
                   onClick={() => setSpotifyUrl('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-slate/10 hover:bg-slate/20 text-slate/60 flex items-center justify-center text-xs transition-colors cursor-pointer"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-slate/10 hover:bg-slate/20 text-slate/60 flex items-center justify-center text-xs transition-colors cursor-pointer"
                   title="Clear Spotify link"
                 >
                   <X className="w-3 h-3" />
@@ -801,21 +801,21 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
               <motion.div
                 initial={{ opacity: 0, scale: 0.98 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="p-3 bg-gradient-to-r from-lavender/15 via-rose-50/40 to-softblue/15 border border-lavender/30 rounded-xl flex items-center justify-between gap-3 text-xs"
+                className="p-2.5 sm:p-3 bg-gradient-to-r from-lavender/15 via-rose-50/40 to-softblue/15 border border-lavender/30 rounded-xl flex items-center justify-between gap-2.5 text-xs"
               >
                 <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-8 h-8 rounded-lg bg-white shadow-xs border border-lavender/30 flex items-center justify-center text-lavender shrink-0">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-white shadow-xs border border-lavender/30 flex items-center justify-center text-lavender shrink-0">
                     {isFetchingSpotify ? (
                       <div className="w-3.5 h-3.5 border-2 border-lavender border-t-transparent rounded-full animate-spin" />
                     ) : (
-                      <Music2 className="w-4 h-4 text-lavender" />
+                      <Music2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-lavender" />
                     )}
                   </div>
                   <div className="min-w-0">
                     {isFetchingSpotify ? (
                       <div>
                         <p className="font-serif font-bold text-slate text-xs">Listening for song details...</p>
-                        <p className="text-[10px] text-slate/50 font-handwriting text-sm">finding track metadata ♡</p>
+                        <p className="text-[10px] text-slate/50 font-handwriting text-xs sm:text-sm">finding track metadata ♡</p>
                       </div>
                     ) : spotifyTitle ? (
                       <div>
@@ -851,20 +851,20 @@ export default function Write({ onSave, onUpdate, navigate, memories = [], editi
             <label className="block text-[10px] font-bold uppercase tracking-widest text-slate/40 flex items-center gap-1">
               <span>The Story</span>
             </label>
-            <span className="text-[10px] text-slate/40 font-handwriting text-base">markdown supported **bold**</span>
+            <span className="text-[10px] text-slate/40 font-handwriting text-xs sm:text-base">markdown supported **bold**</span>
           </div>
           <textarea 
             required 
             value={story} 
             onChange={e => setStory(e.target.value)} 
-            rows={6} 
-            className="w-full p-4 bg-[#FAF8FE]/80 border border-slate/10 rounded-2xl focus:border-lavender focus:bg-white focus:ring-2 focus:ring-lavender/20 outline-none text-xs sm:text-sm text-slate resize-none leading-relaxed transition-all placeholder:text-slate/30 font-sans" 
+            rows={5} 
+            className="w-full p-3.5 sm:p-4 bg-[#FAF8FE]/80 border border-slate/10 rounded-2xl focus:border-lavender focus:bg-white focus:ring-2 focus:ring-lavender/20 outline-none text-xs sm:text-sm text-slate resize-none leading-relaxed transition-all placeholder:text-slate/30 font-sans" 
             placeholder="Tell us what happened... the laughs, the little details, what made this day special ♡"
           />
         </div>
 
         {/* SECTION 8: SAVE BUTTON */}
-        <div className="pt-2">
+        <div className="pt-2 sm:pt-3">
           <motion.button 
             whileHover={!isSubmitting ? { scale: 1.01 } : undefined}
             whileTap={!isSubmitting ? { scale: 0.98 } : undefined}
