@@ -41,6 +41,21 @@ const memorySchema = new mongoose.Schema({
 
 const Memory = mongoose.model('Memory', memorySchema);
 
+// Letter Schema & Model (New Letters Module)
+const letterSchema = new mongoose.Schema({
+  sender: { type: String, required: true },
+  recipient: { type: String, required: true },
+  title: { type: String, required: true },
+  content: { type: String, required: true },
+  category: { type: String, required: true },
+  signature: { type: String, default: '' },
+  isOpened: { type: Boolean, default: false },
+  openedAt: { type: Date, default: null },
+  createdAt: { type: Date, default: Date.now }
+});
+
+const Letter = mongoose.models.Letter || mongoose.model('Letter', letterSchema);
+
 // --- API Routes ---
 
 // GET: Fetch all memories (sorted by date)
@@ -102,6 +117,101 @@ app.delete('/api/memories/:id', async (req, res) => {
     res.json({ message: 'Memory deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: 'Failed to delete memory' });
+  }
+});
+
+// --- LETTERS API ROUTES ---
+
+// GET: Fetch all letters
+app.get('/api/letters', async (req, res) => {
+  try {
+    const letters = await Letter.find().sort({ createdAt: -1 });
+    const formatted = letters.map(l => ({
+      id: l._id.toString(),
+      sender: l.sender,
+      recipient: l.recipient,
+      title: l.title,
+      content: l.content,
+      category: l.category,
+      signature: l.signature || '',
+      isOpened: Boolean(l.isOpened),
+      openedAt: l.openedAt ? l.openedAt.toISOString() : null,
+      createdAt: l.createdAt ? l.createdAt.toISOString() : new Date().toISOString()
+    }));
+    res.json(formatted);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch letters' });
+  }
+});
+
+// POST: Create a new letter
+app.post('/api/letters', async (req, res) => {
+  try {
+    const newLetter = new Letter({
+      sender: req.body.sender,
+      recipient: req.body.recipient,
+      title: req.body.title,
+      content: req.body.content,
+      category: req.body.category,
+      signature: req.body.signature || '',
+      isOpened: Boolean(req.body.isOpened),
+      openedAt: req.body.openedAt ? new Date(req.body.openedAt) : null,
+      createdAt: req.body.createdAt ? new Date(req.body.createdAt) : new Date()
+    });
+    const saved = await newLetter.save();
+    res.status(201).json({
+      id: saved._id.toString(),
+      sender: saved.sender,
+      recipient: saved.recipient,
+      title: saved.title,
+      content: saved.content,
+      category: saved.category,
+      signature: saved.signature || '',
+      isOpened: saved.isOpened,
+      openedAt: saved.openedAt ? saved.openedAt.toISOString() : null,
+      createdAt: saved.createdAt.toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to save letter' });
+  }
+});
+
+// PUT: Update an existing letter (e.g. marking as opened or updating content)
+app.put('/api/letters/:id', async (req, res) => {
+  try {
+    const payload = { ...req.body };
+    if (payload.openedAt) payload.openedAt = new Date(payload.openedAt);
+    const updated = await Letter.findByIdAndUpdate(
+      req.params.id,
+      payload,
+      { new: true }
+    );
+    if (!updated) return res.status(404).json({ error: 'Letter not found' });
+    res.json({
+      id: updated._id.toString(),
+      sender: updated.sender,
+      recipient: updated.recipient,
+      title: updated.title,
+      content: updated.content,
+      category: updated.category,
+      signature: updated.signature || '',
+      isOpened: updated.isOpened,
+      openedAt: updated.openedAt ? updated.openedAt.toISOString() : null,
+      createdAt: updated.createdAt.toISOString()
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to update letter' });
+  }
+});
+
+// DELETE: Remove a letter
+app.delete('/api/letters/:id', async (req, res) => {
+  try {
+    const deleted = await Letter.findByIdAndDelete(req.params.id);
+    if (!deleted) return res.status(404).json({ error: 'Letter not found' });
+    res.json({ message: 'Letter deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to delete letter' });
   }
 });
 

@@ -31,10 +31,30 @@ export interface OfflineMemory {
   lastSyncError?: string;
 }
 
+export interface OfflineLetter {
+  localId: string;
+  id?: string; // MongoDB server _id if synced
+  serverId?: string;
+  sender: string;
+  recipient: string;
+  title: string;
+  content: string;
+  category: string;
+  signature?: string;
+  isOpened: boolean;
+  openedAt?: string | null;
+  syncStatus: 'pending' | 'syncing' | 'synced' | 'failed';
+  syncAction?: 'create' | 'update' | 'delete';
+  createdAt: string;
+  updatedAt: string;
+  lastSyncError?: string;
+}
+
 const DB_NAME = 'natatale_offline_db';
-const DB_VERSION = 1;
+const DB_VERSION = 2; // Incremented for letters store
 const MEMORIES_STORE = 'offline_memories';
 const PHOTOS_STORE = 'offline_photos';
+const LETTERS_STORE = 'offline_letters';
 
 let dbPromise: Promise<IDBDatabase> | null = null;
 
@@ -63,6 +83,13 @@ export function openOfflineDb(): Promise<IDBDatabase> {
         const photoStore = db.createObjectStore(PHOTOS_STORE, { keyPath: 'localPhotoId' });
         photoStore.createIndex('memoryLocalId', 'memoryLocalId', { unique: false });
         photoStore.createIndex('syncStatus', 'syncStatus', { unique: false });
+      }
+
+      // Store for offline letters & sync queue
+      if (!db.objectStoreNames.contains(LETTERS_STORE)) {
+        const letterStore = db.createObjectStore(LETTERS_STORE, { keyPath: 'localId' });
+        letterStore.createIndex('syncStatus', 'syncStatus', { unique: false });
+        letterStore.createIndex('serverId', 'serverId', { unique: false });
       }
     };
 
@@ -188,3 +215,65 @@ export async function deleteOfflineMemory(localId: string): Promise<void> {
     req.onerror = () => reject(req.error);
   });
 }
+
+// --- Offline Letters Operations ---
+
+export async function saveOfflineLetter(letter: OfflineLetter): Promise<void> {
+  const db = await openOfflineDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(LETTERS_STORE, 'readwrite');
+    const store = tx.objectStore(LETTERS_STORE);
+    const req = store.put(letter);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function getOfflineLetter(localId: string): Promise<OfflineLetter | undefined> {
+  const db = await openOfflineDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(LETTERS_STORE, 'readonly');
+    const store = tx.objectStore(LETTERS_STORE);
+    const req = store.get(localId);
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function getAllOfflineLetters(): Promise<OfflineLetter[]> {
+  const db = await openOfflineDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(LETTERS_STORE, 'readonly');
+    const store = tx.objectStore(LETTERS_STORE);
+    const req = store.getAll();
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function getPendingLetters(): Promise<OfflineLetter[]> {
+  const db = await openOfflineDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(LETTERS_STORE, 'readonly');
+    const store = tx.objectStore(LETTERS_STORE);
+    const req = store.getAll();
+    req.onsuccess = () => {
+      const all: OfflineLetter[] = req.result || [];
+      const pending = all.filter(l => l.syncStatus === 'pending' || l.syncStatus === 'failed');
+      resolve(pending);
+    };
+    req.onerror = () => reject(req.error);
+  });
+}
+
+export async function deleteOfflineLetter(localId: string): Promise<void> {
+  const db = await openOfflineDb();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(LETTERS_STORE, 'readwrite');
+    const store = tx.objectStore(LETTERS_STORE);
+    const req = store.delete(localId);
+    req.onsuccess = () => resolve();
+    req.onerror = () => reject(req.error);
+  });
+}
+

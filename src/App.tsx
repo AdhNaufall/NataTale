@@ -7,6 +7,7 @@ import Archive from './pages/Archive';
 import Write from './pages/Write';
 import Story from './pages/Story';
 import Us from './pages/Us';
+import Letters, { LetterItem } from './pages/Letters';
 import { Navigation } from './components/Navigation';
 import LockScreen from './components/LockScreen';
 import { memoriesData } from './data';
@@ -16,9 +17,12 @@ import {
   getAllOfflineMemories,
   getOfflinePhoto,
   deleteOfflineMemory,
-  OfflineMemory
+  OfflineMemory,
+  saveOfflineLetter,
+  getAllOfflineLetters,
+  OfflineLetter
 } from './lib/offlineDb';
-import { syncPendingMemories, onSyncStatusChange } from './lib/syncEngine';
+import { syncPendingMemories, syncPendingLetters, onSyncStatusChange } from './lib/syncEngine';
 
 const API_BASE_URL = (import.meta as any).env.VITE_API_URL || '';
 
@@ -30,6 +34,10 @@ function App() {
   const [memories, setMemories] = useState<any[]>(() => {
     const localData = localStorage.getItem('natatale_memories');
     return localData ? JSON.parse(localData) : memoriesData;
+  });
+  const [letters, setLetters] = useState<LetterItem[]>(() => {
+    const localLetters = localStorage.getItem('natatale_letters');
+    return localLetters ? JSON.parse(localLetters) : [];
   });
   const [editingMemory, setEditingMemory] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(() => {
@@ -43,6 +51,74 @@ function App() {
     countPending: 0
   });
   const [showSyncSuccessToast, setShowSyncSuccessToast] = useState(false);
+
+  // Unopened letters count for navigation badge
+  const unopenedLettersCount = letters.filter(l => !l.isOpened).length;
+
+  // Helper to safely merge server letters with local IndexedDB letters
+  const mergeLetters = useCallback(async (serverList: any[]) => {
+    try {
+      const offlineList = await getAllOfflineLetters();
+      const serverIds = new Set(serverList.map((l: any) => l.id || l._id));
+
+      const pendingOrLocalOnly = offlineList.filter((offLet) => {
+        if (offLet.syncAction === 'delete') return false;
+        if (offLet.serverId && serverIds.has(offLet.serverId)) return false;
+        if (offLet.id && serverIds.has(offLet.id)) return false;
+        return true;
+      });
+
+      const formattedLocal: LetterItem[] = pendingOrLocalOnly.map(offLet => ({
+        id: offLet.localId,
+        localId: offLet.localId,
+        sender: offLet.sender,
+        recipient: offLet.recipient,
+        title: offLet.title,
+        content: offLet.content,
+        category: offLet.category,
+        signature: offLet.signature || '',
+        isOpened: offLet.isOpened,
+        openedAt: offLet.openedAt,
+        createdAt: offLet.createdAt,
+        syncStatus: offLet.syncStatus || 'pending'
+      }));
+
+      // Combined & sorted by createdAt descending
+      const combined = [...serverList, ...formattedLocal].sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+      setLetters(combined);
+      localStorage.setItem('natatale_letters', JSON.stringify(combined));
+    } catch (e) {
+      console.error('Error merging offline and server letters:', e);
+      setLetters(serverList);
+      localStorage.setItem('natatale_letters', JSON.stringify(serverList));
+    }
+  }, []);
+
+  const fetchLetters = useCallback(async () => {
+    if (typeof navigator !== 'undefined' && !navigator.onLine) {
+      const localData = localStorage.getItem('natatale_letters');
+      const cached = localData ? JSON.parse(localData) : [];
+      await mergeLetters(cached);
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/letters`);
+      if (!res.ok) throw new Error('Backend not available');
+      const data = await res.json();
+      if (Array.isArray(data)) {
+        await mergeLetters(data);
+      }
+    } catch (err) {
+      console.warn('Failed to load letters from DB (using local cache/IndexedDB):', err);
+      const localData = localStorage.getItem('natatale_letters');
+      const cached = localData ? JSON.parse(localData) : [];
+      await mergeLetters(cached);
+    }
+  }, [mergeLetters]);
 
   // Helper to safely merge server memories with local IndexedDB memories (preserving offline pending items)
   const mergeMemories = useCallback(async (serverList: any[]) => {
@@ -139,7 +215,8 @@ function App() {
   // Initial load
   useEffect(() => {
     fetchMemories();
-  }, [fetchMemories]);
+    fetchLetters();
+  }, [fetchMemories, fetchLetters]);
 
   // Online / Offline Detection and Sync Trigger
   useEffect(() => {
@@ -148,6 +225,9 @@ function App() {
       // Trigger background sync immediately when connection returns
       syncPendingMemories(() => {
         fetchMemories();
+      });
+      syncPendingLetters(() => {
+        fetchLetters();
       });
     };
 
@@ -172,6 +252,9 @@ function App() {
       syncPendingMemories(() => {
         fetchMemories();
       });
+      syncPendingLetters(() => {
+        fetchLetters();
+      });
     }
 
     return () => {
@@ -179,10 +262,118 @@ function App() {
       window.removeEventListener('offline', handleOffline);
       unsubscribeSync();
     };
-  }, [fetchMemories]);
+  }, [fetchMemories, fetchLetters]);
 
   const navigate = (path: string) => {
     setCurrentPath(path);
+  };
+
+  // --- LETTER OPERATIONS (Offline-First) ---
+  const addLetter = async (newLetter: Omit<LetterItem, 'id' | 'createdAt' | 'isOpened'>) => {
+    const localId = 'let_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7);
+    const nowIso = new Date().toISOString();
+
+    const offlineLetDoc: OfflineLetter = {
+      localId,
+      sender: newLetter.sender,
+      recipient: newLetter.recipient,
+      title: newLetter.title,
+      content: newLetter.content,
+      category: newLetter.category,
+      signature: newLetter.signature || '',
+      isOpened: false,
+      openedAt: null,
+      syncStatus: 'pending',
+      syncAction: 'create',
+      createdAt: nowIso,
+      updatedAt: nowIso
+    };
+
+    await saveOfflineLetter(offlineLetDoc);
+
+    const optimisticLetter: LetterItem = {
+      id: localId,
+      localId,
+      sender: newLetter.sender,
+      recipient: newLetter.recipient,
+      title: newLetter.title,
+      content: newLetter.content,
+      category: newLetter.category,
+      signature: newLetter.signature || '',
+      isOpened: false,
+      openedAt: null,
+      createdAt: nowIso,
+      syncStatus: 'pending'
+    };
+
+    const updated = [optimisticLetter, ...letters];
+    setLetters(updated);
+    localStorage.setItem('natatale_letters', JSON.stringify(updated));
+
+    if (navigator.onLine) {
+      syncPendingLetters(() => {
+        fetchLetters();
+      });
+    }
+  };
+
+  const openLetter = async (letterId: string) => {
+    const target = letters.find(l => l.id === letterId || l.localId === letterId);
+    if (!target) return;
+
+    const nowIso = new Date().toISOString();
+
+    // 1. Optimistic UI update
+    const updated = letters.map(l => {
+      if (l.id === letterId || l.localId === letterId) {
+        return { ...l, isOpened: true, openedAt: nowIso };
+      }
+      return l;
+    });
+    setLetters(updated);
+    localStorage.setItem('natatale_letters', JSON.stringify(updated));
+
+    // 2. Update in IndexedDB
+    try {
+      const localId = target.localId || target.id;
+      const offlineDoc = await getAllOfflineLetters();
+      const existing = offlineDoc.find(l => l.localId === localId || l.serverId === target.id);
+      
+      if (existing) {
+        existing.isOpened = true;
+        existing.openedAt = nowIso;
+        existing.syncAction = 'update';
+        existing.syncStatus = 'pending';
+        await saveOfflineLetter(existing);
+      } else {
+        await saveOfflineLetter({
+          localId,
+          serverId: target.id,
+          id: target.id,
+          sender: target.sender,
+          recipient: target.recipient,
+          title: target.title,
+          content: target.content,
+          category: target.category,
+          signature: target.signature || '',
+          isOpened: true,
+          openedAt: nowIso,
+          syncStatus: 'pending',
+          syncAction: 'update',
+          createdAt: target.createdAt,
+          updatedAt: nowIso
+        });
+      }
+    } catch (err) {
+      console.error('Failed to update letter in IndexedDB:', err);
+    }
+
+    // 3. Sync if online
+    if (navigator.onLine) {
+      syncPendingLetters(() => {
+        fetchLetters();
+      });
+    }
   };
 
   // 1. ADD MEMORY: Offline-First Flow
@@ -448,6 +639,7 @@ function App() {
             {currentPath === '/' && <Timeline memories={memories} onEdit={handleEdit} onDelete={deleteMemory} navigate={navigate} />}
             {currentPath === '/archive' && <Archive memories={memories} />}
             {currentPath === '/write' && <Write onSave={addMemory} onUpdate={updateMemory} navigate={navigate} memories={memories} editingMemory={editingMemory} setEditingMemory={setEditingMemory} />}
+            {currentPath === '/letters' && <Letters letters={letters} onSaveLetter={addLetter} onOpenLetter={openLetter} navigate={navigate} />}
             {currentPath === '/story' && <Story memories={memories} navigate={navigate} />}
             {currentPath === '/us' && <Us memories={memories} navigate={navigate} />}
           </motion.div>
@@ -455,7 +647,7 @@ function App() {
       </main>
 
       {/* Global Navigation */}
-      <Navigation currentPath={currentPath} navigate={navigate} />
+      <Navigation currentPath={currentPath} navigate={navigate} unopenedLettersCount={unopenedLettersCount} />
     </div>
   );
 }

@@ -225,3 +225,115 @@ export async function syncPendingMemories(onSuccessItem?: (syncedMem: OfflineMem
 
   return { successCount, failCount };
 }
+
+// --- LETTERS SYNC ENGINE ---
+
+import {
+  getPendingLetters,
+  saveOfflineLetter,
+  deleteOfflineLetter,
+  OfflineLetter
+} from './offlineDb';
+
+export async function syncSingleLetter(letter: OfflineLetter): Promise<OfflineLetter> {
+  // If marked for deletion
+  if (letter.syncAction === 'delete') {
+    if (letter.serverId) {
+      const res = await fetch(`${API_BASE_URL}/api/letters/${letter.serverId}`, {
+        method: 'DELETE'
+      });
+      if (!res.ok && res.status !== 404) {
+        throw new Error(`Failed to delete letter on server (${res.status})`);
+      }
+    }
+    await deleteOfflineLetter(letter.localId);
+    return letter;
+  }
+
+  // 1. Mark as syncing
+  letter.syncStatus = 'syncing';
+  await saveOfflineLetter(letter);
+
+  // 2. Prepare payload
+  const payload = {
+    sender: letter.sender,
+    recipient: letter.recipient,
+    title: letter.title,
+    content: letter.content,
+    category: letter.category,
+    signature: letter.signature || '',
+    isOpened: letter.isOpened,
+    openedAt: letter.openedAt,
+    createdAt: letter.createdAt
+  };
+
+  let serverId = letter.serverId;
+
+  if (letter.syncAction === 'update' && serverId) {
+    const res = await fetch(`${API_BASE_URL}/api/letters/${serverId}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      throw new Error(`Server update letter failed (${res.status})`);
+    }
+  } else {
+    const res = await fetch(`${API_BASE_URL}/api/letters`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    if (!res.ok) {
+      throw new Error(`Server save letter failed (${res.status})`);
+    }
+
+    const savedDoc = await res.json();
+    serverId = savedDoc._id || savedDoc.id;
+  }
+
+  // 3. Mark as synced locally
+  letter.serverId = serverId;
+  letter.id = serverId;
+  letter.syncStatus = 'synced';
+  letter.syncAction = undefined;
+  letter.lastSyncError = undefined;
+  letter.updatedAt = new Date().toISOString();
+
+  await saveOfflineLetter(letter);
+  return letter;
+}
+
+export async function syncPendingLetters(onSuccessItem?: (syncedLetter: OfflineLetter) => void): Promise<{ successCount: number; failCount: number }> {
+  if (typeof navigator !== 'undefined' && !navigator.onLine) {
+    return { successCount: 0, failCount: 0 };
+  }
+
+  let successCount = 0;
+  let failCount = 0;
+
+  try {
+    const pending = await getPendingLetters();
+    for (const letter of pending) {
+      try {
+        const synced = await syncSingleLetter(letter);
+        successCount++;
+        if (onSuccessItem) {
+          onSuccessItem(synced);
+        }
+      } catch (err: any) {
+        console.error('Failed to sync letter:', letter.localId, err);
+        failCount++;
+        letter.syncStatus = 'failed';
+        letter.lastSyncError = err?.message || 'Sync failed';
+        await saveOfflineLetter(letter);
+      }
+    }
+  } catch (err) {
+    console.error('Letter sync queue error:', err);
+  }
+
+  return { successCount, failCount };
+}
